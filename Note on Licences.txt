@@ -1,0 +1,35 @@
+Due to the fact that ForCharConv library may be considered as a derivative work, licenses of those code used as references may be applied to the library.  The following list summarizes the licenses that may involve.
+
+(1)  DragonBox: C++ reference implementation.  https://github.com/jk-jeon/dragonbox
+	The source code can be licensed under either of
+    - Apache License Version 2.0 with LLVM Exceptions (LICENSE-Apache2-LLVM or https://llvm.org/foundation/relicensing/LICENSE.txt) or
+    - Boost Software License Version 1.0 (LICENSE-Boost or https://www.boost.org/LICENSE_1_0.txt).
+(2)  Ryu: C reference implementation.  https://github.com/ulfjack/ryu
+	The source code can be licensed under Apache License Version 2.0 or Boost Software License Version 1.0.
+(3)  Schubfach: Java reference implementation.  https://github.com/c4f7fcce9cb06515/Schubfach
+	The source code is licensed as Copyright 2018-2020 Raffaello Giulietti (under MIT License?).
+(4)  Drachennest: Different algorithms for converting binary to decimal floating-point numbers.
+		https://github.com/abolz/Drachennest
+	The source code is licensed under Boost Software License Version 1.0.
+(5)  Number Conversion Benchmark in C.  https://github.com/ibireme/c_numconv_benchmark
+	The source code is licensed under MIT License.
+(6)  Fast_Float Number Parsing Library.  https://github.com/fastfloat/fast_float
+	The source code can be licensed under Apache License Version 2.0 or MIT License or Boost Software License Version 1.0.
+(7)	 Fast_Double_Parser.  https://github.com/lemire/fast_double_parser
+	The source code can be licensed under Apache License Version 2.0 or Boost Software License Version 1.0.
+(8)	 The LLVM Project (LibC).  https://github.com/llvm/llvm-project/tree/main/libc/src/__support
+	The source code can be licensed under Apache License Version 2.0 WITH LLVM-exception.
+(9)	 Double Conversion: Efficient binary-decimal and decimal-binary conversion routines for IEEE doubles.  https://github.com/google/double-conversion
+	The source code is licensed as Copyright 2006-2011, the V8 project authors. (under MIT License?).
+(10)  fmt: A modern formatting library.  https://github.com/fmtlib/fmt
+	The source code is licensed under MIT License.
+(11)  jeaiii_to_text: https://github.com/jeaiii/itoa
+	The source code is licensed under MIT License.
+(12)  Absl's Numeric Library: https://github.com/abseil/abseil-cpp/tree/master/absl/numeric
+	The source code is licensed under Apache License Version 2.0.
+(13)  Fast 128-bit math library for Java: https://github.com/martint/int128/
+	The source code is licensed under Apache License Version 2.0.
+(14)  Extended precision integer C++ library: https://github.com/chfast/intx
+	The source code is licensed under Apache License Version 2.0.
+
+
