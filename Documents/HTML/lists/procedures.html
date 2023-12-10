@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="FortCharConv documentation">
+    <meta name="author" content="Niranama" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>All Procedures &ndash; FortCharConv
+</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/local.css" rel="stylesheet">
+      <link  href="../tipuesearch/tipuesearch.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.7.0.slim.min.js" integrity="sha256-tG5mcZUtJsZvyKAxYLVXrmjKBVLd6VpVccqz/r4ypFE=" crossorigin="anonymous"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">FortCharConv </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12" id='text'>
+			 <h1>Procedures</h1>
+			 <table class="table table-striped">
+			 <thead><tr><th>Procedure</th><th>Location</th><th>Procedure Type</th><th>Description</th></tr></thead>
+			 <tbody>
+			   <tr><td><a href='../proc/abortprogram.html'>AbortProgram</a></td><td><a href='../module/modbase_error_handlers.html'>ModBase_Error_Handlers</a></td><td>Subroutine</td><td><p>This subroutine causes the program to halt due to a fatal error.</p></td></tr>
+			   <tr><td><a href='../interface/abs.html'>ABS</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ABS<br>
+<strong>Purpose</strong>:  To return the absolute value of the input<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUTPUT = ABS(INPUT)</p></td></tr>
+			   <tr><td><a href='../interface/add.html'>Add</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: Add<br>
+<strong>Purpose</strong>:  To add a signed integer to a 128-bit signed integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL Add(This, Other)</p></td></tr>
+			   <tr><td><a href='../interface/add~2.html'>Add</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: Add<br>
+<strong>Purpose</strong>:  To add an unsigned integer to a 128-bit unsigned integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL Add(This, Other)</p></td></tr>
+			   <tr><td><a href='../interface/assignment(=).html'>ASSIGNMENT(=)</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: ASSIGNMENT(=)<br>
+<strong>Purpose</strong>:  To convert between a 128-bit signed integer and
+  other signed integers (32- and 64-bit integers)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    I128 = OtherType</p></td></tr>
+			   <tr><td><a href='../interface/assignment(=)~2.html'>ASSIGNMENT(=)</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: ASSIGNMENT(=)<br>
+<strong>Purpose</strong>:  To convert between a 128-bit unsigned integer and
+  other unsigned integers (32- and 64-bit integers)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    U128 = OtherType</p></td></tr>
+			   <tr><td><a href='../interface/btest.html'>BTEST</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: BTEST<br>
+<strong>Purpose</strong>:  To check whether the bit at the specified position is 0 (False) or 1 (True)<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = BTEST(IN, Pos)</p></td></tr>
+			   <tr><td><a href='../interface/btest~2.html'>BTEST</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: BTEST<br>
+<strong>Purpose</strong>:  To check whether the bit at the specified position is 0 (False) or 1 (True)<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = BTEST(IN, Pos)</p></td></tr>
+			   <tr><td><a href='../proc/closeerrorfile.html'>CloseErrorFile</a></td><td><a href='../module/modbase_error_handlers.html'>ModBase_Error_Handlers</a></td><td>Subroutine</td><td><p>This subroutine closes the general error file.</p></td></tr>
+			   <tr><td><a href='../proc/closemiscopenfiles.html'>CloseMiscOpenFiles</a></td><td><a href='../module/modbase_error_handlers.html'>ModBase_Error_Handlers</a></td><td>Subroutine</td><td><p>This subroutine scans potential Unit numbers and closes
+  any that are still open.</p></td></tr>
+			   <tr><td><a href='../interface/compare.html'>Compare</a></td><td><a href='../module/modbase_sintutil.html'>ModBase_SIntUtil</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: Compare<br>
+<strong>Purpose</strong>:  To compare two signed integers of the same kind and return<br>
+  -1 if LHS &lt; RHS<br>
+   0 if LHS == RHS<br>
+   1 if LHS &gt; RHS<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = Compare(LHS, RHS)<br>
+  ---&gt;    IF (Compare(LHS, RHS) /= 0) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/compare~2.html'>Compare</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: Compare<br>
+<strong>Purpose</strong>:  To compare two 128-bit signed integers and return<br>
+  -1 if LHS &lt; RHS<br>
+   0 if LHS == RHS<br>
+   1 if LHS &gt; RHS<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = Compare(LHS, RHS)<br>
+  ---&gt;    IF (Compare(LHS, RHS) /= 0) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/compareunsigned.html'>CompareUnsigned</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: CompareUnsigned<br>
+<strong>Purpose</strong>:  To compare two unsigned integers (of the same kind) and return<br>
+  -1 if LHS &lt; RHS<br>
+   0 if LHS == RHS<br>
+   1 if LHS &gt; RHS<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = CompareUnsigned(LHS, RHS)<br>
+  ---&gt;    IF (CompareUnsigned(LHS, RHS) /= 0) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/compareunsigned~2.html'>CompareUnsigned</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: CompareUnsigned<br>
+<strong>Purpose</strong>:  To compare two 128-bit unsigned integers and return<br>
+  -1 if LHS &lt; RHS<br>
+   0 if LHS == RHS<br>
+   1 if LHS &gt; RHS<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = CompareUnsigned(LHS, RHS)<br>
+  ---&gt;    IF (CompareUnsigned(LHS, RHS) /= 0) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/decrement.html'>Decrement</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: Decrement<br>
+<strong>Purpose</strong>:  To decrease value of a 128-bit signed integer by one<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL Decrement(I128)</p></td></tr>
+			   <tr><td><a href='../interface/decrement~2.html'>Decrement</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: Decrement<br>
+<strong>Purpose</strong>:  To decrease value of a 128-bit unsigned integer by one<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL Decrement(U128)</p></td></tr>
+			   <tr><td><a href='../interface/display.html'>Display</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: Display<br>
+<strong>Purpose</strong>:  To write/display the 'SInt128' object to the screen (or the specified unit)<br>
+<strong>Usage</strong>:<br>
+  To display (signed) value of I128 as a decimal string to the screen<br>
+  ---&gt;    CALL Display(I128)<br>
+  To display (signed) value of I128 as a decimal string to the output logical unit<br>
+  ---&gt;    CALL Display(I128, 11)<br>
+  To display (signed) value of I128 as a decimal string to the output logical unit<br>
+  with input/output status and message<br>
+  ---&gt;    CALL Display(I128, 11, IOStat, IOMsg)<br>
+  To display (signed) values of components of U128 as a decimal string to the screen<br>
+  ---&gt;    CALL Display(I128, ShowComponent=.TRUE.)<br>
+  To display (signed) value of I128 as a decimal string to the screen with a prefix string<br>
+  ---&gt;    CALL Display(I128, Prefix='Unsigned value of U128')</p></td></tr>
+			   <tr><td><a href='../interface/display~2.html'>Display</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: Display<br>
+<strong>Purpose</strong>:  To write/display the 'UInt128' object to the screen (or the specified unit)<br>
+<strong>Usage</strong>:<br>
+  To display (unsigned) value of U128 as a decimal string to the screen<br>
+  ---&gt;    CALL Display(U128)<br>
+  To display (unsigned) value of U128 as a decimal string to the output logical unit<br>
+  ---&gt;    CALL Display(U128, 11)<br>
+  To display (unsigned) value of U128 as a decimal string to the output logical unit<br>
+  with input/output status and message<br>
+  ---&gt;    CALL Display(U128, 11, IOStat, IOMsg)<br>
+  To display (signed) values of components of U128 as a decimal string to the screen<br>
+  ---&gt;    CALL Display(U128, ShowComponent=.TRUE.)<br>
+  To display (unsigned) value of U128 as a decimal string to the screen with a prefix string<br>
+  ---&gt;    CALL Display(U128, Prefix='Unsigned value of U128')</p></td></tr>
+			   <tr><td><a href='../proc/displaycontinueerror.html'>DisplayContinueError</a></td><td><a href='../module/modbase_error_handlers.html'>ModBase_Error_Handlers</a></td><td>Subroutine</td><td><p>To display a 'Continued Error' message.</p></td></tr>
+			   <tr><td><a href='../proc/displayfatalerror.html'>DisplayFatalError</a></td><td><a href='../module/modbase_error_handlers.html'>ModBase_Error_Handlers</a></td><td>Subroutine</td><td><p>To display a 'Fatal Error' message.</p></td></tr>
+			   <tr><td><a href='../proc/displaymessage.html'>DisplayMessage</a></td><td><a href='../module/modbase_error_handlers.html'>ModBase_Error_Handlers</a></td><td>Subroutine</td><td><p>To display a (informative) message on designated output Files.</p></td></tr>
+			   <tr><td><a href='../proc/displaysevereerror.html'>DisplaySevereError</a></td><td><a href='../module/modbase_error_handlers.html'>ModBase_Error_Handlers</a></td><td>Subroutine</td><td><p>To display a 'Severe Error' message.</p></td></tr>
+			   <tr><td><a href='../proc/displaywarningerror.html'>DisplayWarningError</a></td><td><a href='../module/modbase_error_handlers.html'>ModBase_Error_Handlers</a></td><td>Subroutine</td><td><p>To display a 'Warning Error' message.</p></td></tr>
+			   <tr><td><a href='../interface/divide.html'>Divide</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: Divide<br>
+<strong>Purpose</strong>:  To divide a 128-bit signed integer by a signed integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL Divide(This, Other)</p></td></tr>
+			   <tr><td><a href='../interface/divide~2.html'>Divide</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: Divide<br>
+<strong>Purpose</strong>:  To divide a 128-bit unsigned integer by an unsigned integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL Divide(This, Other)</p></td></tr>
+			   <tr><td><a href='../interface/divmod.html'>DivMod</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: DivMod<br>
+<strong>Purpose</strong>:  To perform a division of two signed integers (where the
+  dividend (numerator) is a 128-bit signed integer and the divisor
+  (denominator) can be 32-, 64- or 128-bit signed integer) and
+  to return both the quotient and the remainder<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL DivMod(NUMER, DENOM, QUOT, REM)</p></td></tr>
+			   <tr><td><a href='../interface/highestonebit.html'>HighestOneBit</a></td><td><a href='../module/modbase_sintutil.html'>ModBase_SIntUtil</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: HighestOneBit<br>
+<strong>Purpose</strong>:  To return an integer value (same kind as the specified integer value) with at most<br>
+  a single one-bit, in the position of the highest-order (leftmost) one-bit in the input.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUTPUT = HighestOneBit(INPUT)</p></td></tr>
+			   <tr><td><a href='../proc/i32_fromchar.html'>I32_FromChar</a></td><td><a href='../module/modbase_sintutil.html'>ModBase_SIntUtil</a></td><td>Function</td><td><p>To convert a decimal string to an integer value</p></td></tr>
+			   <tr><td><a href='../proc/i32_fromchar_cc_fortnum.html'>I32_FromChar_CC_FortNum</a></td><td><a href='../module/modbase_integer_fromchar.html'>ModBase_Integer_FromChar</a></td><td>Function</td><td><p>To convert a decimal string to a 32-bit integer by interpreting the string as a Fortran number</p></td></tr>
+			   <tr><td><a href='../proc/i32_fromchar_cc_fortplus.html'>I32_FromChar_CC_FortPlus</a></td><td><a href='../module/modbase_integer_fromchar.html'>ModBase_Integer_FromChar</a></td><td>Function</td><td><p>To convert a decimal string to a 32-bit integer by interpreting the string as a FortPlus number</p></td></tr>
+			   <tr><td><a href='../proc/i32_fromchar_cc_jsonnum.html'>I32_FromChar_CC_JsonNum</a></td><td><a href='../module/modbase_integer_fromchar.html'>ModBase_Integer_FromChar</a></td><td>Function</td><td><p>To convert a decimal string to a 32-bit integer by interpreting the string as a JSON number</p></td></tr>
+			   <tr><td><a href='../proc/i32_fromchar_lemire_fortplus.html'>I32_FromChar_Lemire_FortPlus</a></td><td><a href='../module/modbase_integer_fromchar.html'>ModBase_Integer_FromChar</a></td><td>Function</td><td><p>To convert a decimal string to a 32-bit integer by interpreting the string as a FortPlus number</p></td></tr>
+			   <tr><td><a href='../proc/i32_fromchar_yy_jsonnum.html'>I32_FromChar_YY_JsonNum</a></td><td><a href='../module/modbase_integer_fromchar.html'>ModBase_Integer_FromChar</a></td><td>Function</td><td><p>To convert a decimal string to a 32-bit integer by interpreting the string as a JSON number</p></td></tr>
+			   <tr><td><a href='../proc/i32_tochar_basic.html'>I32_ToChar_Basic</a></td><td><a href='../module/modbase_integer_tochar.html'>ModBase_Integer_ToChar</a></td><td>Function</td><td><p>To convert a 32-bit integer to a decimal string using basic (naive) algorithm</p></td></tr>
+			   <tr><td><a href='../proc/i32_tochar_cc.html'>I32_ToChar_CC</a></td><td><a href='../module/modbase_integer_tochar.html'>ModBase_Integer_ToChar</a></td><td>Function</td><td><p>To convert a 32-bit integer to a decimal string using CC algorithm</p></td></tr>
+			   <tr><td><a href='../proc/i32_tochar_jea.html'>I32_ToChar_JEA</a></td><td><a href='../module/modbase_integer_tochar.html'>ModBase_Integer_ToChar</a></td><td>Function</td><td><p>To convert a 32-bit integer to a decimal string using JEA algorithm</p></td></tr>
+			   <tr><td><a href='../proc/i32_tochar_yy.html'>I32_ToChar_YY</a></td><td><a href='../module/modbase_integer_tochar.html'>ModBase_Integer_ToChar</a></td><td>Function</td><td><p>To convert a 32-bit integer to a decimal string using YY algorithm</p></td></tr>
+			   <tr><td><a href='../proc/i32_tochar_yyll.html'>I32_ToChar_YYLL</a></td><td><a href='../module/modbase_integer_tochar.html'>ModBase_Integer_ToChar</a></td><td>Function</td><td><p>To convert a 32-bit integer to a decimal string using YY algorithm with large table</p></td></tr>
+			   <tr><td><a href='../proc/i64_fromchar.html'>I64_FromChar</a></td><td><a href='../module/modbase_sintutil.html'>ModBase_SIntUtil</a></td><td>Function</td><td><p>To convert a decimal string to an integer value</p></td></tr>
+			   <tr><td><a href='../proc/i64_fromchar_cc_fortnum.html'>I64_FromChar_CC_FortNum</a></td><td><a href='../module/modbase_integer_fromchar.html'>ModBase_Integer_FromChar</a></td><td>Function</td><td><p>To convert a decimal string to a 64-bit integer by interpreting the string as a Fortran number</p></td></tr>
+			   <tr><td><a href='../proc/i64_fromchar_cc_fortplus.html'>I64_FromChar_CC_FortPlus</a></td><td><a href='../module/modbase_integer_fromchar.html'>ModBase_Integer_FromChar</a></td><td>Function</td><td><p>To convert a decimal string to a 64-bit integer by interpreting the string as a FortPlus number</p></td></tr>
+			   <tr><td><a href='../proc/i64_fromchar_cc_jsonnum.html'>I64_FromChar_CC_JsonNum</a></td><td><a href='../module/modbase_integer_fromchar.html'>ModBase_Integer_FromChar</a></td><td>Function</td><td><p>To convert a decimal string to a 64-bit integer by interpreting the string as a JSON number</p></td></tr>
+			   <tr><td><a href='../proc/i64_fromchar_lemire_fortplus.html'>I64_FromChar_Lemire_FortPlus</a></td><td><a href='../module/modbase_integer_fromchar.html'>ModBase_Integer_FromChar</a></td><td>Function</td><td><p>To convert a decimal string to a 64-bit integer by interpreting the string as a FortPlus number</p></td></tr>
+			   <tr><td><a href='../proc/i64_fromchar_yy_jsonnum.html'>I64_FromChar_YY_JsonNum</a></td><td><a href='../module/modbase_integer_fromchar.html'>ModBase_Integer_FromChar</a></td><td>Function</td><td><p>To convert a decimal string to a 64-bit integer by interpreting the string as a JSON number</p></td></tr>
+			   <tr><td><a href='../proc/i64_tochar_basic.html'>I64_ToChar_Basic</a></td><td><a href='../module/modbase_integer_tochar.html'>ModBase_Integer_ToChar</a></td><td>Function</td><td><p>To convert a 64-bit integer to a decimal string using basic (naive) algorithm</p></td></tr>
+			   <tr><td><a href='../proc/i64_tochar_cc.html'>I64_ToChar_CC</a></td><td><a href='../module/modbase_integer_tochar.html'>ModBase_Integer_ToChar</a></td><td>Function</td><td><p>To convert a 64-bit integer to a decimal string using CC algorithm</p></td></tr>
+			   <tr><td><a href='../proc/i64_tochar_jea.html'>I64_ToChar_JEA</a></td><td><a href='../module/modbase_integer_tochar.html'>ModBase_Integer_ToChar</a></td><td>Function</td><td><p>To convert a 64-bit integer to a decimal string using JEA algorithm</p></td></tr>
+			   <tr><td><a href='../proc/i64_tochar_yy.html'>I64_ToChar_YY</a></td><td><a href='../module/modbase_integer_tochar.html'>ModBase_Integer_ToChar</a></td><td>Function</td><td><p>To convert a 64-bit integer to a decimal string using YY algorithm</p></td></tr>
+			   <tr><td><a href='../proc/i64_tochar_yyll.html'>I64_ToChar_YYLL</a></td><td><a href='../module/modbase_integer_tochar.html'>ModBase_Integer_ToChar</a></td><td>Function</td><td><p>To convert a 64-bit integer to a decimal string using YY algorithm with large table</p></td></tr>
+			   <tr><td><a href='../interface/iand.html'>IAND</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IAND<br>
+<strong>Purpose</strong>:  To perform a logical AND on corresponding bits of the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = IAND(LHSIN, RHSIN)</p></td></tr>
+			   <tr><td><a href='../interface/iand~2.html'>IAND</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IAND<br>
+<strong>Purpose</strong>:  To perform a logical AND on corresponding bits of the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = IAND(LHSIN, RHSIN)</p></td></tr>
+			   <tr><td><a href='../interface/ibchng.html'>IBCHNG</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IBCHNG<br>
+<strong>Purpose</strong>:  To reverse the bit at the specified position<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = IBCHNG(IN, Pos)</p></td></tr>
+			   <tr><td><a href='../interface/ibchng~2.html'>IBCHNG</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IBCHNG<br>
+<strong>Purpose</strong>:  To reverse the bit at the specified position<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = IBCHNG(IN, Pos)</p></td></tr>
+			   <tr><td><a href='../interface/ibclr.html'>IBCLR</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IBCLR<br>
+<strong>Purpose</strong>:  To set the bit at the specified position to 0<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = IBCLR(IN, Pos)</p></td></tr>
+			   <tr><td><a href='../interface/ibclr~2.html'>IBCLR</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IBCLR<br>
+<strong>Purpose</strong>:  To set the bit at the specified position to 0<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = IBCLR(IN, Pos)</p></td></tr>
+			   <tr><td><a href='../interface/ibits.html'>IBITS</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IBITS<br>
+<strong>Purpose</strong>:  To extract a sequence of bits according to the specified input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = IBITS(IN, Pos, Len)</p></td></tr>
+			   <tr><td><a href='../interface/ibits~2.html'>IBITS</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IBITS<br>
+<strong>Purpose</strong>:  To extract a sequence of bits according to the specified input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = IBITS(IN, Pos, Len)</p></td></tr>
+			   <tr><td><a href='../interface/ibset.html'>IBSET</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IBSET<br>
+<strong>Purpose</strong>:  To set the bit at the specified position to 1<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = IBSET(IN, Pos)</p></td></tr>
+			   <tr><td><a href='../interface/ibset~2.html'>IBSET</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IBSET<br>
+<strong>Purpose</strong>:  To set the bit at the specified position to 1<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = IBSET(IN, Pos)</p></td></tr>
+			   <tr><td><a href='../interface/ieor.html'>IEOR</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IEOR<br>
+<strong>Purpose</strong>:  To perform an exclusive OR on corresponding bits of the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = IEOR(LHSIN, RHSIN)</p></td></tr>
+			   <tr><td><a href='../interface/ieor~2.html'>IEOR</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IEOR<br>
+<strong>Purpose</strong>:  To perform an exclusive OR on corresponding bits of the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = IEOR(LHSIN, RHSIN)</p></td></tr>
+			   <tr><td><a href='../interface/increment.html'>Increment</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: Increment<br>
+<strong>Purpose</strong>:  To increase value of a 128-bit signed integer by one<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL Increment(I128)</p></td></tr>
+			   <tr><td><a href='../interface/increment~2.html'>Increment</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: Increment<br>
+<strong>Purpose</strong>:  To increase value of a 128-bit unsigned integer by one<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL Increment(U128)</p></td></tr>
+			   <tr><td><a href='../interface/ior.html'>IOR</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IOR<br>
+<strong>Purpose</strong>:  To perform an inclusive OR on corresponding bits of the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = IOR(LHSIN, RHSIN)</p></td></tr>
+			   <tr><td><a href='../interface/ior~2.html'>IOR</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IOR<br>
+<strong>Purpose</strong>:  To perform an inclusive OR on corresponding bits of the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = IOR(LHSIN, RHSIN)</p></td></tr>
+			   <tr><td><a href='../interface/ishft.html'>ISHFT</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ISHFT<br>
+<strong>Purpose</strong>:  To perform logical shift with -128 &lt;= ShiftPos &lt;= 128<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ISHFT(IN, 53)    ! a logical left shift by 53<br>
+  ---&gt;    OUT = ISHFT(IN, -24)   ! a logical right shift by 24</p></td></tr>
+			   <tr><td><a href='../interface/ishft~2.html'>ISHFT</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ISHFT<br>
+<strong>Purpose</strong>:  To perform logical shift with -128 &lt;= ShiftPos &lt;= 128<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ISHFT(IN, 53)    ! a logical left shift by 53<br>
+  ---&gt;    OUT = ISHFT(IN, -24)   ! a logical right shift by 24</p></td></tr>
+			   <tr><td><a href='../interface/ishftc.html'>ISHFTC</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ISHFTC<br>
+<strong>Purpose</strong>:  To perform circular shift with -128 &lt;= ShiftPos &lt;= 128<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ISHFTC(IN, 53)    ! a circular left shift by 53<br>
+  ---&gt;    OUT = ISHFTC(IN, -24)   ! a circular right shift by 24</p></td></tr>
+			   <tr><td><a href='../interface/ishftc~2.html'>ISHFTC</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ISHFTC<br>
+<strong>Purpose</strong>:  To perform circular shift with -128 &lt;= ShiftPos &lt;= 128<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ISHFTC(IN, 53)    ! a circular left shift by 53<br>
+  ---&gt;    OUT = ISHFTC(IN, -24)   ! a circular right shift by 24</p></td></tr>
+			   <tr><td><a href='../interface/isnegative.html'>IsNegative</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IsNegative<br>
+<strong>Purpose</strong>:  To check whether the input value is negative or not<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = IsNegative(INPUT)<br>
+  ---&gt;    IF (IsNegative(INPUT)) DoSomeThing</p></td></tr>
+			   <tr><td><a href='../interface/ispositive.html'>IsPositive</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IsPositive<br>
+<strong>Purpose</strong>:  To check whether the input value is positive or not<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = IsPositive(INPUT)<br>
+  ---&gt;    IF (IsPositive(INPUT)) DoSomeThing</p></td></tr>
+			   <tr><td><a href='../interface/iszero.html'>IsZero</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: IsZero<br>
+<strong>Purpose</strong>:  To check whether the input value is zero or not<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = IsZero(INPUT)<br>
+  ---&gt;    IF (IsZero(INPUT)) DoSomeThing</p></td></tr>
+			   <tr><td><a href='../interface/leadz.html'>LEADZ</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: LEADZ<br>
+<strong>Purpose</strong>:  To count the number of leading zero bits of the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    NumLZ = LEADZ(INPUT)</p></td></tr>
+			   <tr><td><a href='../interface/leadz~2.html'>LEADZ</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: LEADZ<br>
+<strong>Purpose</strong>:  To count the number of leading zero bits of the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    NumLZ = LEADZ(INPUT)</p></td></tr>
+			   <tr><td><a href='../interface/lowestonebit.html'>LowestOneBit</a></td><td><a href='../module/modbase_sintutil.html'>ModBase_SIntUtil</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: LowestOneBit<br>
+<strong>Purpose</strong>:  To return an integer value (same kind as the specified integer value) with at most<br>
+  a single one-bit, in the position of the lowest-order (rightmost) one-bit in the input.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUTPUT = LowestOneBit(INPUT)</p></td></tr>
+			   <tr><td><a href='../interface/mod.html'>MOD</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: MOD<br>
+<strong>Purpose</strong>:  To return the remainder of a division of two signed integers,
+  where the dividend (numerator) is a 128-bit signed integer and the
+  divisor (denominator) can be 32-, 64- or 128-bit signed integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    REM = MOD(NUMER, DENOM)</p></td></tr>
+			   <tr><td><a href='../interface/movebits.html'>MoveBits</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: MoveBits<br>
+<strong>Purpose</strong>:  To copy a sequence of bits (a bit field) from one location to another<br>
+  (For more information, see detailed explanation of the intrinsic subroutine 'MVBITS')<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL MoveBits(InVal, InPos, Len, OutVal, OutPos)</p></td></tr>
+			   <tr><td><a href='../interface/movebits~2.html'>MoveBits</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: MoveBits<br>
+<strong>Purpose</strong>:  To copy a sequence of bits (a bit field) from one location to another<br>
+  (For more information, see detailed explanation of the intrinsic subroutine 'MVBITS')<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL MoveBits(InVal, InPos, Len, OutVal, OutPos)</p></td></tr>
+			   <tr><td><a href='../interface/multiply.html'>Multiply</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: Multiply<br>
+<strong>Purpose</strong>:  To multiply a 128-bit signed integer by a signed integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL Multiply(This, Other)</p></td></tr>
+			   <tr><td><a href='../interface/multiply~2.html'>Multiply</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: Multiply<br>
+<strong>Purpose</strong>:  To multiply a 128-bit unsigned integer by an unsigned integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL Multiply(This, Other)</p></td></tr>
+			   <tr><td><a href='../interface/not.html'>NOT</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: NOT<br>
+<strong>Purpose</strong>:  To return the bitwise logical complement of the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = NOT(IN)</p></td></tr>
+			   <tr><td><a href='../interface/not~2.html'>NOT</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: NOT<br>
+<strong>Purpose</strong>:  To return the bitwise logical complement of the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = NOT(IN)</p></td></tr>
+			   <tr><td><a href='../interface/operator (.udiv.).html'>OPERATOR (.UDIV.)</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(.UDIV.)<br>
+<strong>Purpose</strong>:  To return the quotient of a division of two unsigned integers,
+  where both input and an output have the same kind<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    QUOT = NUMER .UDIV. DENOM</p></td></tr>
+			   <tr><td><a href='../interface/operator (.uge.).html'>OPERATOR (.UGE.)</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(.UGE.)<br>
+<strong>Purpose</strong>:  To check if the LHS value is greater than or equal to the RHS value<br>
+  return .TRUE. if LHS &gt;= RHS; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS .UGE. RHS<br>
+  ---&gt;    IF (LHS .UGE. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/operator (.ugt.).html'>OPERATOR (.UGT.)</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(.UGT.)<br>
+<strong>Purpose</strong>:  To check if the LHS value is greater than the RHS value<br>
+  return .TRUE. if LHS &gt; RHS; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS .UGT. RHS<br>
+  ---&gt;    IF (LHS .UGT. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/operator (.ule.).html'>OPERATOR (.ULE.)</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(.ULE.)<br>
+<strong>Purpose</strong>:  To check if the LHS value is less than or equal to the RHS value<br>
+  return .TRUE. if LHS &lt;= RHS; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS .ULE. RHS<br>
+  ---&gt;    IF (LHS .ULE. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/operator (.ult.).html'>OPERATOR (.ULT.)</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(.ULT.)<br>
+<strong>Purpose</strong>:  To check if the LHS value is less than the RHS value<br>
+  return .TRUE. if LHS &lt; RHS; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS .ULT. RHS<br>
+  ---&gt;    IF (LHS .ULT. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/operator(ASTERISK).html'>OPERATOR(*)</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR( * )<br>
+<strong>Purpose</strong>:  To perform a multiplication of two signed integers<br>
+  (at least one of which is a 128-bit signed integer) <br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUTPUT = FIRST_IN * SECOND_IN</p></td></tr>
+			   <tr><td><a href='../interface/operator(ASTERISK)~2.html'>OPERATOR(*)</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR( * )<br>
+<strong>Purpose</strong>:  To perform a multiplication of two unsigned integers<br>
+  (at least one of which is a 128-bit unsigned integer) <br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUTPUT = FIRST_IN * SECOND_IN</p></td></tr>
+			   <tr><td><a href='../interface/operator(+).html'>OPERATOR(+)</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(+)<br>
+<strong>Purpose</strong>:  To perform a summation of two signed integers
+  (at least one of which is a 128-bit signed integer) or
+  to add a unary plus sign to a 128-bit signed integer
+  (which has no effect on the signed integer)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUTPUT = +INPUT<br>
+  ---&gt;    OUTPUT = FIRST_IN + SECOND_IN</p></td></tr>
+			   <tr><td><a href='../interface/operator(+)~2.html'>OPERATOR(+)</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(+)<br>
+<strong>Purpose</strong>:  To perform a summation of two unsigned integers
+  (at least one of which is a 128-bit unsigned integer) or
+  to add a unary plus sign to a 128-bit unsigned integer
+  (which has no effect on the unsigned integer)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUTPUT = +INPUT<br>
+  ---&gt;    OUTPUT = FIRST_IN + SECOND_IN</p></td></tr>
+			   <tr><td><a href='../interface/operator(-).html'>OPERATOR(-)</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(-)<br>
+<strong>Purpose</strong>:  To perform a subtraction of two signed integers
+  (at least one of which is a 128-bit signed integer) or
+  to perform a negation of a 128-bit signed integer <br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUTPUT = -INPUT<br>
+  ---&gt;    OUTPUT = FIRST_IN - SECOND_IN<br>
+<strong><em>Important Note</em></strong>:  For subtraction of signed integers (unlike unsigned one),
+  value of FIRST_IN can be less than SECOND_IN.</p></td></tr>
+			   <tr><td><a href='../interface/operator(-)~2.html'>OPERATOR(-)</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(-)<br>
+<strong>Purpose</strong>:  To perform a subtraction of two unsigned integers
+  (at least one of which is a 128-bit unsigned integer) or
+  to perform a negation of a 128-bit unsigned integer <br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUTPUT = -INPUT<br>
+  ---&gt;    OUTPUT = FIRST_IN - SECOND_IN<br>
+<strong><em>Important Note</em></strong>:  For subtraction of unsigned integers, value of FIRST_IN
+  must always be greater than SECOND_IN.  Otherwise, value of OUTPUT
+  is NOT valid.</p></td></tr>
+			   <tr><td><a href='../interface/operator(.udiv.).html'>OPERATOR(.UDIV.)</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(.UDIV.)<br>
+<strong>Purpose</strong>:  To return the quotient of a division of two unsigned integers,
+  where the dividend (numerator) is a 128-bit unsigned integer and the
+  divisor (denominator) can be 32-, 64- or 128-bit unsigned integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    QUOT = NUMER .UDIV. DENOM</p></td></tr>
+			   <tr><td><a href='../interface/operator(.uge.).html'>OPERATOR(.UGE.)</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(.UGE.)<br>
+<strong>Purpose</strong>:  To check if the LHS value is greater than or equal to the RHS value<br>
+  return .TRUE. if LHS &gt;= RHS; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS .UGE. RHS<br>
+  ---&gt;    IF (LHS .UGE. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/operator(.ugt.).html'>OPERATOR(.UGT.)</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(.UGT.)<br>
+<strong>Purpose</strong>:  To check if the LHS value is greater than the RHS value<br>
+  return .TRUE. if LHS &gt; RHS; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS .UGT. RHS<br>
+  ---&gt;    IF (LHS .UGT. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/operator(.ule.).html'>OPERATOR(.ULE.)</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(.ULE.)<br>
+<strong>Purpose</strong>:  To check if the LHS value is less than or equal to the RHS value<br>
+  return .TRUE. if LHS &lt;= RHS; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS .ULE. RHS<br>
+  ---&gt;    IF (LHS .ULE. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/operator(.ult.).html'>OPERATOR(.ULT.)</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(.ULT.)<br>
+<strong>Purpose</strong>:  To check if the LHS value is less than the RHS value<br>
+  return .TRUE. if LHS &lt; RHS; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS .ULT. RHS<br>
+  ---&gt;    IF (LHS .ULT. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/operator(SLASH).html'>OPERATOR(/)</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(/)<br>
+<strong>Purpose</strong>:  To return the quotient of a division of two signed integers,
+  where the dividend (numerator) is a 128-bit signed integer and the
+  divisor (denominator) can be 32-, 64- or 128-bit signed integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    QUOT = NUMER / DENOM</p></td></tr>
+			   <tr><td><a href='../interface/operator(SLASH=).html'>OPERATOR(/=)</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(/=)<br>
+<strong>Purpose</strong>:  To check if values of two 128-bit signed integers are not equal<br>
+  return .TRUE. if both values are NOT equal; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS /= RHS<br>
+  ---&gt;    IF (LHS .NE. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/operator(SLASH=)~2.html'>OPERATOR(/=)</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(/=)<br>
+<strong>Purpose</strong>:  To check if values of two 128-bit unsigned integers are not equal<br>
+  return .TRUE. if both values are NOT equal; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS /= RHS<br>
+  ---&gt;    IF (LHS .NE. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/operator(lt).html'>OPERATOR(<)</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(&lt;)<br>
+<strong>Purpose</strong>:  To check if the LHS value is less than the RHS value<br>
+  return .TRUE. if LHS &lt; RHS; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS &lt; RHS<br>
+  ---&gt;    IF (LHS .LT. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/operator(lt=).html'>OPERATOR(<=)</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(&lt;=)<br>
+<strong>Purpose</strong>:  To check if the LHS value is less than or equal to the RHS value<br>
+  return .TRUE. if LHS &lt;= RHS; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS &lt;= RHS<br>
+  ---&gt;    IF (LHS .LE. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/operator(==).html'>OPERATOR(==)</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(==)<br>
+<strong>Purpose</strong>:  To check if values of two 128-bit signed integers are equal<br>
+  return .TRUE. if both values are equal; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS == RHS<br>
+  ---&gt;    IF (LHS .EQ. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/operator(==)~2.html'>OPERATOR(==)</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(==)<br>
+<strong>Purpose</strong>:  To check if values of two 128-bit unsigned integers are equal<br>
+  return .TRUE. if both values are equal; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS == RHS<br>
+  ---&gt;    IF (LHS .EQ. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/operator(gt).html'>OPERATOR(>)</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(&gt;)<br>
+<strong>Purpose</strong>:  To check if the LHS value is greater than the RHS value<br>
+  return .TRUE. if LHS &gt; RHS; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS &gt; RHS<br>
+  ---&gt;    IF (LHS .GT. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/operator(gt=).html'>OPERATOR(>=)</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Operator Overload</strong>: OPERATOR(&gt;=)<br>
+<strong>Purpose</strong>:  To check if the LHS value is greater than or equal to the RHS value<br>
+  return .TRUE. if LHS &gt;= RHS; otherwise return .FALSE.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Flag = LHS &gt;= RHS<br>
+  ---&gt;    IF (LHS .GE. RHS) DoSomething</p></td></tr>
+			   <tr><td><a href='../interface/popcnt.html'>POPCNT</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: POPCNT<br>
+<strong>Purpose</strong>:  To count the number of 1 bits in the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    NumBits = POPCNT(INPUT)</p></td></tr>
+			   <tr><td><a href='../interface/popcnt~2.html'>POPCNT</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: POPCNT<br>
+<strong>Purpose</strong>:  To count the number of 1 bits in the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    NumBits = POPCNT(INPUT)</p></td></tr>
+			   <tr><td><a href='../interface/poppar.html'>POPPAR</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: POPPAR<br>
+<strong>Purpose</strong>:  To determine the parity of the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    NumPar = POPPAR(INPUT)</p></td></tr>
+			   <tr><td><a href='../interface/poppar~2.html'>POPPAR</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: POPPAR<br>
+<strong>Purpose</strong>:  To determine the parity of the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    NumPar = POPPAR(INPUT)</p></td></tr>
+			   <tr><td><a href='../proc/realdp_fromstring_fastfloat.html'>RealDP_FromString_FastFloat</a></td><td><a href='../module/modbase_realdp_charconv.html'>ModBase_RealDP_CharConv</a></td><td>Function</td><td><p>To convert a character (decimal) string to a double-precision floating-point value
+using the FastFloat algorithm.</p></td></tr>
+			   <tr><td><a href='../proc/realdp_fromstring_lemire.html'>RealDP_FromString_Lemire</a></td><td><a href='../module/modbase_realdp_charconv.html'>ModBase_RealDP_CharConv</a></td><td>Function</td><td><p>To convert a character (decimal) string to a double-precision floating-point value
+using the Lemire algorithm.</p></td></tr>
+			   <tr><td><a href='../proc/realdp_fromstring_libc.html'>RealDP_FromString_LibC</a></td><td><a href='../module/modbase_realdp_charconv.html'>ModBase_RealDP_CharConv</a></td><td>Function</td><td><p>To convert a character (decimal) string to a double-precision floating-point value
+using the LibC algorithm.</p></td></tr>
+			   <tr><td><a href='../proc/realdp_fromstring_yy.html'>RealDP_FromString_YY</a></td><td><a href='../module/modbase_realdp_charconv.html'>ModBase_RealDP_CharConv</a></td><td>Function</td><td><p>To convert a character (decimal) string to a double-precision floating-point value
+using the YY algorithm.</p></td></tr>
+			   <tr><td><a href='../proc/realdp_tostring_dragonbox.html'>RealDP_ToString_DragonBox</a></td><td><a href='../module/modbase_realdp_charconv.html'>ModBase_RealDP_CharConv</a></td><td>Function</td><td><p>To convert a double-precision floating-point value to a character (decimal) string
+using the DragonBox algorithm.</p></td></tr>
+			   <tr><td><a href='../proc/realdp_tostring_ryu.html'>RealDP_ToString_Ryu</a></td><td><a href='../module/modbase_realdp_charconv.html'>ModBase_RealDP_CharConv</a></td><td>Function</td><td><p>To convert a double-precision floating-point value to a character (decimal) string
+using the Ryu algorithm.</p></td></tr>
+			   <tr><td><a href='../proc/realdp_tostring_schubfach.html'>RealDP_ToString_Schubfach</a></td><td><a href='../module/modbase_realdp_charconv.html'>ModBase_RealDP_CharConv</a></td><td>Function</td><td><p>To convert a double-precision floating-point value to a character (decimal) string
+using the Schubfach algorithm.</p></td></tr>
+			   <tr><td><a href='../proc/realqp_fromstring_fastfloat.html'>RealQP_FromString_FastFloat</a></td><td><a href='../module/modbase_realqp_charconv.html'>ModBase_RealQP_CharConv</a></td><td>Function</td><td></td></tr>
+			   <tr><td><a href='../proc/realqp_fromstring_lemire.html'>RealQP_FromString_Lemire</a></td><td><a href='../module/modbase_realqp_charconv.html'>ModBase_RealQP_CharConv</a></td><td>Function</td><td></td></tr>
+			   <tr><td><a href='../proc/realqp_fromstring_libc.html'>RealQP_FromString_LibC</a></td><td><a href='../module/modbase_realqp_charconv.html'>ModBase_RealQP_CharConv</a></td><td>Function</td><td></td></tr>
+			   <tr><td><a href='../proc/realqp_fromstring_yy.html'>RealQP_FromString_YY</a></td><td><a href='../module/modbase_realqp_charconv.html'>ModBase_RealQP_CharConv</a></td><td>Function</td><td></td></tr>
+			   <tr><td><a href='../proc/realqp_tostring_dragonbox.html'>RealQP_ToString_DragonBox</a></td><td><a href='../module/modbase_realqp_charconv.html'>ModBase_RealQP_CharConv</a></td><td>Function</td><td></td></tr>
+			   <tr><td><a href='../proc/realqp_tostring_ryu.html'>RealQP_ToString_Ryu</a></td><td><a href='../module/modbase_realqp_charconv.html'>ModBase_RealQP_CharConv</a></td><td>Function</td><td></td></tr>
+			   <tr><td><a href='../proc/realqp_tostring_schubfach.html'>RealQP_ToString_Schubfach</a></td><td><a href='../module/modbase_realqp_charconv.html'>ModBase_RealQP_CharConv</a></td><td>Function</td><td></td></tr>
+			   <tr><td><a href='../proc/realsp_fromstring_fastfloat.html'>RealSP_FromString_FastFloat</a></td><td><a href='../module/modbase_realsp_charconv.html'>ModBase_RealSP_CharConv</a></td><td>Function</td><td><p>To convert a character (decimal) string to a single-precision floating-point value
+using the FastFloat algorithm.</p></td></tr>
+			   <tr><td><a href='../proc/realsp_fromstring_lemire.html'>RealSP_FromString_Lemire</a></td><td><a href='../module/modbase_realsp_charconv.html'>ModBase_RealSP_CharConv</a></td><td>Function</td><td><p>To convert a character (decimal) string to a single-precision floating-point value
+using the Lemire algorithm.</p></td></tr>
+			   <tr><td><a href='../proc/realsp_fromstring_libc.html'>RealSP_FromString_LibC</a></td><td><a href='../module/modbase_realsp_charconv.html'>ModBase_RealSP_CharConv</a></td><td>Function</td><td><p>To convert a character (decimal) string to a single-precision floating-point value
+using the LibC algorithm.</p></td></tr>
+			   <tr><td><a href='../proc/realsp_fromstring_yy.html'>RealSP_FromString_YY</a></td><td><a href='../module/modbase_realsp_charconv.html'>ModBase_RealSP_CharConv</a></td><td>Function</td><td><p>To convert a character (decimal) string to a single-precision floating-point value
+using the YY algorithm.</p></td></tr>
+			   <tr><td><a href='../proc/realsp_tostring_dragonbox.html'>RealSP_ToString_DragonBox</a></td><td><a href='../module/modbase_realsp_charconv.html'>ModBase_RealSP_CharConv</a></td><td>Function</td><td><p>To convert a single-precision floating-point value to a character (decimal) string
+using the DragonBox algorithm.</p></td></tr>
+			   <tr><td><a href='../proc/realsp_tostring_ryu.html'>RealSP_ToString_Ryu</a></td><td><a href='../module/modbase_realsp_charconv.html'>ModBase_RealSP_CharConv</a></td><td>Function</td><td><p>To convert a single-precision floating-point value to a character (decimal) string
+using the Ryu algorithm.</p></td></tr>
+			   <tr><td><a href='../proc/realsp_tostring_schubfach.html'>RealSP_ToString_Schubfach</a></td><td><a href='../module/modbase_realsp_charconv.html'>ModBase_RealSP_CharConv</a></td><td>Function</td><td><p>To convert a single-precision floating-point value to a character (decimal) string
+using the Schubfach algorithm.</p></td></tr>
+			   <tr><td><a href='../interface/reversebits.html'>ReverseBits</a></td><td><a href='../module/modbase_sintutil.html'>ModBase_SIntUtil</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ReverseBits<br>
+<strong>Purpose</strong>:  To return an integer value (same kind as the specified integer value) obtained by<br>
+   reversing the order of the bits in the two's complement binary representation of the input.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUTPUT = ReverseBits(INPUT)</p></td></tr>
+			   <tr><td><a href='../interface/reversebytes.html'>ReverseBytes</a></td><td><a href='../module/modbase_sintutil.html'>ModBase_SIntUtil</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ReverseBits<br>
+<strong>Purpose</strong>:  To return an integer value (same kind as the specified integer value) obtained by<br>
+   reversing the order of the bytes in the two's complement binary representation of the input.<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUTPUT = ReverseBytes(INPUT)</p></td></tr>
+			   <tr><td><a href='../proc/setstoponerror.html'>SetStopOnError</a></td><td><a href='../module/modbase_error_handlers.html'>ModBase_Error_Handlers</a></td><td>Subroutine</td><td><p>To set StopOnError flag (module variable).</p></td></tr>
+			   <tr><td><a href='../interface/shifta.html'>SHIFTA</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: SHIFTA<br>
+<strong>Purpose</strong>:  To perform arithmetic right shift with 0 &lt;= ShiftPos &lt;= 128<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = SHIFTA(IN, 33)</p></td></tr>
+			   <tr><td><a href='../interface/shifta63down.html'>ShiftA63Down</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftA63Down<br>
+<strong>Purpose</strong>:  To perform arithmetic right shift by 63 or less<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftA63Down(IN, 53)</p></td></tr>
+			   <tr><td><a href='../interface/shifta64.html'>ShiftA64</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftA64<br>
+<strong>Purpose</strong>:  To perform arithmetic right shift by 64<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftA64(IN)</p></td></tr>
+			   <tr><td><a href='../interface/shifta64up.html'>ShiftA64Up</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftA64Up<br>
+<strong>Purpose</strong>:  To perform arithmetic right shift by 64 or more (&lt;= 128)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftA64Up(IN, 84)</p></td></tr>
+			   <tr><td><a href='../interface/shiftaonce.html'>ShiftAOnce</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftAOnce<br>
+<strong>Purpose</strong>:  To perform arithmetic right shift by 1<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftAOnce(IN)</p></td></tr>
+			   <tr><td><a href='../interface/shiftl.html'>SHIFTL</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: SHIFTL<br>
+<strong>Purpose</strong>:  To perform logical left shift with 0 &lt;= ShiftPos &lt;= 128<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = SHIFTL(IN, 127)</p></td></tr>
+			   <tr><td><a href='../interface/shiftl~2.html'>SHIFTL</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: SHIFTL<br>
+<strong>Purpose</strong>:  To perform logical left shift with 0 &lt;= ShiftPos &lt;= 128<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = SHIFTL(IN, 127)</p></td></tr>
+			   <tr><td><a href='../interface/shiftl63down.html'>ShiftL63Down</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftL63Down<br>
+<strong>Purpose</strong>:  To perform logical left shift by 63 or less<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftL63Down(IN, 11)</p></td></tr>
+			   <tr><td><a href='../interface/shiftl63down~2.html'>ShiftL63Down</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftL63Down<br>
+<strong>Purpose</strong>:  To perform logical left shift by 63 or less<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftL63Down(IN, 11)</p></td></tr>
+			   <tr><td><a href='../interface/shiftl64.html'>ShiftL64</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftL64<br>
+<strong>Purpose</strong>:  To perform logical left shift by 64<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftL64(IN)</p></td></tr>
+			   <tr><td><a href='../interface/shiftl64~2.html'>ShiftL64</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftL64<br>
+<strong>Purpose</strong>:  To perform logical left shift by 64<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftL64(IN)</p></td></tr>
+			   <tr><td><a href='../interface/shiftl64up.html'>ShiftL64Up</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftL64Up<br>
+<strong>Purpose</strong>:  To perform logical left shift by 64 or more (&lt;= 128)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftL64Up(IN, 111)</p></td></tr>
+			   <tr><td><a href='../interface/shiftl64up~2.html'>ShiftL64Up</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftL64Up<br>
+<strong>Purpose</strong>:  To perform logical left shift by 64 or more (&lt;= 128)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftL64Up(IN, 111)</p></td></tr>
+			   <tr><td><a href='../interface/shiftlonce.html'>ShiftLOnce</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftLOnce<br>
+<strong>Purpose</strong>:  To perform logical left shift by 1<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftLOnce(IN)</p></td></tr>
+			   <tr><td><a href='../interface/shiftlonce~2.html'>ShiftLOnce</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftLOnce<br>
+<strong>Purpose</strong>:  To perform logical left shift by 1<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftLOnce(IN)</p></td></tr>
+			   <tr><td><a href='../interface/shiftr.html'>SHIFTR</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: SHIFTR<br>
+<strong>Purpose</strong>:  To perform logical right shift with 0 &lt;= ShiftPos &lt;= 128<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = SHIFTR(IN, 33)</p></td></tr>
+			   <tr><td><a href='../interface/shiftr~2.html'>SHIFTR</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: SHIFTR<br>
+<strong>Purpose</strong>:  To perform logical right shift with 0 &lt;= ShiftPos &lt;= 128<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = SHIFTR(IN, 33)</p></td></tr>
+			   <tr><td><a href='../interface/shiftr63down.html'>ShiftR63Down</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftR63Down<br>
+<strong>Purpose</strong>:  To perform logical right shift by 63 or less<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftR63Down(IN, 53)</p></td></tr>
+			   <tr><td><a href='../interface/shiftr63down~2.html'>ShiftR63Down</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftR63Down<br>
+<strong>Purpose</strong>:  To perform logical right shift by 63 or less<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftR63Down(IN, 53)</p></td></tr>
+			   <tr><td><a href='../interface/shiftr64.html'>ShiftR64</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftR64<br>
+<strong>Purpose</strong>:  To perform logical right shift by 64<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftR64(IN)</p></td></tr>
+			   <tr><td><a href='../interface/shiftr64~2.html'>ShiftR64</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftR64<br>
+<strong>Purpose</strong>:  To perform logical right shift by 64<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftR64(IN)</p></td></tr>
+			   <tr><td><a href='../interface/shiftr64up.html'>ShiftR64Up</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftR64Up<br>
+<strong>Purpose</strong>:  To perform logical right shift by 64 or more (&lt;= 128)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftR64Up(IN, 84)</p></td></tr>
+			   <tr><td><a href='../interface/shiftr64up~2.html'>ShiftR64Up</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftR64Up<br>
+<strong>Purpose</strong>:  To perform logical right shift by 64 or more (&lt;= 128)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftR64Up(IN, 84)</p></td></tr>
+			   <tr><td><a href='../interface/shiftronce.html'>ShiftROnce</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftROnce<br>
+<strong>Purpose</strong>:  To perform logical right shift by 1<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftROnce(IN)</p></td></tr>
+			   <tr><td><a href='../interface/shiftronce~2.html'>ShiftROnce</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ShiftROnce<br>
+<strong>Purpose</strong>:  To perform logical right shift by 1<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    OUT = ShiftROnce(IN)</p></td></tr>
+			   <tr><td><a href='../interface/signum.html'>SigNum</a></td><td><a href='../module/modbase_sintutil.html'>ModBase_SIntUtil</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: SigNum<br>
+<strong>Purpose</strong>:  To return the sign of the specified input where the return value is<br>
+  -1 if the specified value is negative<br>
+   0 if the specified value is zero<br>
+   1 if the specified value is positive<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    SignFlag = SigNum(INPUT)</p></td></tr>
+			   <tr><td><a href='../interface/sint128.html'>SInt128</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Constructor Interface</strong>: SInt128<br>
+<strong>Purpose</strong>:  To construct a 128-bit signed integer from
+  other Fortran intrinsic types or 32- and 64-bit unsigned integers<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    I128 = SInt128(IntrinsicType)   ! constructor for Fortran intrinsic types<br>
+  ---&gt;    I128 = SInt128(UType, Negative) ! 32- and 64-bit unsigned integers where I128 has negative value if 'Negative' is true<br>
+<strong>Note</strong>:  The different between 32-bit signed (I32) and unsigned (U32) integer types
+            is that I32 is treated as signed while U32 is treated as unsigned although
+            both are actually the 32-bit Fortran intrinsic integer type.</p></td></tr>
+			   <tr><td><a href='../interface/subtract.html'>Subtract</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: Subtract<br>
+<strong>Purpose</strong>:  To subtract a signed integer from a 128-bit signed integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL Subtract(This, Other)<br>
+<strong><em>Important Note</em></strong>:  For subtraction of signed integers (unlike unsigned one),
+  value of This can be less than Other.</p></td></tr>
+			   <tr><td><a href='../interface/subtract~2.html'>Subtract</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: Subtract<br>
+<strong>Purpose</strong>:  To subtract an unsigned integer from a 128-bit unsigned integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL Subtract(This, Other)<br>
+<strong><em>Important Note</em></strong>:  For subtraction of unsigned integers, value of This
+  must always be greater than Other.  Otherwise, value of the returned
+  This is NOT valid.</p></td></tr>
+			   <tr><td><a href='../interface/todecstring.html'>ToDecString</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToDecString<br>
+<strong>Purpose</strong>:  To convert a 128-bit signed integer to
+  a decimal string<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Str = ToDecString(I128)</p></td></tr>
+			   <tr><td><a href='../interface/todecstring~2.html'>ToDecString</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToDecString<br>
+<strong>Purpose</strong>:  To convert a 128-bit unsigned integer to
+  a decimal string<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Str = ToDecString(U128)</p></td></tr>
+			   <tr><td><a href='../interface/todecstrsigned.html'>ToDecStrSigned</a></td><td><a href='../module/modbase_sintutil.html'>ModBase_SIntUtil</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToDecStrSigned<br>
+<strong>Purpose</strong>:  To convert a signed integer to a decimal string<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Str = ToDecStrSigned(I64)</p></td></tr>
+			   <tr><td><a href='../interface/todecstrunsigned.html'>ToDecStrUnsigned</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToDecStrUnsigned<br>
+<strong>Purpose</strong>:  To convert an unsigned integer to a decimal string<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Str = ToDecStrUnsigned(U32)</p></td></tr>
+			   <tr><td><a href='../interface/tohexstring.html'>ToHexString</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToHexString<br>
+<strong>Purpose</strong>:  To convert a 128-bit signed integer to
+  a hexadecimal string<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Str = ToHexString(I128)</p></td></tr>
+			   <tr><td><a href='../interface/tohexstring~2.html'>ToHexString</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToHexString<br>
+<strong>Purpose</strong>:  To convert a 128-bit unsigned integer to
+  a hexadecimal string<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Str = ToHexString(U128)</p></td></tr>
+			   <tr><td><a href='../interface/tohexstrsigned.html'>ToHexStrSigned</a></td><td><a href='../module/modbase_sintutil.html'>ModBase_SIntUtil</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToHexStrSigned<br>
+<strong>Purpose</strong>:  To convert a signed integer to a hexadecimal string<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Str = ToHexStrSigned(I32)</p></td></tr>
+			   <tr><td><a href='../interface/tohexstrunsigned.html'>ToHexStrUnsigned</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToHexStrUnsigned<br>
+<strong>Purpose</strong>:  To convert an unsigned integer to a hexadecimal string<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    Str = ToHexStrUnsigned(U32)</p></td></tr>
+			   <tr><td><a href='../interface/toi32.html'>ToI32</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToI32<br>
+<strong>Purpose</strong>:  To convert a 128-bit unsigned integer to a 
+  32-bit signed integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    I32 = ToI32(U128)</p></td></tr>
+			   <tr><td><a href='../interface/toi64.html'>ToI64</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToI64<br>
+<strong>Purpose</strong>:  To convert a 128-bit unsigned integer to
+  a 64-bit signed integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    I64 = ToI64(U128)</p></td></tr>
+			   <tr><td><a href='../interface/tor128.html'>ToR128</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToR128<br>
+<strong>Purpose</strong>:  To convert a 128-bit signed integer to
+  a 128-bit floating point (real) number<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    R128 = ToR128(I128)</p></td></tr>
+			   <tr><td><a href='../interface/tor128~2.html'>ToR128</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToR128<br>
+<strong>Purpose</strong>:  To convert a 128-bit unsigned integer to
+  a 128-bit floating point (real) number<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    R128 = ToR128(U128)</p></td></tr>
+			   <tr><td><a href='../interface/tor32.html'>ToR32</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToR32<br>
+<strong>Purpose</strong>:  To convert a 128-bit signed integer to
+  a 32-bit floating point (real) number<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    R32 = ToR32(I128)</p></td></tr>
+			   <tr><td><a href='../interface/tor32~2.html'>ToR32</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToR32<br>
+<strong>Purpose</strong>:  To convert a 128-bit unsigned integer to
+  a 32-bit floating point (real) number<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    R32 = ToR32(U128)</p></td></tr>
+			   <tr><td><a href='../interface/tor64.html'>ToR64</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToR64<br>
+<strong>Purpose</strong>:  To convert a 128-bit signed integer to
+  a 64-bit floating point (real) number<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    R64 = ToR64(I128)</p></td></tr>
+			   <tr><td><a href='../interface/tor64~2.html'>ToR64</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToR64<br>
+<strong>Purpose</strong>:  To convert a 128-bit unsigned integer to
+  a 64-bit floating point (real) number<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    R64 = ToR64(U128)</p></td></tr>
+			   <tr><td><a href='../interface/tou128.html'>ToU128</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToU128<br>
+<strong>Purpose</strong>:  To convert a 128-bit signed integer to a 
+  128-bit unsigned integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    U128 = ToU128(I128)</p></td></tr>
+			   <tr><td><a href='../interface/tou32.html'>ToU32</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToU32<br>
+<strong>Purpose</strong>:  To convert a 128-bit signed integer to a 
+  32-bit unsigned integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    U32 = ToU32(I128)</p></td></tr>
+			   <tr><td><a href='../interface/tou64.html'>ToU64</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToU64<br>
+<strong>Purpose</strong>:  To convert a 128-bit signed integer to a 
+  64-bit unsigned integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    U64 = ToU64(I128)</p></td></tr>
+			   <tr><td><a href='../interface/tounsignedinteger.html'>ToUnsignedInteger</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToUnsignedInteger<br>
+<strong>Purpose</strong>:  To perform unsigned conversion from lower-precision unsigned integer
+  to 32-bit unsigned integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    U32 = ToUnsignedInteger(U8)</p></td></tr>
+			   <tr><td><a href='../interface/tounsignedlong.html'>ToUnsignedLong</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: ToUnsignedLong<br>
+<strong>Purpose</strong>:  To perform unsigned conversion from lower-precision unsigned integer
+  to 64-bit unsigned integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    U64 = ToUnsignedLong(U32)</p></td></tr>
+			   <tr><td><a href='../interface/trailz.html'>TRAILZ</a></td><td><a href='../module/modbase_sint128.html'>ModBase_SInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: TRAILZ<br>
+<strong>Purpose</strong>:  To count the number of trailing zero bits of the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    NumTZ = TRAILZ(INPUT)</p></td></tr>
+			   <tr><td><a href='../interface/trailz~2.html'>TRAILZ</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: TRAILZ<br>
+<strong>Purpose</strong>:  To count the number of trailing zero bits of the input<br>
+  (For more information, see detailed explanation of the intrinsic function)<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    NumTZ = TRAILZ(INPUT)</p></td></tr>
+			   <tr><td><a href='../interface/udivmod.html'>UDivMod</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: UDivMod<br>
+<strong>Purpose</strong>:  To perform a division of two unsigned integers and then return both
+  the quotient and the remainder where both input and output have the same kind<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL UDivMod(NUMER, DENOM, QUOT, REM)</p></td></tr>
+			   <tr><td><a href='../interface/udivmod~2.html'>UDivMod</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Subroutine Interface</strong>: UDivMod<br>
+<strong>Purpose</strong>:  To perform a division of two unsigned integers (where the
+  dividend (numerator) is a 128-bit unsigned integer and the divisor
+  (denominator) can be 32-, 64- or 128-bit unsigned integer) and
+  to return both the quotient and the remainder<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    CALL UDivMod(NUMER, DENOM, QUOT, REM)</p></td></tr>
+			   <tr><td><a href='../interface/uint128.html'>UInt128</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Constructor Interface</strong>: UInt128<br>
+<strong>Purpose</strong>:  To construct a 128-bit unsigned integer from
+  other Fortran intrinsic types<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    U128 = UInt128(OtherType)</p></td></tr>
+			   <tr><td><a href='../interface/umod.html'>UMOD</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: UMOD<br>
+<strong>Purpose</strong>:  To return the remainder of a division of two unsigned integers,
+  where both input and an output have the same kind<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    REM = UMOD(NUMER, DENOM)</p></td></tr>
+			   <tr><td><a href='../interface/umod~2.html'>UMOD</a></td><td><a href='../module/modbase_uint128.html'>ModBase_UInt128</a></td><td>Interface</td><td><p><strong>Function Interface</strong>: UMOD<br>
+<strong>Purpose</strong>:  To return the remainder of a division of two unsigned integers,
+  where the dividend (numerator) is a 128-bit unsigned integer and the
+  divisor (denominator) can be 32-, 64- or 128-bit unsigned integer<br>
+<strong>Usage</strong>:<br>
+  ---&gt;    REM = UMOD(NUMER, DENOM)</p></td></tr>
+			   <tr><td><a href='../proc/umul128.html'>UMul128</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Subroutine</td><td><p>To compute 128-bit result of multiplication of two 64-bit unsigned integers.</p></td></tr>
+			   <tr><td><a href='../proc/umul128_n_add.html'>UMul128_N_Add</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Subroutine</td><td><p>To multiply two 64-bit unsigned integers and add a value (A*B + C), and
+return the 128-bit result as U128Hi, U128Lo.</p></td></tr>
+			   <tr><td><a href='../proc/umul128_n_shift.html'>UMul128_N_Shift</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Function</td><td><p>To multiply two 64-bit unsigned integers, and then shift
+the 128-bit result by ShrPos =&gt; SHIFTR(A*B, ShrPos).<br>
+Note: ShrPos should be in the range [64, 128].</p></td></tr>
+			   <tr><td><a href='../proc/umul128_upper64.html'>UMul128_Upper64</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Function</td><td><p>To compute upper 64 bits of multiplication of two 64-bit unsigned integers</p></td></tr>
+			   <tr><td><a href='../proc/umul192_lower128.html'>UMul192_Lower128</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Subroutine</td><td><p>To compute lower 128 bits of multiplication of a 64-bit unsigned integer and
+a 128-bit unsigned integer.</p></td></tr>
+			   <tr><td><a href='../proc/umul192_upper128.html'>UMul192_Upper128</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Subroutine</td><td><p>To compute upper 128 bits of multiplication of a 64-bit unsigned integer and
+a 128-bit unsigned integer.</p></td></tr>
+			   <tr><td><a href='../proc/umul96_lower64.html'>UMul96_Lower64</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Function</td><td><p>To compute lower 64 bits of multiplication of a 32-bit unsigned integer and
+a 64-bit unsigned integer.</p></td></tr>
+			   <tr><td><a href='../proc/umul96_upper64.html'>UMul96_Upper64</a></td><td><a href='../module/modbase_uintutil.html'>ModBase_UIntUtil</a></td><td>Function</td><td><p>To compute upper 64 bits of multiplication of a 32-bit unsigned integer and
+a 64-bit unsigned integer.</p></td></tr>
+			 </tbody></table>
+             
+        </div>
+      </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col"><p>FortCharConv was developed by Niranama<br>&copy; 2023 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
+
+    <!-- MathJax JavaScript
+             ================================================== -->
+             <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({
+          TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } },
+          jax: ['input/TeX','input/MathML','output/HTML-CSS'],
+          extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']
+          });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+          <script src="../tipuesearch/tipuesearch_content.js"></script>
+          <script src="../tipuesearch/tipuesearch_set.js"></script>
+          <script src="../tipuesearch/tipuesearch.js"></script>
+
+  </body>
+</html>
