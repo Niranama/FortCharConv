@@ -61,7 +61,7 @@ MODULE Class_Mt32RNG
 
 !** INTERFACE DEFINITIONS:
     ! na
-    
+
 !** MODULE VARIABLE DECLARATIONS:
     ! na
 
@@ -75,7 +75,7 @@ SUBROUTINE Mt32RNG_Initialize(RNG, Seed)
     ! To initialize the 'Mt32RNG' object with optional initial seeds.
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(Mt32RNG),              INTENT(INOUT)   :: RNG      ! 'Mt32RNG' object
     INTEGER(KIND=I4B), OPTIONAL, INTENT(IN)      :: Seed(:)  ! seed
@@ -96,15 +96,15 @@ SUBROUTINE Mt32RNG_Initialize(RNG, Seed)
         InitSeed(1) = INT(IAND(RNG%InitSeed(), MaskL), KIND=I4B) + GOLDEN_RATIO_32
         CALL Fill_State(InitSeed, RNG%Seed0)
     END IF
-    
+
     ! set States
     RNG%MT = RNG%Seed0
-    
+
     ! Initial index
     RNG%MTI = N
 
     RETURN
-    
+
     CONTAINS
 
     SUBROUTINE Fill_State(Seed, State)
@@ -113,7 +113,7 @@ SUBROUTINE Mt32RNG_Initialize(RNG, Seed)
         ! To fill State based on the given seed.
 
         IMPLICIT NONE
-        
+
     !** SUBROUTINE ARGUMENT DECLARATIONS:
         INTEGER(KIND=I4B), INTENT(IN)    :: Seed(0:)
         INTEGER(KIND=I4B), INTENT(OUT)   :: State(0:)
@@ -125,7 +125,7 @@ SUBROUTINE Mt32RNG_Initialize(RNG, Seed)
         INTEGER(KIND=I4B)    :: NextIndex
 
     ! FLOW
-    
+
         CALL Initialize_State(State)
 
         NextIndex = Mix_Seed_N_State(Seed, State)
@@ -147,7 +147,7 @@ SUBROUTINE Mt32RNG_Initialize(RNG, Seed)
         ! To fill the State using a defined pseudo-random sequence.
 
         IMPLICIT NONE
-        
+
     !** SUBROUTINE ARGUMENT DECLARATIONS:
         INTEGER(KIND=I4B), INTENT(OUT)   :: State(0:)
 
@@ -156,14 +156,14 @@ SUBROUTINE Mt32RNG_Initialize(RNG, Seed)
         INTEGER(KIND=I4B)   :: I
 
     ! FLOW
-    
+
         MT = IAND(19650218_I8B, INT_MASK_LONG)
         State(0) = INT(MT, KIND=I4B)
         DO I = 1, SIZE(State)-1
             MT = IAND((1812433253_I8B * IEOR(MT, SHIFTA(MT, 30)) + I), INT_MASK_LONG)
             State(I) = INT(MT, KIND=I4B)
         END DO
-            
+
         RETURN
 
     END SUBROUTINE Initialize_State
@@ -181,7 +181,7 @@ SUBROUTINE Mt32RNG_Initialize(RNG, Seed)
         ! in the state array.
 
         IMPLICIT NONE
-        
+
     !** SUBROUTINE ARGUMENT DECLARATIONS:
         INTEGER(KIND=I4B), INTENT(INOUT) :: State(0:)
         INTEGER(KIND=I4B), INTENT(IN)    :: Seed(0:)
@@ -193,23 +193,23 @@ SUBROUTINE Mt32RNG_Initialize(RNG, Seed)
         INTEGER(KIND=I8B)   :: A, B, C
 
     ! FLOW
-    
+
         StateSize = SIZE(State)
         SeedSize  = SIZE(Seed)
         MaxSize   = MAX(StateSize, SeedSize)
         I = 1
         J = 0
-        
+
         DO K = MaxSize, 1, -1
             IF (State(I) < 0) THEN
-                A = IOR(IAND(State(I), LOWER_MASK_LONG), UPPER_MASK_LONG)
+                A = IOR(IAND(INT(State(I), KIND=I8B), LOWER_MASK_LONG), UPPER_MASK_LONG)
             ELSE
-                A = IOR(IAND(State(I), LOWER_MASK_LONG), 0_I8B)
+                A = IOR(IAND(INT(State(I), KIND=I8B), LOWER_MASK_LONG), 0_I8B)
             END IF
             IF (State(I-1) < 0) THEN
-                B = IOR(IAND(State(I-1), LOWER_MASK_LONG), UPPER_MASK_LONG)
+                B = IOR(IAND(INT(State(I-1), KIND=I8B), LOWER_MASK_LONG), UPPER_MASK_LONG)
             ELSE
-                B = IOR(IAND(State(I-1), LOWER_MASK_LONG), 0_I8B)
+                B = IOR(IAND(INT(State(I-1), KIND=I8B), LOWER_MASK_LONG), 0_I8B)
             END IF
             ! Non linear
             C = IEOR(A, (IEOR(B, SHIFTA(B, 30)) * 1664525_I8B)) + Seed(J) + J
@@ -224,7 +224,7 @@ SUBROUTINE Mt32RNG_Initialize(RNG, Seed)
                 J = 0
             END IF
         END DO
-        
+
         ! return the next index
         NextID = I
 
@@ -242,7 +242,7 @@ SUBROUTINE Mt32RNG_Initialize(RNG, Seed)
         ! iteration through the array if required.
 
         IMPLICIT NONE
-        
+
     !** SUBROUTINE ARGUMENT DECLARATIONS:
         INTEGER(KIND=I4B), INTENT(INOUT) :: State(0:)
         INTEGER(KIND=I4B), INTENT(IN)    :: StartID
@@ -253,20 +253,20 @@ SUBROUTINE Mt32RNG_Initialize(RNG, Seed)
         INTEGER(KIND=I8B)   :: A, B, C
 
     ! FLOW
-    
+
         StateSize = SIZE(State)
         I = StartID
-        
+
         DO K = StateSize, 1, -1
             IF (State(I) < 0) THEN
-                A = IOR(IAND(State(I), LOWER_MASK_LONG), UPPER_MASK_LONG)
+                A = IOR(IAND(INT(State(I), KIND=I8B), LOWER_MASK_LONG), UPPER_MASK_LONG)
             ELSE
-                A = IOR(IAND(State(I), LOWER_MASK_LONG), 0_I8B)
+                A = IOR(IAND(INT(State(I), KIND=I8B), LOWER_MASK_LONG), 0_I8B)
             END IF
             IF (State(I-1) < 0) THEN
-                B = IOR(IAND(State(I-1), LOWER_MASK_LONG), UPPER_MASK_LONG)
+                B = IOR(IAND(INT(State(I-1), KIND=I8B), LOWER_MASK_LONG), UPPER_MASK_LONG)
             ELSE
-                B = IOR(IAND(State(I-1), LOWER_MASK_LONG), 0_I8B)
+                B = IOR(IAND(INT(State(I-1), KIND=I8B), LOWER_MASK_LONG), 0_I8B)
             END IF
             ! Non linear
             C = IEOR(A, (IEOR(B, SHIFTA(B, 30)) * 1566083941_I8B)) - I
@@ -277,7 +277,7 @@ SUBROUTINE Mt32RNG_Initialize(RNG, Seed)
                 I = 1
             END IF
         END DO
-            
+
         RETURN
 
     END SUBROUTINE Mix_State
@@ -294,7 +294,7 @@ FUNCTION Mt32RNG_NextInteger(RNG) RESULT(RandNum)
     ! To return the 32-bit random integer value
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(Mt32RNG), INTENT(INOUT)   :: RNG      ! 'Mt32RNG' object
     INTEGER(KIND=I4B)               :: RandNum  ! random number
@@ -303,7 +303,7 @@ FUNCTION Mt32RNG_NextInteger(RNG) RESULT(RandNum)
     ! Tempering parameters
     INTEGER(KIND=I4B), PARAMETER :: TMaskB = INT(Z'9D2C5680', KIND=I4B)
     INTEGER(KIND=I4B), PARAMETER :: TMaskC = INT(Z'EFC60000', KIND=I4B)
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I4B)    :: Y, MTCurr, MTNext, K
 
@@ -353,7 +353,7 @@ SUBROUTINE Mt32RNG_ReInitialize(RNG)
     ! To re-initialize the 'Mt32RNG' object.
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(Mt32RNG), INTENT(INOUT)   :: RNG  ! 'Mt32RNG' object
 
@@ -361,9 +361,9 @@ SUBROUTINE Mt32RNG_ReInitialize(RNG)
     ! na
 
 ! FLOW
-    
+
     CALL RNG%Initialize(RNG%Seed0)
-    
+
     RETURN
 
 END SUBROUTINE Mt32RNG_ReInitialize
@@ -376,7 +376,7 @@ FUNCTION Mt32RNG_GetName(RNG) RESULT(Name)
     ! To return the name of the generator
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(Mt32RNG),   INTENT(IN)    :: RNG      ! 'Mt32RNG' object
     CHARACTER(LEN=:), ALLOCATABLE   :: Name     ! name of the generator
@@ -385,7 +385,7 @@ FUNCTION Mt32RNG_GetName(RNG) RESULT(Name)
     ! na
 
 ! FLOW
-    
+
     Name = 'Mt32RNG'
     ! to prevent warning of unused variable(s)
     ASSOCIATE (Dummy => RNG); END ASSOCIATE
@@ -397,5 +397,5 @@ END FUNCTION Mt32RNG_GetName
 !******************************************************************************
 
 END MODULE Class_Mt32RNG
-    
+
 !******************************************************************************

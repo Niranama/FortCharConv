@@ -1,13 +1,12 @@
 
 MODULE ModBase_Integer_ToChar
 
-!** PURPOSE OF THIS MODULE:
-    ! This module contains routines that convert an integer value into a decimal string.
-
-!** REFERENCES:
-    ! [1] itoa_yy: https://github.com/ibireme/c_numconv_benchmark
-    ! [2] itoa_yy_largelut: https://github.com/ibireme/c_numconv_benchmark
-    ! [3] jeaiii_to_text: https://github.com/jeaiii/itoa
+!^ **PURPOSE OF THIS MODULE**:  
+    ! This module contains routines that convert an integer value into a decimal string.  
+    !    
+!^ **REFERENCES**:  
+    ! [1] [Number Conversion Benchmark in C](https://github.com/ibireme/c_numconv_benchmark)    
+    ! [2] [itoa - Fast integer to ascii / integer to string conversion](https://github.com/jeaiii/itoa)
 
 !** USE STATEMENTS:
     USE ModBase_Common
@@ -27,7 +26,7 @@ MODULE ModBase_Integer_ToChar
     PUBLIC :: I64_ToChar_JEA
 
     PRIVATE          ! by default, hide all data and routines except those declared explicitly
-    
+
 !** MODULE PARAMETERS:
     INTEGER(KIND=I4B), PARAMETER  :: MinI32 = INT(Z'80000000', KIND=I4B)            ! -2147483648
     INTEGER(KIND=I8B), PARAMETER  :: MinI64 = INT(Z'8000000000000000', KIND=I8B)    ! -9223372036854775808
@@ -54,7 +53,7 @@ MODULE ModBase_Integer_ToChar
 FUNCTION I32_ToChar_Basic(Number) RESULT(cStr)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an integer number to character string
+    !! To convert a 32-bit integer to a decimal string using basic (naive) algorithm
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -66,7 +65,7 @@ FUNCTION I32_ToChar_Basic(Number) RESULT(cStr)
     INTEGER(KIND=I4B), PARAMETER  :: MaxLen = 10
     INTEGER(KIND=I4B), PARAMETER  :: Base   = 10
     CHARACTER(LEN=1),  PARAMETER  :: NumStr(0:9) = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     CHARACTER(LEN=MaxLen)         :: wStr     ! working string
     INTEGER(KIND=I4B)             :: PosNum   ! positive number (working number)
@@ -91,7 +90,7 @@ FUNCTION I32_ToChar_Basic(Number) RESULT(cStr)
         PosNum = Number
     END IF
     Indx = MaxLen
-    
+
     ! start the conversion
     DO
         ! save current number
@@ -105,7 +104,7 @@ FUNCTION I32_ToChar_Basic(Number) RESULT(cStr)
         Indx = Indx - 1
         IF (PosNum == 0) EXIT
     END DO
-    
+
     ! allocate the resulting string and transfer
     ! characters from the working string
     Indx = Indx + 1
@@ -114,7 +113,7 @@ FUNCTION I32_ToChar_Basic(Number) RESULT(cStr)
     ELSE
         cStr = wStr(Indx:MaxLen)
     END IF
-    
+
     RETURN
 
 END FUNCTION I32_ToChar_Basic
@@ -124,7 +123,7 @@ END FUNCTION I32_ToChar_Basic
 FUNCTION I32_ToChar_CC(Number) RESULT(cStr)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an integer number to character string
+    !! To convert a 32-bit integer to a decimal string using CC algorithm
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -137,7 +136,7 @@ FUNCTION I32_ToChar_CC(Number) RESULT(cStr)
     INTEGER(KIND=I4B), PARAMETER  :: ShiftPos = 45
     INTEGER(KIND=I8B), PARAMETER  :: Multiplier = INT(Z'00000000D1B71759', KIND=I8B)
     INTEGER(KIND=I4B), PARAMETER  :: Divisor = 10000
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     CHARACTER(LEN=MaxLen)         :: wStr     ! working string
     INTEGER(KIND=I4B)             :: PosNum   ! positive number (working number)
@@ -149,7 +148,7 @@ FUNCTION I32_ToChar_CC(Number) RESULT(cStr)
 
     ! set positive number
     PosNum = ABS(Number)
-    
+
     ! start the conversion
     IF (PosNum < 10000) THEN
         Start  = 1
@@ -201,7 +200,7 @@ FUNCTION I32_ToChar_CC(Number) RESULT(cStr)
             END IF
         END IF
     END IF
-    
+
     IF (Number < 0) THEN
         IF (Number == MinI32) THEN
             cStr = '-2147483648'
@@ -211,9 +210,9 @@ FUNCTION I32_ToChar_CC(Number) RESULT(cStr)
     ELSE
         cStr = wStr(Start:Finish)
     END IF
-    
+
     RETURN
-    
+
 END FUNCTION I32_ToChar_CC
 
 !******************************************************************************
@@ -221,7 +220,7 @@ END FUNCTION I32_ToChar_CC
 FUNCTION I32_ToChar_YY(Number) RESULT(cStr)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an integer number to character string
+    !! To convert a 32-bit integer to a decimal string using YY algorithm
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -231,7 +230,7 @@ FUNCTION I32_ToChar_YY(Number) RESULT(cStr)
 
 !** SUBROUTINE PARAMETER DECLARATIONS:
     INTEGER(KIND=I4B), PARAMETER  :: MaxLen = 10
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     CHARACTER(LEN=MaxLen)         :: wStr
     INTEGER(KIND=I4B)             :: PosNum
@@ -241,10 +240,10 @@ FUNCTION I32_ToChar_YY(Number) RESULT(cStr)
     INTEGER(KIND=I4B)             :: AABBCC, DDEE, EE
 
 !** FLOW
-    
+
     ! set positive number
     PosNum = ABS(Number)
-    
+
     ! start the conversion
     IF (PosNum < 100) THEN                                      ! 1-2 digits
         wStr(1:2) = Char2Digits(PosNum)
@@ -295,7 +294,7 @@ FUNCTION I32_ToChar_YY(Number) RESULT(cStr)
 
     Start = 1
     IF (wStr(1:1) == '0') Start = 2
-        
+
     IF (Number < 0) THEN
         IF (Number == MinI32) THEN
             cStr = '-2147483648'
@@ -305,7 +304,7 @@ FUNCTION I32_ToChar_YY(Number) RESULT(cStr)
     ELSE
         cStr = wStr(Start:Finish)
     END IF
-    
+
     RETURN
 
 END FUNCTION I32_ToChar_YY
@@ -315,7 +314,7 @@ END FUNCTION I32_ToChar_YY
 FUNCTION I32_ToChar_YYLL(Number) RESULT(cStr)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an integer number to character string
+    !! To convert a 32-bit integer to a decimal string using YY algorithm with large table
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -325,7 +324,7 @@ FUNCTION I32_ToChar_YYLL(Number) RESULT(cStr)
 
 !** SUBROUTINE PARAMETER DECLARATIONS:
     INTEGER(KIND=I4B), PARAMETER  :: MaxLen = 10
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     CHARACTER(LEN=MaxLen)         :: wStr
     INTEGER(KIND=I4B)             :: PosNum
@@ -335,11 +334,11 @@ FUNCTION I32_ToChar_YYLL(Number) RESULT(cStr)
     INTEGER(KIND=I4B)             :: BBCCDDEE, DDEE
 
 !** FLOW
-    
+
     ! set positive number
     PosNum = ABS(Number)
     Start = 1
-    
+
     ! start the conversion
     IF (PosNum < 10000) THEN                                    ! 1-4 digits
         wStr(1:4) = Char4Digits(PosNum)
@@ -381,7 +380,7 @@ FUNCTION I32_ToChar_YYLL(Number) RESULT(cStr)
         END IF
         Finish = 10
     END IF
-        
+
     IF (Number < 0) THEN
         IF (Number == MinI32) THEN
             cStr = '-2147483648'
@@ -391,7 +390,7 @@ FUNCTION I32_ToChar_YYLL(Number) RESULT(cStr)
     ELSE
         cStr = wStr(Start:Finish)
     END IF
-    
+
     RETURN
 
 END FUNCTION I32_ToChar_YYLL
@@ -401,7 +400,7 @@ END FUNCTION I32_ToChar_YYLL
 FUNCTION I32_ToChar_JEA(Number) RESULT(cStr)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an integer number to character string
+    !! To convert a 32-bit integer to a decimal string using JEA algorithm
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -413,14 +412,14 @@ FUNCTION I32_ToChar_JEA(Number) RESULT(cStr)
     INTEGER(KIND=I4B), PARAMETER  :: MaxLen = 10
     REAL(KIND=QP),     PARAMETER  :: R1  = 1.0_QP
     REAL(KIND=QP),     PARAMETER  :: R2  = 2.0_QP
-    INTEGER(KIND=I8B), PARAMETER  :: K24 = INT(R2**24/1.0Q2 + R1, KIND=I8B)
-    INTEGER(KIND=I8B), PARAMETER  :: K32 = INT(R2**32/1.0Q4 + R1, KIND=I8B)
-    INTEGER(KIND=I8B), PARAMETER  :: K48 = INT(R2**48/1.0Q6 + R1, KIND=I8B)
-    INTEGER(KIND=I8B), PARAMETER  :: K57 = INT(R2**57/1.0Q8 + R1, KIND=I8B)
+    INTEGER(KIND=I8B), PARAMETER  :: K24 = INT(R2**24/1.0E2_QP + R1, KIND=I8B)
+    INTEGER(KIND=I8B), PARAMETER  :: K32 = INT(R2**32/1.0E4_QP + R1, KIND=I8B)
+    INTEGER(KIND=I8B), PARAMETER  :: K48 = INT(R2**48/1.0E6_QP + R1, KIND=I8B)
+    INTEGER(KIND=I8B), PARAMETER  :: K57 = INT(R2**57/1.0E8_QP + R1, KIND=I8B)
     INTEGER(KIND=I8B), PARAMETER  :: M24 = SHIFTL(1_I8B, 24) - 1_I8B
     INTEGER(KIND=I8B), PARAMETER  :: M32 = SHIFTL(1_I8B, 32) - 1_I8B
     INTEGER(KIND=I8B), PARAMETER  :: M57 = SHIFTL(1_I8B, 57) - 1_I8B
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     CHARACTER(LEN=MaxLen)         :: wStr
     INTEGER(KIND=I8B)             :: PosNum
@@ -428,10 +427,10 @@ FUNCTION I32_ToChar_JEA(Number) RESULT(cStr)
     INTEGER(KIND=I8B)             :: F0, F2, F4, F6, F8
 
 !** FLOW
-    
+
     ! set positive number
     PosNum = ABS(Number)
-    
+
     ! start the conversion
     IF (PosNum < 100_I8B) THEN                   ! 1-2 digits
         wStr(1:2) = Char2Digits(PosNum)
@@ -476,7 +475,7 @@ FUNCTION I32_ToChar_JEA(Number) RESULT(cStr)
 
     Start = 1
     IF (wStr(1:1) == '0') Start = 2
-        
+
     IF (Number < 0) THEN
         IF (Number == MinI32) THEN
             cStr = '-2147483648'
@@ -486,7 +485,7 @@ FUNCTION I32_ToChar_JEA(Number) RESULT(cStr)
     ELSE
         cStr = wStr(Start:Finish)
     END IF
-    
+
     RETURN
 
 END FUNCTION I32_ToChar_JEA
@@ -500,7 +499,7 @@ END FUNCTION I32_ToChar_JEA
 FUNCTION I64_ToChar_Basic(Number) RESULT(cStr)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an integer number to character string
+    !! To convert a 64-bit integer to a decimal string using basic (naive) algorithm
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -512,7 +511,7 @@ FUNCTION I64_ToChar_Basic(Number) RESULT(cStr)
     INTEGER(KIND=I4B), PARAMETER  :: MaxLen = 19
     INTEGER(KIND=I8B), PARAMETER  :: Base   = 10_I8B
     CHARACTER(LEN=1),  PARAMETER  :: NumStr(0:9) = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     CHARACTER(LEN=MaxLen)         :: wStr     ! working string
     INTEGER(KIND=I8B)             :: PosNum   ! positive number (working number)
@@ -537,7 +536,7 @@ FUNCTION I64_ToChar_Basic(Number) RESULT(cStr)
         PosNum = Number
     END IF
     Indx = MaxLen
-    
+
     ! start the conversion
     DO
         ! save current number
@@ -551,7 +550,7 @@ FUNCTION I64_ToChar_Basic(Number) RESULT(cStr)
         Indx = Indx - 1
         IF (PosNum == 0_I8B) EXIT
     END DO
-    
+
     ! allocate the resulting string and transfer
     ! characters from the working string
     Indx = Indx + 1
@@ -560,7 +559,7 @@ FUNCTION I64_ToChar_Basic(Number) RESULT(cStr)
     ELSE
         cStr = wStr(Indx:MaxLen)
     END IF
-    
+
     RETURN
 
 END FUNCTION I64_ToChar_Basic
@@ -570,7 +569,7 @@ END FUNCTION I64_ToChar_Basic
 FUNCTION I64_ToChar_CC(Number) RESULT(cStr)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an integer number to character string
+    !! To convert a 64-bit integer to a decimal string using CC algorithm
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -586,7 +585,7 @@ FUNCTION I64_ToChar_CC(Number) RESULT(cStr)
     INTEGER(KIND=I4B), PARAMETER  :: S90 = 90 - 64
     ! multiplier for 11 digits and divisor of 1.0E8
     INTEGER(KIND=I8B), PARAMETER  :: M64 = INT(Z'0000002AF31DC462', KIND=I8B)
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     CHARACTER(LEN=MaxLen)         :: wStr
     INTEGER(KIND=I8B)             :: PosNum
@@ -597,7 +596,7 @@ FUNCTION I64_ToChar_CC(Number) RESULT(cStr)
 
     ! set positive number
     PosNum = ABS(Number)
-    
+
     ! start the conversion
     IF (PosNum < 1000000000_I8B) THEN
         ! utilize I32_ToChar_CC routine
@@ -646,9 +645,9 @@ FUNCTION I64_ToChar_CC(Number) RESULT(cStr)
             cStr = wStr(Start:MaxLen)
         END IF
     END IF
-    
+
     RETURN
-    
+
     CONTAINS
 
     SUBROUTINE Write_8_Digits(Number, cStr)
@@ -674,7 +673,7 @@ FUNCTION I64_ToChar_CC(Number) RESULT(cStr)
         INTEGER(KIND=I4B)     :: PosNum, NxtNum, RemNum
 
     !** FLOW
-    
+
         ! set working number
         PosNum = Number
         ! compute NxtNum = PosNum/10000
@@ -685,7 +684,7 @@ FUNCTION I64_ToChar_CC(Number) RESULT(cStr)
         cStr(5:8) = Char4Digits(RemNum)
         ! convert the rest
         cStr(1:4) = Char4Digits(NxtNum)
-        
+
         RETURN
 
     END SUBROUTINE Write_8_Digits
@@ -716,7 +715,7 @@ FUNCTION I64_ToChar_CC(Number) RESULT(cStr)
         INTEGER(KIND=I4B)     :: PosNum, NxtNum, RemNum
 
     !** FLOW
-        
+
         PosNum = Number
         IF (PosNum < 10000) THEN
             IF (PosNum < 100) THEN
@@ -745,7 +744,7 @@ FUNCTION I64_ToChar_CC(Number) RESULT(cStr)
                 IF (cStr(Start:Start) == '0') Start = 2
             END IF
         END IF
-        
+
         RETURN
 
     END FUNCTION Write_1_to_8_Digits
@@ -759,7 +758,7 @@ END FUNCTION I64_ToChar_CC
 FUNCTION I64_ToChar_YY(Number) RESULT(cStr)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an integer number to character string
+    !! To convert a 64-bit integer to a decimal string using YY algorithm
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -769,7 +768,7 @@ FUNCTION I64_ToChar_YY(Number) RESULT(cStr)
 
 !** SUBROUTINE PARAMETER DECLARATIONS:
     INTEGER(KIND=I4B), PARAMETER  :: MaxLen = 20
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     CHARACTER(LEN=MaxLen)         :: wStr
     INTEGER(KIND=I8B)             :: PosNum, TmpNum, HiNum, LoNum, MidNum
@@ -779,7 +778,7 @@ FUNCTION I64_ToChar_YY(Number) RESULT(cStr)
 
     ! set positive number
     PosNum = ABS(Number)
-    
+
     ! start conversion and store digits in working string
     IF (PosNum < 100000000_I8B) THEN                        ! 1-8 digits
         Start = 12 + Write_1_to_8_Digits(INT(PosNum, KIND=I4B), wStr(13:20))
@@ -797,7 +796,7 @@ FUNCTION I64_ToChar_YY(Number) RESULT(cStr)
         CALL Write_4_Digits(INT(MidNum, KIND=I4B), wStr(9:12))
         Start = Write_5_to_8_Digits(INT(HiNum, KIND=I4B), wStr(1:8))
     END IF
-    
+
     ! transfer to output string
     IF (Number < 0_I8B) THEN
         IF (Number == MinI64) THEN
@@ -808,9 +807,9 @@ FUNCTION I64_ToChar_YY(Number) RESULT(cStr)
     ELSE
         cStr = wStr(Start:MaxLen)
     END IF
-    
+
     RETURN
-    
+
     CONTAINS
 
     SUBROUTINE Write_8_Digits(Number, cStr)
@@ -831,7 +830,7 @@ FUNCTION I64_ToChar_YY(Number) RESULT(cStr)
         INTEGER(KIND=I4B)     :: AABB, CCDD       ! working variables
 
     !** FLOW
-    
+
         AABB = INT(SHIFTR(INT(Number, KIND=I8B)*109951163_I8B, 40), KIND=I4B)   ! Number / 10000
         CCDD = Number - AABB*10000                                              ! MOD(Number, 10000)
         AA = SHIFTR(AABB*5243, 19)                                              ! AABB / 100
@@ -842,7 +841,7 @@ FUNCTION I64_ToChar_YY(Number) RESULT(cStr)
         cStr(3:4) = Char2Digits(BB)
         cStr(5:6) = Char2Digits(CC)
         cStr(7:8) = Char2Digits(DD)
-        
+
         RETURN
 
     END SUBROUTINE Write_8_Digits
@@ -866,12 +865,12 @@ FUNCTION I64_ToChar_YY(Number) RESULT(cStr)
         INTEGER(KIND=I4B)     :: AA, BB   ! working indices
 
     !** FLOW
-    
+
         AA = SHIFTR(Number*5243, 19)            ! Number / 100
         BB = Number - AA*100                    ! MOD(Number, 100)
         cStr(1:2) = Char2Digits(AA)
         cStr(3:4) = Char2Digits(BB)
-        
+
         RETURN
 
     END SUBROUTINE Write_4_Digits
@@ -897,7 +896,7 @@ FUNCTION I64_ToChar_YY(Number) RESULT(cStr)
         INTEGER(KIND=I4B)     :: AABB, BBCC, CCDD ! working variables
 
     !** FLOW
-    
+
         IF (Number < 100) THEN                                              ! 1-2 digits
             AA = Number
             IF (AA < 10) THEN
@@ -956,7 +955,7 @@ FUNCTION I64_ToChar_YY(Number) RESULT(cStr)
                 Start = 1
             END IF
         END IF
-        
+
         RETURN
 
     END FUNCTION Write_1_to_8_Digits
@@ -982,7 +981,7 @@ FUNCTION I64_ToChar_YY(Number) RESULT(cStr)
         INTEGER(KIND=I4B)     :: AABB, BBCC, CCDD ! working variables
 
     !** FLOW
-    
+
         IF (Number < 1000000) THEN                                              ! 5-6 digits
             AA = INT(SHIFTR(INT(Number, KIND=I8B)*429497_I8B, 32), KIND=I4B)     ! Number / 10000
             BBCC = Number - AA*10000                                            ! MOD(Number, 10000)
@@ -1020,7 +1019,7 @@ FUNCTION I64_ToChar_YY(Number) RESULT(cStr)
                 Start = 1
             END IF
         END IF
-        
+
         RETURN
 
     END FUNCTION Write_5_to_8_Digits
@@ -1034,7 +1033,7 @@ END FUNCTION I64_ToChar_YY
 FUNCTION I64_ToChar_YYLL(Number) RESULT(cStr)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an integer number to character string
+    !! To convert a 64-bit integer to a decimal string using YY algorithm with large table
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -1044,7 +1043,7 @@ FUNCTION I64_ToChar_YYLL(Number) RESULT(cStr)
 
 !** SUBROUTINE PARAMETER DECLARATIONS:
     INTEGER(KIND=I4B), PARAMETER  :: MaxLen = 20
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     CHARACTER(LEN=MaxLen)         :: wStr
     INTEGER(KIND=I8B)             :: PosNum, TmpNum, HiNum, LoNum, MidNum
@@ -1054,7 +1053,7 @@ FUNCTION I64_ToChar_YYLL(Number) RESULT(cStr)
 
     ! set positive number
     PosNum = ABS(Number)
-    
+
     ! start conversion and store digits in working string
     IF (PosNum < 100000000_I8B) THEN                        ! 1-8 digits
         Start = 12 + Write_1_to_8_Digits(INT(PosNum, KIND=I4B), wStr(13:20))
@@ -1072,7 +1071,7 @@ FUNCTION I64_ToChar_YYLL(Number) RESULT(cStr)
         CALL Write_4_Digits(INT(MidNum, KIND=I4B), wStr(9:12))
         Start = Write_5_to_8_Digits(INT(HiNum, KIND=I4B), wStr(1:8))
     END IF
-    
+
     ! transfer to output string
     IF (Number < 0_I8B) THEN
         IF (Number == MinI64) THEN
@@ -1083,9 +1082,9 @@ FUNCTION I64_ToChar_YYLL(Number) RESULT(cStr)
     ELSE
         cStr = wStr(Start:MaxLen)
     END IF
-    
+
     RETURN
-    
+
     CONTAINS
 
     SUBROUTINE Write_8_Digits(Number, cStr)
@@ -1105,12 +1104,12 @@ FUNCTION I64_ToChar_YYLL(Number) RESULT(cStr)
         INTEGER(KIND=I4B)     :: AABB, CCDD       ! working variables
 
     !** FLOW
-    
+
         AABB = INT(SHIFTR(INT(Number, KIND=I8B)*109951163_I8B, 40), KIND=I4B)   ! Number / 10000
         CCDD = Number - AABB*10000                                              ! MOD(Number, 10000)
         cStr(1:4) = Char4Digits(AABB)
         cStr(5:8) = Char4Digits(CCDD)
-        
+
         RETURN
 
     END SUBROUTINE Write_8_Digits
@@ -1134,9 +1133,9 @@ FUNCTION I64_ToChar_YYLL(Number) RESULT(cStr)
         ! na
 
     !** FLOW
-    
+
         cStr(1:4) = Char4Digits(Number)
-        
+
         RETURN
 
     END SUBROUTINE Write_4_Digits
@@ -1161,7 +1160,7 @@ FUNCTION I64_ToChar_YYLL(Number) RESULT(cStr)
         INTEGER(KIND=I4B)     :: AABB, CCDD
 
     !** FLOW
-    
+
         IF (Number < 10000) THEN                                                    ! 1-4 digits
             cStr(5:8) = Char4Digits(Number)
             Start = 5
@@ -1190,7 +1189,7 @@ FUNCTION I64_ToChar_YYLL(Number) RESULT(cStr)
                 END IF
             END IF
         END IF
-        
+
         RETURN
 
     END FUNCTION Write_1_to_8_Digits
@@ -1215,7 +1214,7 @@ FUNCTION I64_ToChar_YYLL(Number) RESULT(cStr)
         INTEGER(KIND=I4B)     :: AABB, CCDD
 
     !** FLOW
-    
+
         AABB = INT(SHIFTR(INT(Number, KIND=I8B)*109951163_I8B, 40), KIND=I4B)   ! Number / 10000
         CCDD = Number - AABB*10000                                              ! MOD(Number, 10000)
         cStr(1:4) = Char4Digits(AABB)
@@ -1230,7 +1229,7 @@ FUNCTION I64_ToChar_YYLL(Number) RESULT(cStr)
                 END IF
             END IF
         END IF
-        
+
         RETURN
 
     END FUNCTION Write_5_to_8_Digits
@@ -1244,7 +1243,7 @@ END FUNCTION I64_ToChar_YYLL
 FUNCTION I64_ToChar_JEA(Number) RESULT(cStr)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an integer number to character string
+    !! To convert a 64-bit integer to a decimal string using JEA algorithm
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -1256,15 +1255,15 @@ FUNCTION I64_ToChar_JEA(Number) RESULT(cStr)
     INTEGER(KIND=I4B), PARAMETER  :: MaxLen = 20
     REAL(KIND=QP),     PARAMETER  :: R1  = 1.0_QP
     REAL(KIND=QP),     PARAMETER  :: R2  = 2.0_QP
-    INTEGER(KIND=I8B), PARAMETER  :: K24 = INT(R2**24/1.0Q2 + R1, KIND=I8B)
-    INTEGER(KIND=I8B), PARAMETER  :: K32 = INT(R2**32/1.0Q4 + R1, KIND=I8B)
-    INTEGER(KIND=I8B), PARAMETER  :: K48 = INT(R2**48/1.0Q6 + R1, KIND=I8B)
-    INTEGER(KIND=I8B), PARAMETER  :: K57 = INT(R2**57/1.0Q8 + R1, KIND=I8B)
+    INTEGER(KIND=I8B), PARAMETER  :: K24 = INT(R2**24/1.0E2_QP + R1, KIND=I8B)
+    INTEGER(KIND=I8B), PARAMETER  :: K32 = INT(R2**32/1.0E4_QP + R1, KIND=I8B)
+    INTEGER(KIND=I8B), PARAMETER  :: K48 = INT(R2**48/1.0E6_QP + R1, KIND=I8B)
+    INTEGER(KIND=I8B), PARAMETER  :: K57 = INT(R2**57/1.0E8_QP + R1, KIND=I8B)
     INTEGER(KIND=I8B), PARAMETER  :: M24 = SHIFTL(1_I8B, 24) - 1_I8B
     INTEGER(KIND=I8B), PARAMETER  :: M32 = SHIFTL(1_I8B, 32) - 1_I8B
     INTEGER(KIND=I8B), PARAMETER  :: M57 = SHIFTL(1_I8B, 57) - 1_I8B
     INTEGER(KIND=I8B), PARAMETER  :: MaxU32 = INT(Z'00000000FFFFFFFF', KIND=I8B) !  4,294,967,296
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     CHARACTER(LEN=MaxLen)         :: wStr
     INTEGER(KIND=I8B)             :: PosNum
@@ -1273,10 +1272,10 @@ FUNCTION I64_ToChar_JEA(Number) RESULT(cStr)
     INTEGER(KIND=I8B)             :: Z, Y
 
 !** FLOW
-    
+
     ! set positive number
     PosNum = ABS(Number)
-    
+
     ! start the conversion
     IF (PosNum < 100_I8B) THEN                          ! 1-2 digits
         wStr(1:2) = Char2Digits(PosNum)
@@ -1343,7 +1342,7 @@ FUNCTION I64_ToChar_JEA(Number) RESULT(cStr)
 
     Start = 1
     IF (wStr(1:1) == '0') Start = 2
-        
+
     IF (Number < 0) THEN
         IF (Number == MinI64) THEN
             cStr = '-9223372036854775808'
@@ -1353,9 +1352,9 @@ FUNCTION I64_ToChar_JEA(Number) RESULT(cStr)
     ELSE
         cStr = wStr(Start:Finish)
     END IF
-    
+
     RETURN
-    
+
     CONTAINS
 
     SUBROUTINE Write_4_Digits(Number, cStr)
@@ -1375,12 +1374,12 @@ FUNCTION I64_ToChar_JEA(Number) RESULT(cStr)
         ! na
 
     !** FLOW
-    
+
         F0 = K24*Number
         F2 = IAND(F0, M24)*100_I8B
         cStr(1:2) = Char2Digits(SHIFTR(F0, 24))
         cStr(3:4) = Char2Digits(SHIFTR(F2, 24))
-        
+
         RETURN
 
     END SUBROUTINE Write_4_Digits
@@ -1404,14 +1403,14 @@ FUNCTION I64_ToChar_JEA(Number) RESULT(cStr)
         ! na
 
     !** FLOW
-    
+
         F0 = K32*Number
         F2 = IAND(F0, M32)*100_I8B
         F4 = IAND(F2, M32)*100_I8B
         cStr(1:2) = Char2Digits(SHIFTR(F0, 32))
         cStr(3:4) = Char2Digits(SHIFTR(F2, 32))
         cStr(5:6) = Char2Digits(SHIFTR(F4, 32))
-        
+
         RETURN
 
     END SUBROUTINE Write_6_Digits
@@ -1435,12 +1434,12 @@ FUNCTION I64_ToChar_JEA(Number) RESULT(cStr)
         INTEGER(KIND=I4B)     :: AABB, CCDD       ! working variables
 
     !** FLOW
-    
+
         AABB = INT(SHIFTR(Number*109951163_I8B, 40), KIND=I4B)  ! Number / 10000
-        CCDD = Number - AABB*10000                              ! MOD(Number, 10000)
+        CCDD = INT(Number - AABB*10000, KIND=I4B)               ! MOD(Number, 10000)
         cStr(1:4) = Char4Digits(AABB)
         cStr(5:8) = Char4Digits(CCDD)
-        
+
 ! Note: the following statements (original code by JEA algorithm)
 !       do not write correct numbers sometimes
 !        F0 = SHIFTR(K48*Number, 16)
@@ -1451,7 +1450,7 @@ FUNCTION I64_ToChar_JEA(Number) RESULT(cStr)
 !        cStr(3:4) = Char2Digits(SHIFTR(F2, 32))
 !        cStr(5:6) = Char2Digits(SHIFTR(F4, 32))
 !        cStr(7:8) = Char2Digits(SHIFTR(F6, 32))
-        
+
         RETURN
 
     END SUBROUTINE Write_8_Digits
@@ -1475,7 +1474,7 @@ FUNCTION I64_ToChar_JEA(Number) RESULT(cStr)
         ! na
 
     !** FLOW
-    
+
         F0 = K57*Number
         F2 = IAND(F0, M57)*100_I8B
         F4 = IAND(F2, M57)*100_I8B
@@ -1486,7 +1485,7 @@ FUNCTION I64_ToChar_JEA(Number) RESULT(cStr)
         cStr(5:6)  = Char2Digits(SHIFTR(F4, 57))
         cStr(7:8)  = Char2Digits(SHIFTR(F6, 57))
         cStr(9:10) = Char2Digits(SHIFTR(F8, 57))
-        
+
         RETURN
 
     END SUBROUTINE Write_10_Digits

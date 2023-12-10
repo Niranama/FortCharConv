@@ -1,13 +1,24 @@
 
 MODULE ModBase_UInt128
 
-!** PURPOSE OF THIS MODULE:
-    ! This module contains a derived type and basic operations for an unsigned 128-bit integer.
-
-!** REFERENCES:
-    ! [1] Absl's Numeric Library: https://github.com/abseil/abseil-cpp/tree/master/absl/numeric
-    ! [2] Fast 128-bit math library for Java: https://github.com/martint/int128/
-    ! [3] Extended precision integer C++ library: https://github.com/chfast/intx
+!^ **PURPOSE OF THIS MODULE**:  
+    !	This module contains a derived type and basic operations for a 128-bit unsigned integer.  
+    !  The application interfaces (APIs) follows Fortran intrinsic integer types as close as practical.
+    !  However, since Fortran does not have an unsigned integer type, those operations that differ
+    !  between unsigned and signed integers use APIs similar to those used in 'ModBase_UIntUtil' module.  
+    !  ***Important Note***:  
+    !   (1) For arithmetic operations, various types of unsigned integer types (32-, 64- and 128-bit)
+    !   are allowed.  However, the use of signed and unsigned integers in the same operation is NOT
+    !   allowed.  Signed integer types must be explicitly converted to unsigned types before using
+    !   in the arithmetic operations.  
+    !   (2) For comparison and bitwise operations that require two input arguments, both arguments must
+    !   only be the 128-bit unsigned integer type.  All other types must be explicitly converted to
+    !   this type before using in the comparison and bitwise operations.  
+    !  
+!^ **REFERENCES**:  
+    !	[1] [Absl's Numeric Library](https://github.com/abseil/abseil-cpp/tree/master/absl/numeric)  
+    !	[2] [Fast 128-bit math library for Java](https://github.com/martint/int128/)  
+    !	[3] [Extended precision integer C++ library](https://github.com/chfast/intx)
 
 !** USE STATEMENTS:
     USE ModBase_Common
@@ -16,7 +27,7 @@ MODULE ModBase_UInt128
     USE ModBase_UIntUtil
     USE, INTRINSIC :: IEEE_ARITHMETIC
     USE, INTRINSIC :: ISO_FORTRAN_ENV,  ONLY: OUTPUT_UNIT
-    
+
     IMPLICIT NONE       ! Enforce explicit typing of all variables
 
 !** ACCESSIBLE SPECIFICATIONS OF MODULE DATA, SUBROUTINES OR FUNCTONS
@@ -27,7 +38,7 @@ MODULE ModBase_UInt128
     ! conversion
     PUBLIC :: ToI32, ToI64, ToR32, ToR64, ToR128
     PUBLIC :: ToDecString, ToHexString
-    ! comparision
+    ! comparison
     PUBLIC :: OPERATOR(==), OPERATOR(/=)
     PUBLIC :: OPERATOR(.ULT.), OPERATOR(.ULE.)
     PUBLIC :: OPERATOR(.UGT.), OPERATOR(.UGE.)
@@ -52,7 +63,7 @@ MODULE ModBase_UInt128
     PUBLIC :: Display
 
     PRIVATE          ! by default, hide all data and routines except those declared explicitly
-    
+
 !** MODULE PARAMETERS:
     ! module name
     CHARACTER(LEN=*),   PARAMETER :: ModName = 'ModBase_UInt128'
@@ -69,9 +80,9 @@ MODULE ModBase_UInt128
     ! miscellaneous
     INTEGER(KIND=I8B),  PARAMETER :: Mask32 = MaxU32
     INTEGER(KIND=I8B),  PARAMETER :: TopBit = SHIFTL(1_I8B, 63)
-    LOGICAL,            PARAMETER :: AsUnsigned = TrueVal
+    LOGICAL,             PARAMETER :: AsUnsigned = TrueVal
     INTEGER(KIND=I4B),  PARAMETER :: RecTable(0:255) = [                    &
-             2045,  2037,  2029,  2021,  2013,  2005,  1998,  1990, & 
+             2045,  2037,  2029,  2021,  2013,  2005,  1998,  1990, &
              1983,  1975,  1968,  1960,  1953,  1946,  1938,  1931, &
              1924,  1917,  1910,  1903,  1896,  1889,  1883,  1876, &
              1869,  1863,  1856,  1849,  1843,  1836,  1830,  1824, &
@@ -105,103 +116,537 @@ MODULE ModBase_UInt128
              1038,  1036,  1034,  1032,  1030,  1028,  1026,  1024]
 
 !** DERIVED TYPE DEFINITIONS
-	TYPE UInt128
-        INTEGER(KIND=I8B) :: High     ! number representing upper 64 bits treated as unsigned
-        INTEGER(KIND=I8B) :: Low      ! number representing lower 64 bits treated as unsigned
+    !# a 128-bit unsigned integer type where the base of its components is 2**64.  
+    TYPE UInt128
+        INTEGER(KIND=I8B)   :: High !! upper 64 bits treated as unsigned integer
+        INTEGER(KIND=I8B)   :: Low  !! lower 64 bits treated as unsigned integer
     END TYPE UInt128
 
 !** MODULE PARAMETERS (PART 2):
-    ! UInt128 parameters
+    !# 128-bit unsigned parameter with maximum value
     TYPE(UInt128), PARAMETER, PUBLIC :: MaxU128   = UInt128(MaxU64, MaxU64)
+    !# 128-bit unsigned parameter with minimum value
     TYPE(UInt128), PARAMETER, PUBLIC :: MinU128   = UInt128(MinU64, MinU64)
+    !# 128-bit unsigned parameter with value of one
     TYPE(UInt128), PARAMETER, PUBLIC :: OneU128   = UInt128(MinU64, 1_I8B)
+    !# 128-bit unsigned parameter with value of zero
     TYPE(UInt128), PARAMETER, PUBLIC :: ZeroU128  = MinU128
-    ! Used to cast a 64-bit integer to a 128bit integer without getting unwanted sign extension
+    !# Used to cast a 64-bit integer to a 128bit integer without getting unwanted sign extension
     TYPE(UInt128), PARAMETER, PUBLIC :: MASKI64   = UInt128(MinU64, MaxU64)
-    TYPE(UInt128), PARAMETER         :: TenU128   = UInt128(MinU64, 10_I8B)
-    TYPE(UInt128), PARAMETER         :: DivBase10 = UInt128(0_I8B, INT(Z'8AC7230489E80000', KIND=I8B))  ! 10**19
-    TYPE(UInt128), PARAMETER         :: DivBase16 = UInt128(0_I8B, INT(Z'1000000000000000', KIND=I8B))  ! 16**15
 
 !** INTERFACE DEFINITIONS:
-    ! na
-
-!** GENERIC DEFINITIONS:
-    ! assignment (for conversions between UInt128 and unsigned 32/64 bit integers)
-    GENERIC     :: ASSIGNMENT(=)    => U128_From_U32, U128_From_U64, U128_To_U32, U128_To_U64
-    ! constructor
-    GENERIC     :: UInt128          => I32_To_U128, I64_To_U128, R32_To_U128, R64_To_U128, &
-                                       R128_To_U128, DecString_To_U128
-    ! conversion
-    GENERIC     :: ToI32            => I32_From_U128
-    GENERIC     :: ToI64            => I64_From_U128
-    GENERIC     :: ToR32            => R32_From_U128
-    GENERIC     :: ToR64            => R64_From_U128
-    GENERIC     :: ToR128           => R128_From_U128
-    GENERIC     :: ToDecString      => DecString_From_U128
-    GENERIC     :: ToHexString      => HexString_From_U128
-    ! comparision
-    GENERIC     :: OPERATOR(==)     => U128_Equal
-    GENERIC     :: OPERATOR(/=)     => U128_NotEqual
-    GENERIC     :: OPERATOR(.ULT.)  => U128_LessThan
-    GENERIC     :: OPERATOR(.ULE.)  => U128_LessEqual
-    GENERIC     :: OPERATOR(.UGT.)  => U128_GreaterThan
-    GENERIC     :: OPERATOR(.UGE.)  => U128_GreaterEqual
-    GENERIC     :: CompareUnsigned  => U128_Compare
-    ! arithmetic
-    GENERIC     :: OPERATOR(+)      => U128_UnaryPlus,    U128_Plus_U128,    &
-                                       U128_Plus_U32,     U32_Plus_U128,     &
-                                       U128_Plus_U64,     U64_Plus_U128
-    GENERIC     :: OPERATOR(-)      => U128_Negate,       U128_Minus_U128,   &
-                                       U128_Minus_U32,    U32_Minus_U128,    &
-                                       U128_Minus_U64,    U64_Minus_U128
-    GENERIC     :: OPERATOR(*)      => U128_Multiply_U128,                   &
-                                       U128_Multiply_U32, U32_Multiply_U128, &
-                                       U128_Multiply_U64, U64_Multiply_U128
-    GENERIC     :: OPERATOR(.UDIV.) => U128_Divide_U32,   U128_Divide_U64,   &
-                                       U128_Divide_U128
-    GENERIC     :: UMOD             => U128_Mod_U32,      U128_Mod_U64,      &
-                                       U128_Mod_U128
-    GENERIC     :: UDivMod          => U128_DivMod_U32,   U128_DivMod_U64,   &
-                                       U128_DivMod_U128
-    GENERIC     :: Increment        => U128_Increment
-    GENERIC     :: Decrement        => U128_Decrement
-    GENERIC     :: Add              => U128_Add_U32,      U128_Add_U64,      &
-                                       U128_Add_U128
-    GENERIC     :: Subtract         => U128_Subtract_U32, U128_Subtract_U64, &
-                                       U128_Subtract_U128
-    GENERIC     :: Multiply         => U128_Times_U32,    U128_Times_U64,    &
-                                       U128_Times_U128
-    GENERIC     :: Divide           => U128_Over_U32,     U128_Over_U64,     &
-                                       U128_Over_U128
-    ! bitwise
-    GENERIC     :: ShiftLOnce       => U128_ShiftLeftOnce
-    GENERIC     :: ShiftROnce       => U128_ShiftRightOnce
-    GENERIC     :: ShiftL64         => U128_ShiftLeft64
-    GENERIC     :: ShiftR64         => U128_ShiftRight64
-    GENERIC     :: ShiftL63Down     => U128_ShiftLeft63Down
-    GENERIC     :: ShiftR63Down     => U128_ShiftRight63Down
-    GENERIC     :: ShiftL64Up       => U128_ShiftLeft64Up
-    GENERIC     :: ShiftR64Up       => U128_ShiftRight64Up
-    GENERIC     :: SHIFTL           => U128_ShiftLeft
-    GENERIC     :: SHIFTR           => U128_ShiftRight
-    GENERIC     :: ISHFT            => U128_ShiftLogical
-    GENERIC     :: ISHFTC           => U128_Rotate
-    GENERIC     :: NOT              => U128_Not
-    GENERIC     :: IOR              => U128_Ior
-    GENERIC     :: IEOR             => U128_Ieor
-    GENERIC     :: IAND             => U128_Iand
-    GENERIC     :: LEADZ            => U128_LeadingZeros
-    GENERIC     :: TRAILZ           => U128_TrailingZeros
-    GENERIC     :: POPCNT           => U128_Count1Bits
-    GENERIC     :: POPPAR           => U128_Parity
-    GENERIC     :: IBSET            => U128_SetBit
-    GENERIC     :: IBCLR            => U128_ClearBit
-    GENERIC     :: IBCHNG           => U128_FlipBit
-    GENERIC     :: BTEST            => U128_TestBit
-    GENERIC     :: IBITS            => U128_ExtractBits
-    GENERIC     :: MoveBits         => U128_MoveBits
-    ! auxiliary
-    GENERIC     :: Display          => U128_Write
+	!-----------------------------------------------
+    !----- 	        conversion operations 	   -----
+	!-----------------------------------------------
+    INTERFACE ASSIGNMENT(=)
+        !^ **Operator Overload**: ASSIGNMENT(=)  
+        !  **Purpose**:  To convert between a 128-bit unsigned integer and
+        !   other unsigned integers (32- and 64-bit integers)  
+        !  **Usage**:  
+        !   --->    U128 = OtherType
+        MODULE PROCEDURE U128_From_U32
+        MODULE PROCEDURE U128_From_U64
+        MODULE PROCEDURE U128_To_U32
+        MODULE PROCEDURE U128_To_U64
+    END INTERFACE
+    INTERFACE UInt128
+        !^ **Constructor Interface**: UInt128  
+        !  **Purpose**:  To construct a 128-bit unsigned integer from
+        !   other Fortran intrinsic types  
+        !  **Usage**:  
+        !   --->    U128 = UInt128(OtherType)
+        MODULE PROCEDURE I32_To_U128
+        MODULE PROCEDURE I64_To_U128
+        MODULE PROCEDURE R32_To_U128
+        MODULE PROCEDURE R64_To_U128
+        MODULE PROCEDURE R128_To_U128
+        MODULE PROCEDURE DecString_To_U128
+    END INTERFACE
+    INTERFACE ToI32
+        !^ **Function Interface**: ToI32  
+        !  **Purpose**:  To convert a 128-bit unsigned integer to a 
+        !   32-bit signed integer  
+        !  **Usage**:  
+        !   --->    I32 = ToI32(U128)
+        MODULE PROCEDURE I32_From_U128
+    END INTERFACE
+    INTERFACE ToI64
+        !^ **Function Interface**: ToI64  
+        !  **Purpose**:  To convert a 128-bit unsigned integer to
+        !   a 64-bit signed integer  
+        !  **Usage**:  
+        !   --->    I64 = ToI64(U128)
+        MODULE PROCEDURE I64_From_U128
+    END INTERFACE
+    INTERFACE ToR32
+        !^ **Function Interface**: ToR32  
+        !  **Purpose**:  To convert a 128-bit unsigned integer to
+        !   a 32-bit floating point (real) number  
+        !  **Usage**:  
+        !   --->    R32 = ToR32(U128)
+        MODULE PROCEDURE R32_From_U128
+    END INTERFACE
+    INTERFACE ToR64
+        !^ **Function Interface**: ToR64  
+        !  **Purpose**:  To convert a 128-bit unsigned integer to
+        !   a 64-bit floating point (real) number  
+        !  **Usage**:  
+        !   --->    R64 = ToR64(U128)
+        MODULE PROCEDURE R64_From_U128
+    END INTERFACE
+    INTERFACE ToR128
+        !^ **Function Interface**: ToR128  
+        !  **Purpose**:  To convert a 128-bit unsigned integer to
+        !   a 128-bit floating point (real) number  
+        !  **Usage**:  
+        !   --->    R128 = ToR128(U128)
+        MODULE PROCEDURE R128_From_U128
+    END INTERFACE
+    INTERFACE ToDecString
+        !^ **Function Interface**: ToDecString  
+        !  **Purpose**:  To convert a 128-bit unsigned integer to
+        !   a decimal string  
+        !  **Usage**:  
+        !   --->    Str = ToDecString(U128)
+        MODULE PROCEDURE DecString_From_U128
+    END INTERFACE
+    INTERFACE ToHexString
+        !^ **Function Interface**: ToHexString  
+        !  **Purpose**:  To convert a 128-bit unsigned integer to
+        !   a hexadecimal string  
+        !  **Usage**:  
+        !   --->    Str = ToHexString(U128)
+        MODULE PROCEDURE HexString_From_U128
+    END INTERFACE
+	!-----------------------------------------------
+    !----- 		    comparison operations	       -----
+	!-----------------------------------------------
+    INTERFACE OPERATOR(==)
+        !^ **Operator Overload**: OPERATOR(==)  
+        !  **Purpose**:  To check if values of two 128-bit unsigned integers are equal  
+        !   return .TRUE. if both values are equal; otherwise return .FALSE.  
+        !  **Usage**:  
+        !   --->    Flag = LHS == RHS  
+        !   --->    IF (LHS .EQ. RHS) DoSomething
+        MODULE PROCEDURE U128_Equal
+    END INTERFACE
+    INTERFACE OPERATOR(/=)
+        !^ **Operator Overload**: OPERATOR(/=)  
+        !  **Purpose**:  To check if values of two 128-bit unsigned integers are not equal  
+        !   return .TRUE. if both values are NOT equal; otherwise return .FALSE.  
+        !  **Usage**:  
+        !   --->    Flag = LHS /= RHS  
+        !   --->    IF (LHS .NE. RHS) DoSomething
+        MODULE PROCEDURE U128_NotEqual
+    END INTERFACE
+    INTERFACE OPERATOR(.ULT.)
+        !^ **Operator Overload**: OPERATOR(.ULT.)  
+        !  **Purpose**:  To check if the LHS value is less than the RHS value  
+        !   return .TRUE. if LHS < RHS; otherwise return .FALSE.  
+        !  **Usage**:  
+        !   --->    Flag = LHS .ULT. RHS  
+        !   --->    IF (LHS .ULT. RHS) DoSomething
+        MODULE PROCEDURE U128_LessThan
+    END INTERFACE
+    INTERFACE OPERATOR(.ULE.)
+        !^ **Operator Overload**: OPERATOR(.ULE.)  
+        !  **Purpose**:  To check if the LHS value is less than or equal to the RHS value  
+        !   return .TRUE. if LHS <= RHS; otherwise return .FALSE.  
+        !  **Usage**:  
+        !   --->    Flag = LHS .ULE. RHS  
+        !   --->    IF (LHS .ULE. RHS) DoSomething
+        MODULE PROCEDURE U128_LessEqual
+    END INTERFACE
+    INTERFACE OPERATOR(.UGT.)
+        !^ **Operator Overload**: OPERATOR(.UGT.)  
+        !  **Purpose**:  To check if the LHS value is greater than the RHS value  
+        !   return .TRUE. if LHS > RHS; otherwise return .FALSE.  
+        !  **Usage**:  
+        !   --->    Flag = LHS .UGT. RHS  
+        !   --->    IF (LHS .UGT. RHS) DoSomething
+        MODULE PROCEDURE U128_GreaterThan
+    END INTERFACE
+    INTERFACE OPERATOR(.UGE.)
+        !^ **Operator Overload**: OPERATOR(.UGE.)  
+        !  **Purpose**:  To check if the LHS value is greater than or equal to the RHS value  
+        !   return .TRUE. if LHS >= RHS; otherwise return .FALSE.  
+        !  **Usage**:  
+        !   --->    Flag = LHS .UGE. RHS  
+        !   --->    IF (LHS .UGE. RHS) DoSomething
+        MODULE PROCEDURE U128_GreaterEqual
+    END INTERFACE
+    INTERFACE CompareUnsigned
+        !^ **Function Interface**: CompareUnsigned  
+        !  **Purpose**:  To compare two 128-bit unsigned integers and return  
+        !   -1 if LHS < RHS  
+        !    0 if LHS == RHS  
+        !    1 if LHS > RHS  
+        !  **Usage**:  
+        !   --->    Flag = CompareUnsigned(LHS, RHS)  
+        !   --->    IF (CompareUnsigned(LHS, RHS) /= 0) DoSomething
+        MODULE PROCEDURE U128_Compare
+    END INTERFACE
+	!-----------------------------------------------
+    !----- 		 arithmetic operations          -----
+	!-----------------------------------------------
+    INTERFACE OPERATOR(+)
+        !^ **Operator Overload**: OPERATOR(+)  
+        !  **Purpose**:  To perform a summation of two unsigned integers
+        !   (at least one of which is a 128-bit unsigned integer) or
+        !   to add a unary plus sign to a 128-bit unsigned integer
+        !   (which has no effect on the unsigned integer)  
+        !  **Usage**:  
+        !   --->    OUTPUT = +INPUT  
+        !   --->    OUTPUT = FIRST_IN + SECOND_IN
+        MODULE PROCEDURE U128_UnaryPlus
+        MODULE PROCEDURE U128_Plus_U128
+        MODULE PROCEDURE U128_Plus_U32
+        MODULE PROCEDURE U32_Plus_U128
+        MODULE PROCEDURE U128_Plus_U64
+        MODULE PROCEDURE U64_Plus_U128
+    END INTERFACE
+    INTERFACE OPERATOR(-)
+        !^ **Operator Overload**: OPERATOR(-)  
+        !  **Purpose**:  To perform a subtraction of two unsigned integers
+        !   (at least one of which is a 128-bit unsigned integer) or
+        !   to perform a negation of a 128-bit unsigned integer   
+        !  **Usage**:  
+        !   --->    OUTPUT = -INPUT  
+        !   --->    OUTPUT = FIRST_IN - SECOND_IN  
+        !  ***Important Note***:  For subtraction of unsigned integers, value of FIRST_IN
+        !   must always be greater than SECOND_IN.  Otherwise, value of OUTPUT
+        !   is NOT valid.
+        MODULE PROCEDURE U128_Negate
+        MODULE PROCEDURE U128_Minus_U128
+        MODULE PROCEDURE U128_Minus_U32
+        MODULE PROCEDURE U32_Minus_U128
+        MODULE PROCEDURE U128_Minus_U64
+        MODULE PROCEDURE U64_Minus_U128
+    END INTERFACE
+    INTERFACE OPERATOR(*)
+        !^ **Operator Overload**: OPERATOR( * )  
+        !  **Purpose**:  To perform a multiplication of two unsigned integers  
+        !   (at least one of which is a 128-bit unsigned integer)   
+        !  **Usage**:  
+        !   --->    OUTPUT = FIRST_IN * SECOND_IN
+        MODULE PROCEDURE U128_Multiply_U128
+        MODULE PROCEDURE U128_Multiply_U32
+        MODULE PROCEDURE U32_Multiply_U128
+        MODULE PROCEDURE U128_Multiply_U64
+        MODULE PROCEDURE U64_Multiply_U128
+    END INTERFACE
+    INTERFACE OPERATOR(.UDIV.)
+        !^ **Operator Overload**: OPERATOR(.UDIV.)  
+        !  **Purpose**:  To return the quotient of a division of two unsigned integers,
+        !   where the dividend (numerator) is a 128-bit unsigned integer and the
+        !   divisor (denominator) can be 32-, 64- or 128-bit unsigned integer  
+        !  **Usage**:  
+        !   --->    QUOT = NUMER .UDIV. DENOM
+        MODULE PROCEDURE U128_Divide_U32
+        MODULE PROCEDURE U128_Divide_U64
+        MODULE PROCEDURE U128_Divide_U128
+    END INTERFACE
+    INTERFACE UMOD
+        !^ **Function Interface**: UMOD  
+        !  **Purpose**:  To return the remainder of a division of two unsigned integers,
+        !   where the dividend (numerator) is a 128-bit unsigned integer and the
+        !   divisor (denominator) can be 32-, 64- or 128-bit unsigned integer  
+        !  **Usage**:  
+        !   --->    REM = UMOD(NUMER, DENOM)
+        MODULE PROCEDURE U128_Mod_U32
+        MODULE PROCEDURE U128_Mod_U64
+        MODULE PROCEDURE U128_Mod_U128
+    END INTERFACE
+    INTERFACE UDivMod
+        !^ **Subroutine Interface**: UDivMod  
+        !  **Purpose**:  To perform a division of two unsigned integers (where the
+        !   dividend (numerator) is a 128-bit unsigned integer and the divisor
+        !   (denominator) can be 32-, 64- or 128-bit unsigned integer) and
+        !   to return both the quotient and the remainder  
+        !  **Usage**:  
+        !   --->    CALL UDivMod(NUMER, DENOM, QUOT, REM)
+        MODULE PROCEDURE U128_DivMod_U32
+        MODULE PROCEDURE U128_DivMod_U64
+        MODULE PROCEDURE U128_DivMod_U128
+    END INTERFACE
+    INTERFACE Increment
+        !^ **Subroutine Interface**: Increment  
+        !  **Purpose**:  To increase value of a 128-bit unsigned integer by one  
+        !  **Usage**:  
+        !   --->    CALL Increment(U128)
+        MODULE PROCEDURE U128_Increment
+    END INTERFACE
+    INTERFACE Decrement
+        !^ **Subroutine Interface**: Decrement  
+        !  **Purpose**:  To decrease value of a 128-bit unsigned integer by one  
+        !  **Usage**:  
+        !   --->    CALL Decrement(U128)
+        MODULE PROCEDURE U128_Decrement
+    END INTERFACE
+    INTERFACE Add
+        !^ **Subroutine Interface**: Add  
+        !  **Purpose**:  To add an unsigned integer to a 128-bit unsigned integer  
+        !  **Usage**:  
+        !   --->    CALL Add(This, Other)
+        MODULE PROCEDURE U128_Add_U32
+        MODULE PROCEDURE U128_Add_U64
+        MODULE PROCEDURE U128_Add_U128
+    END INTERFACE
+    INTERFACE Subtract
+        !^ **Subroutine Interface**: Subtract  
+        !  **Purpose**:  To subtract an unsigned integer from a 128-bit unsigned integer  
+        !  **Usage**:  
+        !   --->    CALL Subtract(This, Other)  
+        !  ***Important Note***:  For subtraction of unsigned integers, value of This
+        !   must always be greater than Other.  Otherwise, value of the returned
+        !   This is NOT valid.
+        MODULE PROCEDURE U128_Subtract_U32
+        MODULE PROCEDURE U128_Subtract_U64
+        MODULE PROCEDURE U128_Subtract_U128
+    END INTERFACE
+    INTERFACE Multiply
+        !^ **Subroutine Interface**: Multiply  
+        !  **Purpose**:  To multiply a 128-bit unsigned integer by an unsigned integer  
+        !  **Usage**:  
+        !   --->    CALL Multiply(This, Other)
+        MODULE PROCEDURE U128_Times_U32
+        MODULE PROCEDURE U128_Times_U64
+        MODULE PROCEDURE U128_Times_U128
+    END INTERFACE
+    INTERFACE Divide
+        !^ **Subroutine Interface**: Divide  
+        !  **Purpose**:  To divide a 128-bit unsigned integer by an unsigned integer  
+        !  **Usage**:  
+        !   --->    CALL Divide(This, Other)
+        MODULE PROCEDURE U128_Over_U32
+        MODULE PROCEDURE U128_Over_U64
+        MODULE PROCEDURE U128_Over_U128
+    END INTERFACE
+	!-----------------------------------------------
+    !----- 		    bitwise operations 		   -----
+	!-----------------------------------------------
+    INTERFACE ShiftLOnce
+        !^ **Function Interface**: ShiftLOnce  
+        !  **Purpose**:  To perform logical left shift by 1  
+        !  **Usage**:  
+        !   --->    OUT = ShiftLOnce(IN)
+        MODULE PROCEDURE U128_ShiftLeftOnce
+    END INTERFACE
+    INTERFACE ShiftROnce
+        !^ **Function Interface**: ShiftROnce  
+        !  **Purpose**:  To perform logical right shift by 1  
+        !  **Usage**:  
+        !   --->    OUT = ShiftROnce(IN)
+        MODULE PROCEDURE U128_ShiftRightOnce
+    END INTERFACE
+    INTERFACE ShiftL64
+        !^ **Function Interface**: ShiftL64  
+        !  **Purpose**:  To perform logical left shift by 64  
+        !  **Usage**:  
+        !   --->    OUT = ShiftL64(IN)
+        MODULE PROCEDURE U128_ShiftLeft64
+    END INTERFACE
+    INTERFACE ShiftR64
+        !^ **Function Interface**: ShiftR64  
+        !  **Purpose**:  To perform logical right shift by 64  
+        !  **Usage**:  
+        !   --->    OUT = ShiftR64(IN)
+        MODULE PROCEDURE U128_ShiftRight64
+    END INTERFACE
+    INTERFACE ShiftL63Down
+        !^ **Function Interface**: ShiftL63Down  
+        !  **Purpose**:  To perform logical left shift by 63 or less  
+        !  **Usage**:  
+        !   --->    OUT = ShiftL63Down(IN, 11)
+        MODULE PROCEDURE U128_ShiftLeft63Down
+    END INTERFACE
+    INTERFACE ShiftR63Down
+        !^ **Function Interface**: ShiftR63Down  
+        !  **Purpose**:  To perform logical right shift by 63 or less  
+        !  **Usage**:  
+        !   --->    OUT = ShiftR63Down(IN, 53)
+        MODULE PROCEDURE U128_ShiftRight63Down
+    END INTERFACE
+    INTERFACE ShiftL64Up
+        !^ **Function Interface**: ShiftL64Up  
+        !  **Purpose**:  To perform logical left shift by 64 or more (<= 128)  
+        !  **Usage**:  
+        !   --->    OUT = ShiftL64Up(IN, 111)
+        MODULE PROCEDURE U128_ShiftLeft64Up
+    END INTERFACE
+    INTERFACE ShiftR64Up
+        !^ **Function Interface**: ShiftR64Up  
+        !  **Purpose**:  To perform logical right shift by 64 or more (<= 128)  
+        !  **Usage**:  
+        !   --->    OUT = ShiftR64Up(IN, 84)
+        MODULE PROCEDURE U128_ShiftRight64Up
+    END INTERFACE
+    INTERFACE SHIFTL
+        !^ **Function Interface**: SHIFTL  
+        !  **Purpose**:  To perform logical left shift with 0 <= ShiftPos <= 128  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    OUT = SHIFTL(IN, 127)
+        MODULE PROCEDURE U128_ShiftLeft
+    END INTERFACE
+    INTERFACE SHIFTR
+        !^ **Function Interface**: SHIFTR  
+        !  **Purpose**:  To perform logical right shift with 0 <= ShiftPos <= 128  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    OUT = SHIFTR(IN, 33)
+        MODULE PROCEDURE U128_ShiftRight
+    END INTERFACE
+    INTERFACE ISHFT
+        !^ **Function Interface**: ISHFT  
+        !  **Purpose**:  To perform logical shift with -128 <= ShiftPos <= 128  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    OUT = ISHFT(IN, 53)    ! a logical left shift by 53  
+        !   --->    OUT = ISHFT(IN, -24)   ! a logical right shift by 24
+        MODULE PROCEDURE U128_ShiftLogical
+    END INTERFACE
+    INTERFACE ISHFTC
+        !^ **Function Interface**: ISHFTC  
+        !  **Purpose**:  To perform circular shift with -128 <= ShiftPos <= 128  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    OUT = ISHFTC(IN, 53)    ! a circular left shift by 53  
+        !   --->    OUT = ISHFTC(IN, -24)   ! a circular right shift by 24
+        MODULE PROCEDURE U128_Rotate
+    END INTERFACE
+    INTERFACE NOT
+        !^ **Function Interface**: NOT  
+        !  **Purpose**:  To return the bitwise logical complement of the input  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    OUT = NOT(IN)
+        MODULE PROCEDURE U128_Not
+    END INTERFACE
+    INTERFACE IOR
+        !^ **Function Interface**: IOR  
+        !  **Purpose**:  To perform an inclusive OR on corresponding bits of the input  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    OUT = IOR(LHSIN, RHSIN)
+        MODULE PROCEDURE U128_Ior
+    END INTERFACE
+    INTERFACE IEOR
+        !^ **Function Interface**: IEOR  
+        !  **Purpose**:  To perform an exclusive OR on corresponding bits of the input  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    OUT = IEOR(LHSIN, RHSIN)
+        MODULE PROCEDURE U128_Ieor
+    END INTERFACE
+    INTERFACE IAND
+        !^ **Function Interface**: IAND  
+        !  **Purpose**:  To perform a logical AND on corresponding bits of the input  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    OUT = IAND(LHSIN, RHSIN)
+        MODULE PROCEDURE U128_Iand
+    END INTERFACE
+    INTERFACE LEADZ
+        !^ **Function Interface**: LEADZ  
+        !  **Purpose**:  To count the number of leading zero bits of the input  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    NumLZ = LEADZ(INPUT)
+        MODULE PROCEDURE U128_LeadingZeros
+    END INTERFACE
+    INTERFACE TRAILZ
+        !^ **Function Interface**: TRAILZ  
+        !  **Purpose**:  To count the number of trailing zero bits of the input  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    NumTZ = TRAILZ(INPUT)
+        MODULE PROCEDURE U128_TrailingZeros
+    END INTERFACE
+    INTERFACE POPCNT
+        !^ **Function Interface**: POPCNT  
+        !  **Purpose**:  To count the number of 1 bits in the input  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    NumBits = POPCNT(INPUT)
+        MODULE PROCEDURE U128_Count1Bits
+    END INTERFACE
+    INTERFACE POPPAR
+        !^ **Function Interface**: POPPAR  
+        !  **Purpose**:  To determine the parity of the input  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    NumPar = POPPAR(INPUT)
+        MODULE PROCEDURE U128_Parity
+    END INTERFACE
+    INTERFACE IBSET
+        !^ **Function Interface**: IBSET  
+        !  **Purpose**:  To set the bit at the specified position to 1  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    OUT = IBSET(IN, Pos)
+        MODULE PROCEDURE U128_SetBit
+    END INTERFACE
+    INTERFACE IBCLR
+        !^ **Function Interface**: IBCLR  
+        !  **Purpose**:  To set the bit at the specified position to 0  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    OUT = IBCLR(IN, Pos)
+        MODULE PROCEDURE U128_ClearBit
+    END INTERFACE
+    INTERFACE IBCHNG
+        !^ **Function Interface**: IBCHNG  
+        !  **Purpose**:  To reverse the bit at the specified position  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    OUT = IBCHNG(IN, Pos)
+        MODULE PROCEDURE U128_FlipBit
+    END INTERFACE
+    INTERFACE BTEST
+        !^ **Function Interface**: BTEST  
+        !  **Purpose**:  To check whether the bit at the specified position is 0 (False) or 1 (True)  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    Flag = BTEST(IN, Pos)
+        MODULE PROCEDURE U128_TestBit
+    END INTERFACE
+    INTERFACE IBITS
+        !^ **Function Interface**: IBITS  
+        !  **Purpose**:  To extract a sequence of bits according to the specified input  
+        !   (For more information, see detailed explanation of the intrinsic function)  
+        !  **Usage**:  
+        !   --->    OUT = IBITS(IN, Pos, Len)
+        MODULE PROCEDURE U128_ExtractBits
+    END INTERFACE
+    INTERFACE MoveBits
+        !^ **Subroutine Interface**: MoveBits  
+        !  **Purpose**:  To copy a sequence of bits (a bit field) from one location to another  
+        !   (For more information, see detailed explanation of the intrinsic subroutine 'MVBITS')  
+        !  **Usage**:  
+        !   --->    CALL MoveBits(InVal, InPos, Len, OutVal, OutPos)
+        MODULE PROCEDURE U128_MoveBits
+    END INTERFACE
+	!-----------------------------------------------
+    !----- 	        Auxiliary Routine 	       -----
+	!-----------------------------------------------
+    INTERFACE Display
+        !^ **Subroutine Interface**: Display  
+        !  **Purpose**:  To write/display the 'UInt128' object to the screen (or the specified unit)  
+        !  **Usage**:  
+        !   To display (unsigned) value of U128 as a decimal string to the screen  
+        !   --->    CALL Display(U128)  
+        !   To display (unsigned) value of U128 as a decimal string to the output logical unit  
+        !   --->    CALL Display(U128, 11)  
+        !   To display (unsigned) value of U128 as a decimal string to the output logical unit  
+        !   with input/output status and message  
+        !   --->    CALL Display(U128, 11, IOStat, IOMsg)  
+        !   To display (signed) values of components of U128 as a decimal string to the screen  
+        !   --->    CALL Display(U128, ShowComponent=.TRUE.)  
+        !   To display (unsigned) value of U128 as a decimal string to the screen with a prefix string  
+        !   --->    CALL Display(U128, Prefix='Unsigned value of U128')
+        MODULE PROCEDURE U128_Write
+    END INTERFACE
 
 !** MODULE VARIABLE DECLARATIONS:
     ! na
@@ -219,13 +664,13 @@ MODULE ModBase_UInt128
 SUBROUTINE U128_From_U32(U128, U32)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an unsigned 32-bit integer number to an unsigned 128-bit integer number
+    !! To convert an unsigned 32-bit integer number to an unsigned 128-bit integer number.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(OUT)   :: U128
-    INTEGER(KIND=I4B),  INTENT(IN)    :: U32      ! number treated as unsigned
+    INTEGER(KIND=I4B),  INTENT(IN)    :: U32      !! number treated as unsigned
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     ! na
@@ -233,9 +678,9 @@ SUBROUTINE U128_From_U32(U128, U32)
 !** FLOW
 
     U128 = UInt128(MinU64, ToUnsignedLong(U32))
- 
+
     RETURN
-            
+
 END SUBROUTINE U128_From_U32
 
 !******************************************************************************
@@ -243,13 +688,13 @@ END SUBROUTINE U128_From_U32
 SUBROUTINE U128_From_U64(U128, U64)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an unsigned 64-bit integer number to an unsigned 128-bit integer number
+    !! To convert an unsigned 64-bit integer number to an unsigned 128-bit integer number.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(OUT)   :: U128
-    INTEGER(KIND=I8B),  INTENT(IN)    :: U64      ! number treated as unsigned
+    INTEGER(KIND=I8B),  INTENT(IN)    :: U64      !! number treated as unsigned
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     ! na
@@ -257,9 +702,9 @@ SUBROUTINE U128_From_U64(U128, U64)
 !** FLOW
 
     U128 = UInt128(MinU64, U64)
- 
+
     RETURN
-            
+
 END SUBROUTINE U128_From_U64
 
 !******************************************************************************
@@ -267,13 +712,13 @@ END SUBROUTINE U128_From_U64
 SUBROUTINE U128_To_U32(U32, U128)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an unsigned 128-bit integer number to an unsigned 32-bit integer number
+    !! To convert an unsigned 128-bit integer number to an unsigned 32-bit integer number.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B),  INTENT(OUT)   :: U32      ! number treated as unsigned
-    TYPE(UInt128),      INTENT(IN)    :: U128
+    INTEGER(KIND=I4B),  INTENT(OUT)     :: U32      !! number treated as unsigned
+    TYPE(UInt128),      INTENT(IN)      :: U128
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     ! na
@@ -281,9 +726,9 @@ SUBROUTINE U128_To_U32(U32, U128)
 !** FLOW
 
     U32 = INT(U128%Low, KIND=I4B)
- 
+
     RETURN
-            
+
 END SUBROUTINE U128_To_U32
 
 !******************************************************************************
@@ -291,12 +736,12 @@ END SUBROUTINE U128_To_U32
 SUBROUTINE U128_To_U64(U64, U128)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an unsigned 128-bit integer number to an unsigned 64-bit integer number
+    !! To convert an unsigned 128-bit integer number to an unsigned 64-bit integer number.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I8B),  INTENT(OUT)   :: U64      ! number treated as unsigned
+    INTEGER(KIND=I8B),  INTENT(OUT)   :: U64      !! number treated as unsigned
     TYPE(UInt128),      INTENT(IN)    :: U128
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
@@ -305,9 +750,9 @@ SUBROUTINE U128_To_U64(U64, U128)
 !** FLOW
 
     U64 = U128%Low
- 
+
     RETURN
-            
+
 END SUBROUTINE U128_To_U64
 
 !------------------------------------------------------------------------------
@@ -319,16 +764,16 @@ END SUBROUTINE U128_To_U64
 FUNCTION I32_To_U128(I32, AsUnsigned) RESULT(U128)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a signed 32-bit integer number to an unsigned 128-bit integer number
-    ! or to convert an unsigned 32-bit integer number to an unsigned 128-bit integer
-    ! number if the specified flag is present and true
+    !^ To convert a signed 32-bit integer number to an unsigned 128-bit integer number
+    !  or to convert an unsigned 32-bit integer number to an unsigned 128-bit integer
+    !  number if the specified flag is present and true.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN)  :: I32          ! number treated as signed (default)
-    LOGICAL, OPTIONAL, INTENT(IN)  :: AsUnsigned   ! if present and true, number treated as unsigned
-    TYPE(UInt128)                  :: U128
+    INTEGER(KIND=I4B), INTENT(IN)   :: I32          !! number treated as signed (default)
+    LOGICAL, OPTIONAL, INTENT(IN)   :: AsUnsigned   !! if present and true, number treated as unsigned
+    TYPE(UInt128)                   :: U128
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     ! na
@@ -348,9 +793,9 @@ FUNCTION I32_To_U128(I32, AsUnsigned) RESULT(U128)
     ELSE
         U128 = UInt128(MinU64, INT(I32, KIND=I8B))
     END IF
- 
+
     RETURN
-            
+
 END FUNCTION I32_To_U128
 
 !******************************************************************************
@@ -358,15 +803,15 @@ END FUNCTION I32_To_U128
 FUNCTION I64_To_U128(I64, AsUnsigned) RESULT(U128)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a signed 64-bit integer number to an unsigned 128-bit integer number
-    ! or to convert an unsigned 64-bit integer number to an unsigned 128-bit integer
-    ! number if the specified flag is present and true
+    !! To convert a signed 64-bit integer number to an unsigned 128-bit integer number
+    !! or to convert an unsigned 64-bit integer number to an unsigned 128-bit integer
+    !! number if the specified flag is present and true.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I8B), INTENT(IN)  :: I64          ! number treated as signed (default)
-    LOGICAL, OPTIONAL, INTENT(IN)  :: AsUnsigned   ! if present and true, number treated as unsigned
+    INTEGER(KIND=I8B), INTENT(IN)  :: I64          !! number treated as signed (default)
+    LOGICAL, OPTIONAL, INTENT(IN)  :: AsUnsigned   !! if present and true, number treated as unsigned
     TYPE(UInt128)                  :: U128
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
@@ -387,9 +832,9 @@ FUNCTION I64_To_U128(I64, AsUnsigned) RESULT(U128)
     ELSE
         U128 = UInt128(MinU64, I64)
     END IF
- 
+
     RETURN
-            
+
 END FUNCTION I64_To_U128
 
 !******************************************************************************
@@ -397,7 +842,7 @@ END FUNCTION I64_To_U128
 FUNCTION R32_To_U128(R32) RESULT(U128)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a 32-bit floating point number to an unsigned 128-bit integer number
+    !! To convert a 32-bit floating point number to an unsigned 128-bit integer number.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -423,14 +868,17 @@ FUNCTION R32_To_U128(R32) RESULT(U128)
     IF (.NOT.IEEE_IS_FINITE (R32)) THEN
         CALL DisplaySevereError('Message from Routine '//'R32_To_U128'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Undefined behavior: R32 is NOT finite.')
+        U128 = MaxU128
         RETURN
     ELSEIF (R32 <= -1.0_SP) THEN
         CALL DisplaySevereError('Message from Routine '//'R32_To_U128'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Undefined behavior: R32 < U128Min.')
+        U128 = MinU128
         RETURN
     ELSEIF (R32 >= 2.0_SP**128) THEN
         CALL DisplaySevereError('Message from Routine '//'R32_To_U128'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Undefined behavior: R32 > U128Max.')
+        U128 = MaxU128
         RETURN
     ELSEIF (R32 < 0.0_SP) THEN
         U128 = ZeroU128
@@ -472,7 +920,7 @@ END FUNCTION R32_To_U128
 FUNCTION R64_To_U128(R64) RESULT(U128)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a 64-bit floating point number to an unsigned 128-bit integer number
+    !! To convert a 64-bit floating point number to an unsigned 128-bit integer number.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -498,14 +946,17 @@ FUNCTION R64_To_U128(R64) RESULT(U128)
     IF (.NOT.IEEE_IS_FINITE (R64)) THEN
         CALL DisplaySevereError('Message from Routine '//'R64_To_U128'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Undefined behavior: R64 is NOT finite.')
+        U128 = MaxU128
         RETURN
     ELSEIF (R64 <= -1.0_DP) THEN
         CALL DisplaySevereError('Message from Routine '//'R64_To_U128'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Undefined behavior: R64 < U128Min.')
+        U128 = MinU128
         RETURN
     ELSEIF (R64 >= 2.0_DP**128) THEN
         CALL DisplaySevereError('Message from Routine '//'R64_To_U128'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Undefined behavior: R64 > U128Max.')
+        U128 = MaxU128
         RETURN
     ELSEIF (R64 < 0.0_DP) THEN
         U128 = ZeroU128
@@ -537,7 +988,7 @@ FUNCTION R64_To_U128(R64) RESULT(U128)
             U128 = UInt128(SHIFTR(IBits, 64 - Exp), SHIFTL(IBits, Exp))
         END IF
     END IF
- 
+
     RETURN
 
 END FUNCTION R64_To_U128
@@ -547,7 +998,7 @@ END FUNCTION R64_To_U128
 FUNCTION R128_To_U128(R128) RESULT(U128)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a 128-bit floating point number to an unsigned 128-bit integer number
+    !! To convert a 128-bit floating point number to an unsigned 128-bit integer number.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -574,21 +1025,24 @@ FUNCTION R128_To_U128(R128) RESULT(U128)
     IF (.NOT.IEEE_IS_FINITE (R128)) THEN
         CALL DisplaySevereError('Message from Routine '//'R128_To_U128'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Undefined behavior: R128 is NOT finite.')
+        U128 = MaxU128
         RETURN
     ELSEIF (R128 <= -1.0_QP) THEN
         CALL DisplaySevereError('Message from Routine '//'R128_To_U128'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Undefined behavior: R128 < U128Min.')
+        U128 = MinU128
         RETURN
     ELSEIF (R128 >= 2.0_QP**128) THEN
         CALL DisplaySevereError('Message from Routine '//'R128_To_U128'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Undefined behavior: R128 > U128Max.')
+        U128 = MaxU128
         RETURN
     ELSEIF (R128 < 0.0_QP) THEN
         U128 = ZeroU128
         RETURN
     END IF
 
-    ! transfer bits from real to integer (assumming little-endian order)
+    ! transfer bits from real to integer (assuming little-endian order)
     ! (if big-endian order, just switch IBits(1) and IBits(2))
     RBits = R128
     ! determine exponent bits
@@ -630,15 +1084,15 @@ END FUNCTION R128_To_U128
 FUNCTION DecString_To_U128(cStr, ErrFlag, ErrMsg) RESULT(Number)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a decimal string to an unsigned 128-bit integer value
+    !! To convert a decimal string to an unsigned 128-bit integer value.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*), TARGET,                INTENT(IN)    :: cStr     ! character string
-    LOGICAL,                       OPTIONAL, INTENT(OUT)   :: ErrFlag  ! true if input is not invalid
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)   :: ErrMsg   ! message if input is not invalid
-    TYPE(UInt128)                                          :: Number   ! number
+    CHARACTER(LEN=*), TARGET,                INTENT(IN)    :: cStr     !! character string
+    LOGICAL,                       OPTIONAL, INTENT(OUT)   :: ErrFlag  !! true if input is not invalid
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)   :: ErrMsg   !! message if input is not invalid
+    TYPE(UInt128)                                          :: Number   !! number
 
 !** SUBROUTINE PARAMETER DECLARATIONS:
     INTEGER(KIND=I4B), PARAMETER  :: A0           = IACHAR('0')
@@ -670,7 +1124,7 @@ FUNCTION DecString_To_U128(cStr, ErrFlag, ErrMsg) RESULT(Number)
     ! get valid string length by removing the trailing space(s)
     StrLen = LEN_TRIM(cStr)
     IF (PRESENT(ErrFlag)) ErrFlag = FalseVal
-    
+
     ! check whether there are spaces in front of the number
     ! (only allow space(s) in front of the number but no spaces inside it)
     Indx = 1
@@ -687,7 +1141,7 @@ FUNCTION DecString_To_U128(cStr, ErrFlag, ErrMsg) RESULT(Number)
             RETURN
         END IF
     END IF
-    
+
     ! check for sign
     CurChr => cStr(Indx:Indx)
     IF ((CurChr == '-').OR.(CurChr == '+')) THEN
@@ -714,7 +1168,7 @@ FUNCTION DecString_To_U128(cStr, ErrFlag, ErrMsg) RESULT(Number)
             RETURN
         END IF
     END IF
-    
+
     ! check for leading zero(s)
     Number = ZeroU128
     IF (cStr(Indx:Indx) == '0') THEN
@@ -831,7 +1285,7 @@ FUNCTION DecString_To_U128(cStr, ErrFlag, ErrMsg) RESULT(Number)
     END IF
 
     RETURN
-    
+
     CONTAINS
 
     FUNCTION Parse8Digits(InVal) RESULT(OutVal)
@@ -859,9 +1313,9 @@ FUNCTION DecString_To_U128(cStr, ErrFlag, ErrMsg) RESULT(Number)
         ! na
 
     !** FLOW
-        
+
         OutVal = SHIFTR(IAND(SHIFTR(IAND(SHIFTR(IAND(InVal, K1)*M1, 8), K2)*M2, 16), K3)*M3, 32)
-    
+
         RETURN
 
     END FUNCTION Parse8Digits
@@ -890,7 +1344,7 @@ FUNCTION DecString_To_U128(cStr, ErrFlag, ErrMsg) RESULT(Number)
         ! na
 
     !** FLOW
-        
+
         Flag = IOR(IAND(InVal, C1), SHIFTR(IAND((InVal + C3), C1), 4)) ==  C2
 
         RETURN
@@ -932,7 +1386,7 @@ FUNCTION DecString_To_U128(cStr, ErrFlag, ErrMsg) RESULT(Number)
         IF (IEOR(U128%Low, MinI64) < IEOR(MulLo, MinI64)) U128%High = U128%High + 1_I8B
 
         RETURN
-            
+
     END SUBROUTINE MulAddU64
 
 !******************************************************************************
@@ -970,11 +1424,11 @@ FUNCTION DecString_To_U128(cStr, ErrFlag, ErrMsg) RESULT(Number)
         IF (IEOR(U128%Low, MinI64) < IEOR(MulLo, MinI64)) U128%High = U128%High + 1_I8B
 
         RETURN
-            
+
     END SUBROUTINE MulAddU32
 
 !******************************************************************************
-    
+
 END FUNCTION DecString_To_U128
 
 !------------------------------------------------------------------------------
@@ -986,13 +1440,13 @@ END FUNCTION DecString_To_U128
 FUNCTION I32_From_U128(U128) RESULT(I32)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an unsigned 128-bit integer number to a signed 32-bit integer number
+    !! To convert an unsigned 128-bit integer number to a signed 32-bit integer number.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128), INTENT(IN)    :: U128
-    INTEGER(KIND=I4B)            :: I32      ! number treated as signed
+    INTEGER(KIND=I4B)            :: I32      !! number treated as signed
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     ! na
@@ -1000,9 +1454,9 @@ FUNCTION I32_From_U128(U128) RESULT(I32)
 !** FLOW
 
     I32 = INT(U128%Low, KIND=I4B)
- 
+
     RETURN
-            
+
 END FUNCTION I32_From_U128
 
 !******************************************************************************
@@ -1010,13 +1464,13 @@ END FUNCTION I32_From_U128
 FUNCTION I64_From_U128(U128) RESULT(I64)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an unsigned 128-bit integer number to a signed 64-bit integer number
+    !! To convert an unsigned 128-bit integer number to a signed 64-bit integer number.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128), INTENT(IN)    :: U128
-    INTEGER(KIND=I8B)            :: I64      ! number treated as signed
+    INTEGER(KIND=I8B)            :: I64      !! number treated as signed
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     ! na
@@ -1024,9 +1478,9 @@ FUNCTION I64_From_U128(U128) RESULT(I64)
 !** FLOW
 
     I64 = U128%Low
- 
+
     RETURN
-            
+
 END FUNCTION I64_From_U128
 
 !******************************************************************************
@@ -1034,14 +1488,14 @@ END FUNCTION I64_From_U128
 FUNCTION R32_From_U128(U128) RESULT(R32)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an unsigned 128-bit integer number to a 32-bit floating point number
+    !! To convert an unsigned 128-bit integer number to a 32-bit floating point number.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128), INTENT(IN)     :: U128
     REAL(KIND=SP)                 :: R32
-    
+
 !** SUBROUTINE PARAMETER DECLARATIONS:
     REAL(KIND=SP),     PARAMETER  :: TwoPow64 = 2.0_SP**64
     INTEGER(KIND=I4B), PARAMETER  :: TwoPow23 = SHIFTL(1, 23)
@@ -1054,7 +1508,7 @@ FUNCTION R32_From_U128(U128) RESULT(R32)
     EQUIVALENCE(IBits, RBits)
 
 !** FLOW
-    
+
     IF (U128%High == 0_I8B) THEN
         ! convert directly and return quickly
         R32 = U64_To_R32(U128%Low)
@@ -1075,10 +1529,10 @@ FUNCTION R32_From_U128(U128) RESULT(R32)
 
     ! Add the exponent
     IBits = IOR(IBits, SHIFTL(Exp, 23))
-    
+
     ! transfer output (RBits mapped to IBits using equivalence)
-	R32 = RBits
-    
+    R32 = RBits
+
     RETURN
 
 CONTAINS
@@ -1120,14 +1574,14 @@ END FUNCTION R32_From_U128
 FUNCTION R64_From_U128(U128) RESULT(R64)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an unsigned 128-bit integer number to a 64-bit floating point number
+    !! To convert an unsigned 128-bit integer number to a 64-bit floating point number.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128), INTENT(IN)     :: U128
     REAL(KIND=DP)                 :: R64
-    
+
 !** SUBROUTINE PARAMETER DECLARATIONS:
     REAL(KIND=DP),     PARAMETER  :: TwoPow64 = 2.0_DP**64
     INTEGER(KIND=I8B), PARAMETER  :: TwoPow52 = SHIFTL(1_I8B, 52)
@@ -1141,7 +1595,7 @@ FUNCTION R64_From_U128(U128) RESULT(R64)
     EQUIVALENCE(IBits, RBits)
 
 !** FLOW
-    
+
     IF (U128%High == 0_I8B) THEN
         R64 = U64_To_R64(U128%Low)
         RETURN
@@ -1161,10 +1615,10 @@ FUNCTION R64_From_U128(U128) RESULT(R64)
 
     ! Add the exponent
     IBits = IOR(IBits, SHIFTL(Exp, 52))
-    
+
     ! transfer output (RBits mapped to IBits using equivalence)
-	R64 = RBits
-    
+    R64 = RBits
+
     RETURN
 
 CONTAINS
@@ -1206,14 +1660,14 @@ END FUNCTION R64_From_U128
 FUNCTION R128_From_U128(U128) RESULT(R128)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an unsigned 128-bit integer number to a 128-bit floating point number
+    !! To convert an unsigned 128-bit integer number to a 128-bit floating point number.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128), INTENT(IN)     :: U128
     REAL(KIND=QP)                 :: R128
-    
+
 !** SUBROUTINE PARAMETER DECLARATIONS:
     REAL(KIND=QP),     PARAMETER  :: TwoPow64     = 2.0_QP**64
     INTEGER(KIND=I8B), PARAMETER  :: TwoPow112(2) = [0_I8B, 281474976710656_I8B]  ! SHIFTL(1, 112)
@@ -1232,14 +1686,14 @@ FUNCTION R128_From_U128(U128) RESULT(R128)
         R128 = U64_To_R128(U128%Low)
         RETURN
     END IF
-    
+
     S = LEADZ(U128%High)
     IF (S >= 15) THEN
         R128 = U64_To_R128(U128%Low) + U64_To_R128(U128%High)*TwoPow64
         RETURN
     END IF
-    
-    ! Mask out the 113 MSBits (assumming little-endian order)
+
+    ! Mask out the 113 MSBits (assuming little-endian order)
     ! (if big-endian order, just switch IBits(1) and IBits(2))
     Shift = 15 - S
     IBits(2) = SHIFTR(U128%High, Shift)
@@ -1252,12 +1706,12 @@ FUNCTION R128_From_U128(U128) RESULT(R128)
     ! and also add the exponent
     IBits(1) = IEOR(IOR(SHIFTR(U128%Low, Shift), SHIFTL(U128%High, 64-Shift)), TwoPow112(1))
     IBits(2) = IOR(IEOR(SHIFTR(U128%High, Shift), TwoPow112(2)), SHIFTL(Exp, 48))   ! 48 = 112 - 64
-    
+
     ! transfer output (RBits mapped to IBits using equivalence)
     ! For big-endian machine, we must swap IBits(1) and IBits(2) before the assigment.
     ! => Tmp = IBits(1); IBits(1) = IBits(2); IBits(2) = Tmp
-	R128 = RBits
-    
+    R128 = RBits
+
     RETURN
 
 CONTAINS
@@ -1299,7 +1753,7 @@ END FUNCTION R128_From_U128
 FUNCTION DecString_From_U128(U128) RESULT(Str)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an unsigned 128-bit integer number to a decimal string
+    !! To convert an unsigned 128-bit integer number to a decimal string.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -2322,7 +2776,7 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
         '9970', '9971', '9972', '9973', '9974', '9975', '9976', '9977', '9978', '9979', &
         '9980', '9981', '9982', '9983', '9984', '9985', '9986', '9987', '9988', '9989', &
         '9990', '9991', '9992', '9993', '9994', '9995', '9996', '9997', '9998', '9999']
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I4B)       :: BufLen, Top, I, J
     CHARACTER(LEN=41)       :: Buffer
@@ -2330,17 +2784,17 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
     INTEGER(KIND=I8B)       :: Tmp
 
 !** FLOW
-        
-	IF (U128 == ZeroU128) THEN
+
+    IF (U128 == ZeroU128) THEN
         Str = '0'
         RETURN
     END IF
 
     BufLen = 41
     FORALL (I=1:BufLen) Buffer(I:I) = '0'
-	Top  = BufLen
+    Top  = BufLen
     Copy = U128
-	DO
+    DO
         J = Top
         Tmp = DivModBy10Pow18(Copy)
         CALL Write_1_To_18_Digits(Tmp, Buffer, Top)
@@ -2353,7 +2807,7 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
     Str = Buffer(Top+1:BufLen)
 
     RETURN
-    
+
     CONTAINS
 
     SUBROUTINE Write_1_To_18_Digits(Number, cStr, Indx)
@@ -2376,7 +2830,7 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
         INTEGER(KIND=I4B), PARAMETER  :: S90 = 90 - 64
         ! multiplier for 11 digits and divisor of 1.0E8
         INTEGER(KIND=I8B), PARAMETER  :: M64 = INT(Z'0000002AF31DC462', KIND=I8B)
-    
+
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
         CHARACTER(LEN=MaxLen)   :: wStr
         INTEGER(KIND=I8B)       :: PosNum
@@ -2428,7 +2882,7 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
         END IF
 
         RETURN
-    
+
     END SUBROUTINE Write_1_To_18_Digits
 
     !******************************************************************************
@@ -2452,7 +2906,7 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
         INTEGER(KIND=I4B), PARAMETER :: ShiftPos = 45
         INTEGER(KIND=I8B), PARAMETER :: Multiplier = INT(Z'00000000D1B71759', KIND=I8B)
         INTEGER(KIND=I4B), PARAMETER :: Divisor = 10000
-    
+
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
         CHARACTER(LEN=MaxLen)   :: wStr     ! working string
         INTEGER(KIND=I4B)       :: PosNum   ! positive number (working number)
@@ -2513,15 +2967,15 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
                 IF (wStr(Start:Start) == '0') Start = 2
             END IF
         END IF
-    
+
         ! transfer to output string
         DO I = Finish, Start, -1
             cStr(Indx:Indx) = wStr(I:I)
             Indx = Indx - 1
         END DO
-    
+
         RETURN
-    
+
     END SUBROUTINE Write_1_To_9_Digits
 
     !******************************************************************************
@@ -2549,7 +3003,7 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
         INTEGER(KIND=I4B)     :: NxtNum, RemNum
 
     !** FLOW
-    
+
         ! compute NxtNum = PosNum/10000
         NxtNum = INT(SHIFTR(Number*Multiplier, ShiftPos), KIND=I4B)
         ! compute RemNum = MOD(PosNum, 10000)
@@ -2558,7 +3012,7 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
         cStr(5:8) = Char4Digits(RemNum)
         ! convert the rest
         cStr(1:4) = Char4Digits(NxtNum)
-        
+
         RETURN
 
     END SUBROUTINE Write_8_Digits
@@ -2589,7 +3043,7 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
         INTEGER(KIND=I4B)     :: NxtNum, RemNum
 
     !** FLOW
-        
+
         IF (Number < 10000) THEN
             IF (Number < 100) THEN
                 cStr(7:8) = Char2Digits(Number)
@@ -2617,7 +3071,7 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
                 IF (cStr(Start:Start) == '0') Start = 2
             END IF
         END IF
-        
+
         RETURN
 
     END FUNCTION Write_1_to_8_Digits
@@ -2632,9 +3086,9 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
         IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
     !** SUBROUTINE ARGUMENT DECLARATIONS:
-        TYPE(UInt128), INTENT(INOUT)    :: DivQuot      ! on entry, the dividend
+        TYPE(UInt128), INTENT(INOUT)  :: DivQuot    ! on entry, the dividend
                                                         ! on exit, the quotient
-        INTEGER(KIND=I8B)               :: Remainder    ! the remainder
+        INTEGER(KIND=I8B)              :: Remainder	! the remainder
 
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
         INTEGER(KIND=I4B), PARAMETER  :: LSh   = 4                                  ! = LEADZ(Divisor)
@@ -2643,12 +3097,14 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
 
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
         INTEGER(KIND=I4B)         :: RSh
-        INTEGER(KIND=I8B)         :: NumerHi, NumerLo, DenomHi, DenomLo
+        INTEGER(KIND=I8B)         :: NumerHi, NumerLo
+!        INTEGER(KIND=I8B)         :: DenomHi, DenomLo
         INTEGER(KIND=I8B)         :: NumerEx, RshMask
-        INTEGER(KIND=I8B)         :: R1, R2, LHS, RHS
+        INTEGER(KIND=I8B)         :: R1, R2
+!        INTEGER(KIND=I8B)         :: LHS, RHS
 
     !** FLOW
-        
+
         IF (DivQuot%High == 0_I8B) THEN
             IF ((DivQuot%Low > 0_I8B).AND.(DivQuot%Low < 1000000000000000000_I8B)) THEN
                 Remainder   = DivQuot%Low
@@ -2685,7 +3141,7 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
 
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
         INTEGER(KIND=I8B), PARAMETER  :: MinInt64 = INT(Z'8000000000000000', KIND=I8B)   ! -9223372036854775808
-        
+
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
         INTEGER(KIND=I8B)     :: QHi, QLo, NewLo
 
@@ -2693,7 +3149,7 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
 
         ! Q128 = V*UHi
         CALL UMul128(V, UHi, QHi, QLo)
-    
+
         ! Q128 = Q128 + U128
         NewLo = QLo + ULo
         IF (IEOR(NewLo, MinInt64) < IEOR(QLo, MinInt64)) THEN
@@ -2702,7 +3158,7 @@ FUNCTION DecString_From_U128(U128) RESULT(Str)
             QHi = QHi + UHi
         END IF
         QLo = NewLo
-    
+
         QHi = QHi + 1_I8B
 
         R = ULo - QHi*D
@@ -2731,14 +3187,14 @@ END FUNCTION DecString_From_U128
 FUNCTION HexString_From_U128(U128) RESULT(Str)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an unsigned 128-bit integer number to a hexadecimal string
+    !! To convert an unsigned 128-bit integer number to a hexadecimal string.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128), INTENT(IN)       :: U128
     CHARACTER(LEN=:), ALLOCATABLE   :: Str
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     !  na
 
@@ -2757,7 +3213,7 @@ FUNCTION HexString_From_U128(U128) RESULT(Str)
     ELSE
         Str = U64_ToHexStr(U128%Low)
     END IF
- 
+
     RETURN
 
 CONTAINS
@@ -2804,7 +3260,7 @@ CONTAINS
             PosNum = Number
         END IF
         Indx = MaxLen
-    
+
         ! start the conversion
         DO
             ! save current number
@@ -2818,7 +3274,7 @@ CONTAINS
             Indx = Indx - 1
             IF (PosNum == 0_I8B) EXIT
         END DO
-    
+
         ! allocate the resulting string and transfer
         ! characters from the working string
         Indx = Indx + 1
@@ -2827,7 +3283,7 @@ CONTAINS
         ELSE
             cStr = wStr(Indx:MaxLen)
         END IF
-    
+
         RETURN
 
     END FUNCTION I64_ToHexStr
@@ -2874,14 +3330,14 @@ END FUNCTION HexString_From_U128
 
 !------------------------------------------------------------------------------
 !
-!                           COMPARISION ROUTINES
+!                           comparison ROUTINES
 !
 !------------------------------------------------------------------------------
 
 FUNCTION U128_Equal(LHS, RHS) RESULT(Flag)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To check whether two Uint128 objects are equal
+    !! To check whether two Uint128 objects are equal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -2906,7 +3362,7 @@ END FUNCTION U128_Equal
 FUNCTION U128_NotEqual(LHS, RHS) RESULT(Flag)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To check whether two Uint128 objects are NOT equal
+    !! To check whether two Uint128 objects are NOT equal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -2931,7 +3387,7 @@ END FUNCTION U128_NotEqual
 FUNCTION U128_LessThan(LHS, RHS) RESULT(Flag)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To check whether the LHS Uint128 object is less than the RHS Uint128 object
+    !! To check whether the LHS Uint128 object is less than the RHS Uint128 object.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -2960,7 +3416,7 @@ END FUNCTION U128_LessThan
 FUNCTION U128_LessEqual(LHS, RHS) RESULT(Flag)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To check whether the LHS Uint128 object is less than or equal to the RHS Uint128 object
+    !! To check whether the LHS Uint128 object is less than or equal to the RHS Uint128 object.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -2989,7 +3445,7 @@ END FUNCTION U128_LessEqual
 FUNCTION U128_GreaterThan(LHS, RHS) RESULT(Flag)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To check whether the LHS Uint128 object is greater than the RHS Uint128 object
+    !! To check whether the LHS Uint128 object is greater than the RHS Uint128 object.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3018,7 +3474,7 @@ END FUNCTION U128_GreaterThan
 FUNCTION U128_GreaterEqual(LHS, RHS) RESULT(Flag)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To check whether the LHS Uint128 object is greater than or equal to the RHS Uint128 object
+    !! To check whether the LHS Uint128 object is greater than or equal to the RHS Uint128 object.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3047,10 +3503,10 @@ END FUNCTION U128_GreaterEqual
 FUNCTION U128_Compare(LHS, RHS) RESULT(Flag)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To compare LHS and RHS objects.
-    ! - return -1 if LHS < RHS
-    ! - return  0 if LHS == RHS
-    ! - return +1 if LHS > RHS
+    !^ To compare LHS and RHS objects.  
+    !   -> return -1 if LHS < RHS  
+    !   -> return  0 if LHS == RHS  
+    !   -> return +1 if LHS > RHS
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3061,9 +3517,9 @@ FUNCTION U128_Compare(LHS, RHS) RESULT(Flag)
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I8B)   :: ULHS, URHS
-        
+
 !** FLOW
-    
+
     ULHS = IEOR(LHS%High, MinI64)
     URHS = IEOR(RHS%High, MinI64)
     IF (ULHS < URHS) THEN
@@ -3081,7 +3537,7 @@ FUNCTION U128_Compare(LHS, RHS) RESULT(Flag)
             Flag = 0
         END IF
     END IF
-    
+
     RETURN
 
 END FUNCTION U128_Compare
@@ -3095,7 +3551,7 @@ END FUNCTION U128_Compare
 FUNCTION U128_ShiftLeftOnce(InVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform logical left shift by 1
+    !! To perform logical left shift by 1.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3120,7 +3576,7 @@ END FUNCTION U128_ShiftLeftOnce
 FUNCTION U128_ShiftRightOnce(InVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform logical right shift by 1
+    !! To perform logical right shift by 1.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3132,7 +3588,7 @@ FUNCTION U128_ShiftRightOnce(InVal) RESULT(OutVal)
     ! na
 
 !** FLOW
-    
+
     OutVal%High = SHIFTR(InVal%High, 1)
     OutVal%Low  = IOR(SHIFTR(InVal%Low, 1), SHIFTL(InVal%High, 63))
 
@@ -3145,7 +3601,7 @@ END FUNCTION U128_ShiftRightOnce
 FUNCTION U128_ShiftLeft64(InVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform logical left shift by 64
+    !! To perform logical left shift by 64.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3170,7 +3626,7 @@ END FUNCTION U128_ShiftLeft64
 FUNCTION U128_ShiftRight64(InVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform logical right shift by 64
+    !! To perform logical right shift by 64
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3182,7 +3638,7 @@ FUNCTION U128_ShiftRight64(InVal) RESULT(OutVal)
     ! na
 
 !** FLOW
-    
+
     OutVal%High = 0_I8B
     OutVal%Low  = InVal%High
 
@@ -3195,13 +3651,13 @@ END FUNCTION U128_ShiftRight64
 FUNCTION U128_ShiftLeft63Down(InVal, ShiftPos) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform logical left shift by 63 or less
+    !! To perform logical left shift by 63 or less.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(IN)  :: InVal
-    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos
+    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos     !! 0 <= ShiftPos < 64
     TYPE(UInt128)                   :: OutVal
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
@@ -3221,20 +3677,20 @@ END FUNCTION U128_ShiftLeft63Down
 FUNCTION U128_ShiftRight63Down(InVal, ShiftPos) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform logical right shift by 63 or less
+    !! To perform logical right shift by 63 or less.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(IN)  :: InVal
-    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos
+    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos     !! 0 <= ShiftPos < 64
     TYPE(UInt128)                   :: OutVal
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     ! na
 
 !** FLOW
-    
+
     OutVal%High = SHIFTR(InVal%High, ShiftPos)
     OutVal%Low  = IOR(SHIFTR(InVal%Low, ShiftPos), SHIFTL(InVal%High, 64 - ShiftPos))
 
@@ -3247,13 +3703,13 @@ END FUNCTION U128_ShiftRight63Down
 FUNCTION U128_ShiftLeft64Up(InVal, ShiftPos) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform logical left shift by 64 or more
+    !! To perform logical left shift by 64 or more.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(IN)  :: InVal
-    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos
+    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos     !! 64 < ShiftPos <= 128
     TYPE(UInt128)                   :: OutVal
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
@@ -3273,20 +3729,20 @@ END FUNCTION U128_ShiftLeft64Up
 FUNCTION U128_ShiftRight64Up(InVal, ShiftPos) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform logical right shift by 64 or more
+    !! To perform logical right shift by 64 or more.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(IN)  :: InVal
-    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos
+    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos     !! 64 < ShiftPos <= 128
     TYPE(UInt128)                   :: OutVal
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     ! na
 
 !** FLOW
-    
+
     OutVal%High = 0_I8B
     OutVal%Low  = SHIFTR(InVal%High, ShiftPos - 64)
 
@@ -3299,15 +3755,15 @@ END FUNCTION U128_ShiftRight64Up
 FUNCTION U128_ShiftLogical(InVal, ShiftPos) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform logical (left or rigth) shift of the UInt128 object
+    !! To perform logical (left or right) shift of the UInt128 object.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(IN)  :: InVal
-    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos ! must be between -128 and 128
-                                                ! positive, the shift is to the left
-                                                ! negative, the shift is to the right
+    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos !! -128 <= ShiftPos <= 128;  
+                                                !! -> positive, the shift is to the left;  
+                                                !! -> negative, the shift is to the right
     TYPE(UInt128)                   :: OutVal
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
@@ -3330,13 +3786,13 @@ END FUNCTION U128_ShiftLogical
 FUNCTION U128_ShiftLeft(InVal, ShiftPos) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform logical left shift of the UInt128 object
+    !! To perform logical left shift of the UInt128 object.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(IN)  :: InVal
-    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos ! must be nonnegative and <= 128
+    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos     !! 0 <= ShiftPos <= 128
     TYPE(UInt128)                   :: OutVal
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
@@ -3368,20 +3824,20 @@ END FUNCTION U128_ShiftLeft
 FUNCTION U128_ShiftRight(InVal, ShiftPos) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform logical right shift of the UInt128 object
+    !! To perform logical right shift of the UInt128 object.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(IN)  :: InVal
-    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos ! must be nonnegative and <= 128
+    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos     !! 0 <= ShiftPos <= 128
     TYPE(UInt128)                   :: OutVal
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     ! na
 
 !** FLOW
-    
+
     IF (ShiftPos < 0) THEN
         CALL DisplaySevereError('Message from Routine '//'U128_ShiftRight'//' in Module '//ModName//'.')
         CALL DisplayContinueError('ShiftPos must be nonnegative number')
@@ -3406,15 +3862,15 @@ END FUNCTION U128_ShiftRight
 FUNCTION U128_Rotate(InVal, ShiftPos) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform a circular shift of the rightmost bits
+    !! To perform a circular shift of the rightmost bits.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(IN)  :: InVal
-    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos ! must be between -128 and 128
-                                                ! positive, the shift is to the left
-                                                ! negative, the shift is to the right
+    INTEGER(KIND=I4B),  INTENT(IN)  :: ShiftPos !! -128 <= ShiftPos <= 128;  
+                                                !! -> positive, the shift is to the left;  
+                                                !! -> negative, the shift is to the right
     TYPE(UInt128)                   :: OutVal
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
@@ -3445,7 +3901,7 @@ END FUNCTION U128_Rotate
 FUNCTION U128_Not(InVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To return the bitwise logical complement of the UInt128 object
+    !! To return the bitwise logical complement of the UInt128 object.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3457,7 +3913,7 @@ FUNCTION U128_Not(InVal) RESULT(OutVal)
     ! na
 
 !** FLOW
-    
+
     OutVal%High = NOT(InVal%High)
     OutVal%Low  = NOT(InVal%Low)
 
@@ -3470,7 +3926,7 @@ END FUNCTION U128_Not
 FUNCTION U128_Ior(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform an inclusive OR on corresponding bits of the UInt128 objects
+    !! To perform an inclusive OR on corresponding bits of the UInt128 objects.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3483,7 +3939,7 @@ FUNCTION U128_Ior(LhsVal, RhsVal) RESULT(OutVal)
     ! na
 
 !** FLOW
-    
+
     OutVal%High = IOR(LhsVal%High, RhsVal%High)
     OutVal%Low  = IOR(LhsVal%Low, RhsVal%Low)
 
@@ -3496,7 +3952,7 @@ END FUNCTION U128_Ior
 FUNCTION U128_Iand(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform a logical AND on corresponding bits of the UInt128 objects
+    !! To perform a logical AND on corresponding bits of the UInt128 objects.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3509,7 +3965,7 @@ FUNCTION U128_Iand(LhsVal, RhsVal) RESULT(OutVal)
     ! na
 
 !** FLOW
-    
+
     OutVal%High = IAND(LhsVal%High, RhsVal%High)
     OutVal%Low  = IAND(LhsVal%Low, RhsVal%Low)
 
@@ -3522,7 +3978,7 @@ END FUNCTION U128_Iand
 FUNCTION U128_Ieor(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform an exclusive OR on corresponding bits of the UInt128 objects
+    !! To perform an exclusive OR on corresponding bits of the UInt128 objects.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3535,7 +3991,7 @@ FUNCTION U128_Ieor(LhsVal, RhsVal) RESULT(OutVal)
     ! na
 
 !** FLOW
-    
+
     OutVal%High = IEOR(LhsVal%High, RhsVal%High)
     OutVal%Low  = IEOR(LhsVal%Low, RhsVal%Low)
 
@@ -3548,7 +4004,7 @@ END FUNCTION U128_Ieor
 FUNCTION U128_LeadingZeros(U128) RESULT(NumLZ)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To count the number of leading zero bits
+    !! To count the number of leading zero bits.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3560,7 +4016,7 @@ FUNCTION U128_LeadingZeros(U128) RESULT(NumLZ)
     ! na
 
 !** FLOW
-    
+
     IF (U128%High == 0_I8B) THEN
         NumLZ = LEADZ(U128%Low) + 64
     ELSE
@@ -3576,7 +4032,7 @@ END FUNCTION U128_LeadingZeros
 FUNCTION U128_TrailingZeros(U128) RESULT(NumTZ)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To count the number of trailing zero bits
+    !! To count the number of trailing zero bits.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3588,7 +4044,7 @@ FUNCTION U128_TrailingZeros(U128) RESULT(NumTZ)
     ! na
 
 !** FLOW
-    
+
     IF (U128%Low == 0_I8B) THEN
         NumTZ = TRAILZ(U128%High) + 64
     ELSE
@@ -3604,7 +4060,7 @@ END FUNCTION U128_TrailingZeros
 FUNCTION U128_Count1Bits(U128) RESULT(NumBits)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To count the number of 1 bits in the specified input
+    !! To count the number of 1 bits in the specified input.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3616,9 +4072,9 @@ FUNCTION U128_Count1Bits(U128) RESULT(NumBits)
     ! na
 
 !** FLOW
-    
+
     NumBits = POPCNT(U128%Low) + POPCNT(U128%High)
-    
+
     RETURN
 
 END FUNCTION U128_Count1Bits
@@ -3628,7 +4084,7 @@ END FUNCTION U128_Count1Bits
 FUNCTION U128_Parity(U128) RESULT(ParNum)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To determine the parity of the specified input
+    !! To determine the parity of the specified input.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3640,11 +4096,11 @@ FUNCTION U128_Parity(U128) RESULT(ParNum)
     ! na
 
 !** FLOW
-    
+
     ! ParNum = IAND(POPCNT(U128), 1)
     ParNum = POPPAR(U128%Low) + POPPAR(U128%High)
     IF (ParNum == 2) ParNum = 0
-    
+
     RETURN
 
 END FUNCTION U128_Parity
@@ -3654,8 +4110,8 @@ END FUNCTION U128_Parity
 FUNCTION U128_SetBit(InVal, Pos) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To set the bit at the specified position to 1
-    ! For more detail, see explanation of elemental intrinsic function 'IBSET'
+    !^ To set the bit at the specified position to 1.  
+    !   For more detail, see explanation of elemental intrinsic function 'IBSET'.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3672,9 +4128,10 @@ FUNCTION U128_SetBit(InVal, Pos) RESULT(OutVal)
     IF ((Pos < 0).OR.(Pos > 127)) THEN
         CALL DisplaySevereError('Message from Routine '//'U128_SetBit'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Pos must be between 0 and 127.')
+        OutVal = ZeroU128
         RETURN
     END IF
-    
+
     IF (Pos < 64) THEN
         OutVal%Low  = IBSET(InVal%Low, Pos)
         OutVal%High = InVal%High
@@ -3682,7 +4139,7 @@ FUNCTION U128_SetBit(InVal, Pos) RESULT(OutVal)
         OutVal%Low  = InVal%Low
         OutVal%High = IBSET(InVal%High, Pos-64)
     END IF
-    
+
     RETURN
 
 END FUNCTION U128_SetBit
@@ -3692,8 +4149,8 @@ END FUNCTION U128_SetBit
 FUNCTION U128_ClearBit(InVal, Pos) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To set the bit at the specified position to 0
-    ! For more detail, see explanation of elemental intrinsic function 'IBCLR'
+    !^ To set the bit at the specified position to 0.  
+    !   For more detail, see explanation of elemental intrinsic function 'IBCLR'.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3710,9 +4167,10 @@ FUNCTION U128_ClearBit(InVal, Pos) RESULT(OutVal)
     IF ((Pos < 0).OR.(Pos > 127)) THEN
         CALL DisplaySevereError('Message from Routine '//'U128_ClearBit'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Pos must be between 0 and 127.')
+        OutVal = ZeroU128
         RETURN
     END IF
-    
+
     IF (Pos < 64) THEN
         OutVal%Low  = IBCLR(InVal%Low, Pos)
         OutVal%High = InVal%High
@@ -3720,7 +4178,7 @@ FUNCTION U128_ClearBit(InVal, Pos) RESULT(OutVal)
         OutVal%Low  = InVal%Low
         OutVal%High = IBCLR(InVal%High, Pos-64)
     END IF
-    
+
     RETURN
 
 END FUNCTION U128_ClearBit
@@ -3730,7 +4188,7 @@ END FUNCTION U128_ClearBit
 FUNCTION U128_FlipBit(InVal, Pos) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To reverse the bit at the specified position
+    !! To reverse the bit at the specified position.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3743,13 +4201,14 @@ FUNCTION U128_FlipBit(InVal, Pos) RESULT(OutVal)
     INTEGER(KIND=I4B)     :: HiPos
 
 !** FLOW
-    
+
     IF ((Pos < 0).OR.(Pos > 127)) THEN
         CALL DisplaySevereError('Message from Routine '//'U128_FlipBit'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Pos must be between 0 and 127.')
+        OutVal = ZeroU128
         RETURN
     END IF
-    
+
     IF (Pos < 64) THEN
         IF (BTEST(InVal%Low, Pos)) THEN
             ! clear bit
@@ -3770,7 +4229,7 @@ FUNCTION U128_FlipBit(InVal, Pos) RESULT(OutVal)
         END IF
         OutVal%Low = InVal%Low
     END IF
-    
+
     RETURN
 
 END FUNCTION U128_FlipBit
@@ -3780,8 +4239,8 @@ END FUNCTION U128_FlipBit
 FUNCTION U128_TestBit(U128, Pos) RESULT(Flag)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To check whether the bit at the specifed position is 0 (False) or 1 (True)
-    ! For more detail, see explanation of elemental intrinsic function 'BTEST'
+    !^ To check whether the bit at the specified position is 0 (False) or 1 (True).  
+    !   For more detail, see explanation of elemental intrinsic function 'BTEST'.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3794,19 +4253,20 @@ FUNCTION U128_TestBit(U128, Pos) RESULT(Flag)
     ! na
 
 !** FLOW
-    
+
     IF ((Pos < 0).OR.(Pos > 127)) THEN
         CALL DisplaySevereError('Message from Routine '//'U128_TestBit'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Pos must be between 0 and 127.')
+        Flag = .FALSE.
         RETURN
     END IF
-    
+
     IF (Pos < 64) THEN
         Flag = BTEST(U128%Low, Pos)
     ELSE
         Flag = BTEST(U128%High, Pos-64)
     END IF
-    
+
     RETURN
 
 END FUNCTION U128_TestBit
@@ -3816,8 +4276,8 @@ END FUNCTION U128_TestBit
 FUNCTION U128_ExtractBits(InVal, Pos, Len) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To extract a sequence of bits according to the specified input
-    ! For more detail, see explanation of elemental intrinsic function 'IBITS'
+    !^ To extract a sequence of bits according to the specified input.  
+    !   For more detail, see explanation of elemental intrinsic function 'IBITS'.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -3836,6 +4296,7 @@ FUNCTION U128_ExtractBits(InVal, Pos, Len) RESULT(OutVal)
     IF (Len < 0) THEN
         CALL DisplaySevereError('Message from Routine '//'U128_ExtractBits'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Len must be nonnegative.')
+        OutVal = ZeroU128
         RETURN
     ELSEIF (Len == 0) THEN
         OutVal = ZeroU128
@@ -3843,10 +4304,12 @@ FUNCTION U128_ExtractBits(InVal, Pos, Len) RESULT(OutVal)
     ELSEIF ((Pos < 0).OR.(Pos > 127)) THEN
         CALL DisplaySevereError('Message from Routine '//'U128_ExtractBits'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Pos must be between 0 and 127.')
+        OutVal = ZeroU128
         RETURN
     ELSEIF (Pos + Len > 128) THEN
         CALL DisplaySevereError('Message from Routine '//'U128_ExtractBits'//' in Module '//ModName//'.')
         CALL DisplayContinueError('Pos + Len > 128.')
+        OutVal = ZeroU128
         RETURN
     END IF
 
@@ -3888,9 +4351,8 @@ END FUNCTION U128_ExtractBits
 SUBROUTINE U128_MoveBits(InVal, InPos, Len, OutVal, OutPos)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To copy a sequence of bits (a bit field) from one location to another
-    ! For more detail, see explanation of elemental intrinsic subroutine
-    ! 'MVBITS'
+    !^ To copy a sequence of bits (a bit field) from one location to another.  
+    !   For more detail, see explanation of elemental intrinsic subroutine 'MVBITS'.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4029,7 +4491,7 @@ END SUBROUTINE U128_MoveBits
 FUNCTION U128_UnaryPlus(InVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To return result of the unary plus sign of the Uint128 object
+    !! To return result of the unary plus sign of the Uint128 object.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4053,7 +4515,7 @@ END FUNCTION U128_UnaryPlus
 SUBROUTINE U128_Increment(Val)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To increase value of the input by 1
+    !! To increase value of the input by 1.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4081,25 +4543,25 @@ END SUBROUTINE U128_Increment
 SUBROUTINE U128_Add_U32(This, Other)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform addition:  This = This + Other
+    !! To perform addition:  This = This + Other.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(INOUT) :: This
-    INTEGER(KIND=I4B),  INTENT(IN)    :: Other
+    INTEGER(KIND=I4B),  INTENT(IN)    :: Other      !! value treated as unsigned integer
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I8B)     :: Carry, OutLo
 
 !** FLOW
-        
+
     CALL AddU64(This%Low, ToUnsignedLong(Other), 0_I8B, OutLo, Carry)
     This%Low  = OutLo
     This%High = This%High + Carry
 
     RETURN
-    
+
 END SUBROUTINE U128_Add_U32
 
 !******************************************************************************
@@ -4107,25 +4569,25 @@ END SUBROUTINE U128_Add_U32
 SUBROUTINE U128_Add_U64(This, Other)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform addition:  This = This + Other
+    !! To perform addition:  This = This + Other.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(INOUT) :: This
-    INTEGER(KIND=I8B),  INTENT(IN)    :: Other
+    INTEGER(KIND=I8B),  INTENT(IN)    :: Other      !! value treated as unsigned integer
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I8B)     :: Carry, OutLo
 
 !** FLOW
-        
+
     CALL AddU64(This%Low, Other, 0_I8B, OutLo, Carry)
     This%Low  = OutLo
     This%High = This%High + Carry
-    
+
     RETURN
-    
+
 END SUBROUTINE U128_Add_U64
 
 !******************************************************************************
@@ -4133,7 +4595,7 @@ END SUBROUTINE U128_Add_U64
 SUBROUTINE U128_Add_U128(This, Other)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform addition:  This = This + Other
+    !! To perform addition:  This = This + Other.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4145,14 +4607,14 @@ SUBROUTINE U128_Add_U128(This, Other)
     INTEGER(KIND=I8B)     :: Carry, OutLo, OutHi
 
 !** FLOW
-        
+
     CALL AddU64(This%Low, Other%Low, 0_I8B, OutLo, Carry)
     CALL AddU64(This%High, Other%High, Carry, OutHi)
     This%Low  = OutLo
     This%High = OutHi
 
     RETURN
-    
+
 END SUBROUTINE U128_Add_U128
 
 !******************************************************************************
@@ -4160,25 +4622,25 @@ END SUBROUTINE U128_Add_U128
 FUNCTION U128_Plus_U32(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform addition:  OutVal = LhsVal + RhsVal
+    !! To perform addition:  OutVal = LhsVal + RhsVal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(IN)    :: LhsVal
-    INTEGER(KIND=I4B),  INTENT(IN)    :: RhsVal
+    INTEGER(KIND=I4B),  INTENT(IN)    :: RhsVal     !! value treated as unsigned integer
     TYPE(UInt128)                     :: OutVal
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I8B)     :: Carry
 
 !** FLOW
-        
+
     CALL AddU64(LhsVal%Low, ToUnsignedLong(RhsVal), 0_I8B, OutVal%Low, Carry)
     OutVal%High = LhsVal%High + Carry
 
     RETURN
-    
+
 END FUNCTION U128_Plus_U32
 
 !******************************************************************************
@@ -4186,12 +4648,12 @@ END FUNCTION U128_Plus_U32
 FUNCTION U32_Plus_U128(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform addition:  OutVal = LhsVal + RhsVal
+    !! To perform addition:  OutVal = LhsVal + RhsVal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B),  INTENT(IN)    :: LhsVal
+    INTEGER(KIND=I4B),  INTENT(IN)    :: LhsVal     !! value treated as unsigned integer
     TYPE(UInt128),      INTENT(IN)    :: RhsVal
     TYPE(UInt128)                     :: OutVal
 
@@ -4199,12 +4661,12 @@ FUNCTION U32_Plus_U128(LhsVal, RhsVal) RESULT(OutVal)
     INTEGER(KIND=I8B)     :: Carry
 
 !** FLOW
-        
+
     CALL AddU64(ToUnsignedLong(LhsVal), RhsVal%Low, 0_I8B, OutVal%Low, Carry)
     OutVal%High = RhsVal%High + Carry
 
     RETURN
-    
+
 END FUNCTION U32_Plus_U128
 
 !******************************************************************************
@@ -4212,25 +4674,25 @@ END FUNCTION U32_Plus_U128
 FUNCTION U128_Plus_U64(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform addition:  OutVal = LhsVal + RhsVal
+    !! To perform addition:  OutVal = LhsVal + RhsVal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(IN)    :: LhsVal
-    INTEGER(KIND=I8B),  INTENT(IN)    :: RhsVal
+    INTEGER(KIND=I8B),  INTENT(IN)    :: RhsVal     !! value treated as unsigned integer
     TYPE(UInt128)                     :: OutVal
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I8B)     :: Carry
 
 !** FLOW
-        
+
     CALL AddU64(LhsVal%Low, RhsVal, 0_I8B, OutVal%Low, Carry)
     OutVal%High = LhsVal%High + Carry
 
     RETURN
-    
+
 END FUNCTION U128_Plus_U64
 
 !******************************************************************************
@@ -4238,12 +4700,12 @@ END FUNCTION U128_Plus_U64
 FUNCTION U64_Plus_U128(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform addition:  OutVal = LhsVal + RhsVal
+    !! To perform addition:  OutVal = LhsVal + RhsVal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I8B),  INTENT(IN)    :: LhsVal
+    INTEGER(KIND=I8B),  INTENT(IN)    :: LhsVal     !! value treated as unsigned integer
     TYPE(UInt128),      INTENT(IN)    :: RhsVal
     TYPE(UInt128)                     :: OutVal
 
@@ -4251,12 +4713,12 @@ FUNCTION U64_Plus_U128(LhsVal, RhsVal) RESULT(OutVal)
     INTEGER(KIND=I8B)     :: Carry
 
 !** FLOW
-        
+
     CALL AddU64(LhsVal, RhsVal%Low, 0_I8B, OutVal%Low, Carry)
     OutVal%High = RhsVal%High + Carry
 
     RETURN
-    
+
 END FUNCTION U64_Plus_U128
 
 !******************************************************************************
@@ -4264,7 +4726,7 @@ END FUNCTION U64_Plus_U128
 FUNCTION U128_Plus_U128(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform addition:  OutVal = LhsVal + RhsVal
+    !! To perform addition:  OutVal = LhsVal + RhsVal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4277,12 +4739,12 @@ FUNCTION U128_Plus_U128(LhsVal, RhsVal) RESULT(OutVal)
     INTEGER(KIND=I8B)     :: Carry
 
 !** FLOW
-        
+
     CALL AddU64(LhsVal%Low, RhsVal%Low, 0_I8B, OutVal%Low, Carry)
     CALL AddU64(LhsVal%High, RhsVal%High, Carry, OutVal%High)
 
     RETURN
-    
+
 END FUNCTION U128_Plus_U128
 
 !******************************************************************************
@@ -4292,15 +4754,15 @@ PURE SUBROUTINE AddU64(X, Y, CarryIn, Sum, CarryOut)
 !DIR$ ATTRIBUTES INLINE :: AddU64
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To return the sum with carry of X, Y and CarryIn: Sum = X + Y + CarryIn.
-    ! The carry input must be 0 or 1; otherwise the behavior is undefined.
-    ! The carry output is guaranteed to be 0 or 1.
+    !^ To return the sum with carry of X, Y and CarryIn: Sum = X + Y + CarryIn.  
+    !   The carry input must be 0 or 1; otherwise the behavior is undefined.  
+    !   The carry output is guaranteed to be 0 or 1.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I8B), INTENT(IN)     :: X, Y, CarryIn
-    INTEGER(KIND=I8B), INTENT(OUT)    :: Sum, CarryOut
+    INTEGER(KIND=I8B), INTENT(IN)     :: X, Y, CarryIn      !! values treated as unsigned integers
+    INTEGER(KIND=I8B), INTENT(OUT)    :: Sum, CarryOut      !! values treated as unsigned integers
     OPTIONAL                          :: CarryOut
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
@@ -4308,11 +4770,11 @@ PURE SUBROUTINE AddU64(X, Y, CarryIn, Sum, CarryOut)
 
 !** FLOW
 
-	Sum = X + Y + CarryIn
+    Sum = X + Y + CarryIn
     ! The sum will overflow if both top bits are set (x & y) or if one of them
     ! is (x | y), and a carry from the lower place happened. If such a carry
     ! happens, the top bit will be 1 + 0 + 1 = 0 (&^ sum).
-	IF (PRESENT(CarryOut)) THEN
+    IF (PRESENT(CarryOut)) THEN
         CarryOut = SHIFTR(IOR(IAND(X, Y), IAND(IOR(X, Y), NOT(Sum))), 63)
     END IF
 
@@ -4327,7 +4789,7 @@ END SUBROUTINE AddU64
 FUNCTION U128_Negate(InVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To negate the Uint128 object
+    !! To negate the Uint128 object.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4353,7 +4815,7 @@ END FUNCTION U128_Negate
 SUBROUTINE U128_Decrement(Val)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To decrease value of the input by 1
+    !! To decrease value of the input by 1.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4381,13 +4843,13 @@ END SUBROUTINE U128_Decrement
 SUBROUTINE U128_Subtract_U32(This, Other)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform subtraction:  This = This - Other
+    !! To perform subtraction:  This = This - Other.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(INOUT) :: This
-    INTEGER(KIND=I4B),  INTENT(IN)    :: Other
+    INTEGER(KIND=I4B),  INTENT(IN)    :: Other      !! value treated as unsigned integer
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I8B)     :: Borrow, OutLo
@@ -4399,7 +4861,7 @@ SUBROUTINE U128_Subtract_U32(This, Other)
     This%High = This%High - Borrow
 
     RETURN
-    
+
 END SUBROUTINE U128_Subtract_U32
 
 !******************************************************************************
@@ -4407,13 +4869,13 @@ END SUBROUTINE U128_Subtract_U32
 SUBROUTINE U128_Subtract_U64(This, Other)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform subtraction:  This = This - Other
+    !! To perform subtraction:  This = This - Other.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(INOUT) :: This
-    INTEGER(KIND=I8B),  INTENT(IN)    :: Other
+    INTEGER(KIND=I8B),  INTENT(IN)    :: Other      !! value treated as unsigned integer
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I8B)     :: Borrow, OutLo
@@ -4425,7 +4887,7 @@ SUBROUTINE U128_Subtract_U64(This, Other)
     This%High = This%High - Borrow
 
     RETURN
-    
+
 END SUBROUTINE U128_Subtract_U64
 
 !******************************************************************************
@@ -4433,7 +4895,7 @@ END SUBROUTINE U128_Subtract_U64
 SUBROUTINE U128_Subtract_U128(This, Other)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform subtraction:  This = This - Other
+    !! To perform subtraction:  This = This - Other.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4452,7 +4914,7 @@ SUBROUTINE U128_Subtract_U128(This, Other)
     This%High = OutHi
 
     RETURN
-    
+
 END SUBROUTINE U128_Subtract_U128
 
 !******************************************************************************
@@ -4460,13 +4922,13 @@ END SUBROUTINE U128_Subtract_U128
 FUNCTION U128_Minus_U32(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform subtraction:  OutVal = LhsVal - RhsVal
+    !! To perform subtraction:  OutVal = LhsVal - RhsVal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(IN)    :: LhsVal
-    INTEGER(KIND=I4B),  INTENT(IN)    :: RhsVal
+    INTEGER(KIND=I4B),  INTENT(IN)    :: RhsVal     !! value treated as unsigned integer
     TYPE(UInt128)                     :: OutVal
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
@@ -4478,7 +4940,7 @@ FUNCTION U128_Minus_U32(LhsVal, RhsVal) RESULT(OutVal)
     OutVal%High = LhsVal%High - Borrow
 
     RETURN
-    
+
 END FUNCTION U128_Minus_U32
 
 !******************************************************************************
@@ -4486,12 +4948,12 @@ END FUNCTION U128_Minus_U32
 FUNCTION U32_Minus_U128(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform subtraction:  OutVal = LhsVal - RhsVal
+    !! To perform subtraction:  OutVal = LhsVal - RhsVal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B),  INTENT(IN)    :: LhsVal
+    INTEGER(KIND=I4B),  INTENT(IN)    :: LhsVal     !! value treated as unsigned integer
     TYPE(UInt128),      INTENT(IN)    :: RhsVal
     TYPE(UInt128)                     :: OutVal
 
@@ -4504,7 +4966,7 @@ FUNCTION U32_Minus_U128(LhsVal, RhsVal) RESULT(OutVal)
     OutVal%High = -(RhsVal%High + Borrow)
 
     RETURN
-    
+
 END FUNCTION U32_Minus_U128
 
 !******************************************************************************
@@ -4512,13 +4974,13 @@ END FUNCTION U32_Minus_U128
 FUNCTION U128_Minus_U64(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform subtraction:  OutVal = LhsVal - RhsVal
+    !! To perform subtraction:  OutVal = LhsVal - RhsVal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     TYPE(UInt128),      INTENT(IN)    :: LhsVal
-    INTEGER(KIND=I8B),  INTENT(IN)    :: RhsVal
+    INTEGER(KIND=I8B),  INTENT(IN)    :: RhsVal     !! value treated as unsigned integer
     TYPE(UInt128)                     :: OutVal
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
@@ -4530,7 +4992,7 @@ FUNCTION U128_Minus_U64(LhsVal, RhsVal) RESULT(OutVal)
     OutVal%High = LhsVal%High - Borrow
 
     RETURN
-    
+
 END FUNCTION U128_Minus_U64
 
 !******************************************************************************
@@ -4538,12 +5000,12 @@ END FUNCTION U128_Minus_U64
 FUNCTION U64_Minus_U128(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform subtraction:  OutVal = LhsVal - RhsVal
+    !! To perform subtraction:  OutVal = LhsVal - RhsVal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I8B),  INTENT(IN)    :: LhsVal
+    INTEGER(KIND=I8B),  INTENT(IN)    :: LhsVal     !! value treated as unsigned integer
     TYPE(UInt128),      INTENT(IN)    :: RhsVal
     TYPE(UInt128)                     :: OutVal
 
@@ -4556,7 +5018,7 @@ FUNCTION U64_Minus_U128(LhsVal, RhsVal) RESULT(OutVal)
     OutVal%High = -(RhsVal%High + Borrow)
 
     RETURN
-    
+
 END FUNCTION U64_Minus_U128
 
 !******************************************************************************
@@ -4564,7 +5026,7 @@ END FUNCTION U64_Minus_U128
 FUNCTION U128_Minus_U128(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform subtraction:  OutVal = LhsVal - RhsVal
+    !! To perform subtraction:  OutVal = LhsVal - RhsVal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4592,15 +5054,15 @@ PURE SUBROUTINE SubU64(X, Y, BorrowIn, Diff, BorrowOut)
 !DIR$ ATTRIBUTES INLINE :: SubU64
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To return the difference of X, Y and BorrowIn: Diff = X - Y - BorrowIn.
-    ! The borrow input must be 0 or 1; otherwise the behavior is undefined.
-    ! The borrow output is guaranteed to be 0 or 1.
+    !^ To return the difference of X, Y and BorrowIn: Diff = X - Y - BorrowIn.  
+    !   The borrow input must be 0 or 1; otherwise the behavior is undefined.  
+    !   The borrow output is guaranteed to be 0 or 1.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I8B), INTENT(IN)     :: X, Y, BorrowIn
-    INTEGER(KIND=I8B), INTENT(OUT)    :: Diff, BorrowOut
+    INTEGER(KIND=I8B), INTENT(IN)     :: X, Y, BorrowIn     !! values treated as unsigned integers
+    INTEGER(KIND=I8B), INTENT(OUT)    :: Diff, BorrowOut    !! values treated as unsigned integers
     OPTIONAL                          :: BorrowOut
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
@@ -4608,13 +5070,13 @@ PURE SUBROUTINE SubU64(X, Y, BorrowIn, Diff, BorrowOut)
 
 !** FLOW
 
-	Diff = X - Y - BorrowIn
+    Diff = X - Y - BorrowIn
     ! The difference will underflow if the top bit of x is not set and the top
     ! bit of y is set (^x & y) or if they are the same (^(x ^ y)) and a Borrow
     ! from the lower place happens. If that Borrow happens, the result will be
     ! 1 - 1 - 1 = 0 - 0 - 1 = 1 (& diff).
-	IF (PRESENT(BorrowOut)) THEN
-	    BorrowOut = SHIFTR(IOR(IAND(NOT(X), Y), IAND(NOT(IEOR(X, Y)), Diff)), 63)
+    IF (PRESENT(BorrowOut)) THEN
+        BorrowOut = SHIFTR(IOR(IAND(NOT(X), Y), IAND(NOT(IEOR(X, Y)), Diff)), 63)
     END IF
 
     RETURN
@@ -4628,7 +5090,7 @@ END SUBROUTINE SubU64
 SUBROUTINE U128_Times_U32(This, Other)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform multiplication:  This = This * Other
+    !! To perform multiplication:  This = This * Other.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4660,7 +5122,7 @@ END SUBROUTINE U128_Times_U32
 SUBROUTINE U128_Times_U64(This, Other)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform multiplication:  This = This * Other
+    !! To perform multiplication:  This = This * Other.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4686,7 +5148,7 @@ END SUBROUTINE U128_Times_U64
 SUBROUTINE U128_Times_U128(This, Other)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform multiplication:  This = This * Other
+    !! To perform multiplication:  This = This * Other.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4712,7 +5174,7 @@ END SUBROUTINE U128_Times_U128
 FUNCTION U32_Multiply_U128(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform multiplication:  OutVal = LhsVal * RhsVal
+    !! To perform multiplication:  OutVal = LhsVal * RhsVal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4745,7 +5207,7 @@ END FUNCTION U32_Multiply_U128
 FUNCTION U128_Multiply_U32(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform multiplication:  OutVal = LhsVal * RhsVal
+    !! To perform multiplication:  OutVal = LhsVal * RhsVal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4778,7 +5240,7 @@ END FUNCTION U128_Multiply_U32
 FUNCTION U64_Multiply_U128(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform multiplication:  OutVal = LhsVal * RhsVal
+    !! To perform multiplication:  OutVal = LhsVal * RhsVal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4804,7 +5266,7 @@ END FUNCTION U64_Multiply_U128
 FUNCTION U128_Multiply_U64(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform multiplication:  OutVal = LhsVal * RhsVal
+    !! To perform multiplication:  OutVal = LhsVal * RhsVal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4830,7 +5292,7 @@ END FUNCTION U128_Multiply_U64
 FUNCTION U128_Multiply_U128(LhsVal, RhsVal) RESULT(OutVal)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform multiplication:  OutVal = LhsVal * RhsVal
+    !! To perform multiplication:  OutVal = LhsVal * RhsVal.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4858,8 +5320,8 @@ END FUNCTION U128_Multiply_U128
 SUBROUTINE U128_DivMod_U32(Dividend, Divisor, Quotient, Remainder)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform division:  Quotient = Dividend / Divisor
-    ! return both quotient and remainder
+    !^ To perform division:  Quotient = Dividend / Divisor.  
+    !   And, to return both quotient and remainder.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4885,8 +5347,8 @@ END SUBROUTINE U128_DivMod_U32
 SUBROUTINE U128_DivMod_U64(Dividend, Divisor, Quotient, Remainder)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform division:  Quotient = Dividend / Divisor and
-    ! return both quotient and remainder
+    !^ To perform division:  Quotient = Dividend / Divisor.  
+    !   And, to return both quotient and remainder.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4912,8 +5374,8 @@ END SUBROUTINE U128_DivMod_U64
 SUBROUTINE U128_DivMod_U128(Dividend, Divisor, Quotient, Remainder)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform division of two UInt128 objects (Dividend / Divisor)
-    ! and return both the quotient and the remainder
+    !^ To perform division:  Quotient = Dividend / Divisor.  
+    !   And, to return both quotient and remainder.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4927,7 +5389,7 @@ SUBROUTINE U128_DivMod_U128(Dividend, Divisor, Quotient, Remainder)
     ! na
 
 !** FLOW
-        
+
     IF (Dividend%High < 0_I8B) THEN
         CALL U128_DivMod_Intx(Dividend, Divisor, Quotient, Remainder)
     ELSE
@@ -4943,7 +5405,7 @@ END SUBROUTINE U128_DivMod_U128
 SUBROUTINE U128_Over_U32(This, Other, Remainder)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform division:  This = This / Other
+    !! To perform division:  This = This / Other.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4956,7 +5418,7 @@ SUBROUTINE U128_Over_U32(This, Other, Remainder)
     TYPE(UInt128)    :: Dividend, Rem
 
 !** FLOW
-    
+
     Dividend = This
     CALL U128_DivMod_U128(Dividend, UInt128(Other, AsUnsigned), This, Rem)
     IF (PRESENT(Remainder)) Remainder = Rem
@@ -4970,7 +5432,7 @@ END SUBROUTINE U128_Over_U32
 SUBROUTINE U128_Over_U64(This, Other, Remainder)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform division:  This = This / Other
+    !! To perform division:  This = This / Other.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -4983,7 +5445,7 @@ SUBROUTINE U128_Over_U64(This, Other, Remainder)
     TYPE(UInt128)    :: Dividend, Rem
 
 !** FLOW
-    
+
     Dividend = This
     CALL U128_DivMod_U128(Dividend, UInt128(Other, AsUnsigned), This, Rem)
     IF (PRESENT(Remainder)) Remainder = Rem
@@ -4997,7 +5459,7 @@ END SUBROUTINE U128_Over_U64
 SUBROUTINE U128_Over_U128(This, Other, Remainder)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform division:  This = This / Other
+    !! To perform division:  This = This / Other.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -5027,7 +5489,7 @@ END SUBROUTINE U128_Over_U128
 FUNCTION U128_Divide_U32(Dividend, Divisor) RESULT(Quotient)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform division:  Quotient = Dividend / Divisor
+    !! To perform division:  Quotient = Dividend / Divisor.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -5052,7 +5514,7 @@ END FUNCTION U128_Divide_U32
 FUNCTION U128_Divide_U64(Dividend, Divisor) RESULT(Quotient)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform division:  Quotient = Dividend / Divisor
+    !! To perform division:  Quotient = Dividend / Divisor.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -5077,7 +5539,7 @@ END FUNCTION U128_Divide_U64
 FUNCTION U128_Divide_U128(Dividend, Divisor) RESULT(Quotient)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform division:  Quotient = Dividend / Divisor
+    !! To perform division:  Quotient = Dividend / Divisor.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -5102,7 +5564,7 @@ END FUNCTION U128_Divide_U128
 FUNCTION U128_Mod_U32(Dividend, Divisor) RESULT(Remainder)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform modulation:  Remainder = Dividend MOD Divisor
+    !! To perform modulation:  Remainder = Dividend MOD Divisor.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -5127,7 +5589,7 @@ END FUNCTION U128_Mod_U32
 FUNCTION U128_Mod_U64(Dividend, Divisor) RESULT(Remainder)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform modulation:  Remainder = Dividend MOD Divisor
+    !! To perform modulation:  Remainder = Dividend MOD Divisor.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -5152,7 +5614,7 @@ END FUNCTION U128_Mod_U64
 FUNCTION U128_Mod_U128(Dividend, Divisor) RESULT(Remainder)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform modulation:  Remainder = Dividend MOD Divisor
+    !! To perform modulation:  Remainder = Dividend MOD Divisor.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -5177,8 +5639,8 @@ END FUNCTION U128_Mod_U128
 SUBROUTINE U128_DivMod_Java(Dividend, Divisor, Quotient, Remainder)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform division of two SInt128 objects (Dividend / Divisor)
-    ! and return both the quotient and the remainder
+    !^ To perform division of two UInt128 objects (Dividend / Divisor)
+    !   and return both the quotient and the remainder.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -5204,7 +5666,7 @@ SUBROUTINE U128_DivMod_Java(Dividend, Divisor, Quotient, Remainder)
         CALL DisplayContinueError('The divisor must not be zero.')
         RETURN
     END IF
-        
+
     CompFlag = CompareU128(Dividend%High, Dividend%Low, Divisor%High, Divisor%Low)
     IF (CompFlag < 0) THEN
         ! divisor > dividend
@@ -5277,7 +5739,7 @@ CONTAINS
         ! initialize
         NumerHi = Numerator%High
         NumerLo = Numerator%Low
-        
+
         ! shift should always be posivite since the routine is only called
         ! when divisor magnitude is less than dividen magnitude
         Shift   = DenomLZ - NumerLZ
@@ -5350,7 +5812,7 @@ CONTAINS
         INTEGER(KIND=I8B)     :: QLo, RLo
 
     !** FLOW
-        
+
         IF (Divisor%High == 0_I8B) THEN
             IF (CompareUnsigned(Dividend%High, Divisor%Low) < 0) THEN
                 CALL DivideU128ByU64(Dividend%High, Dividend%Low, Divisor%Low, &
@@ -5416,7 +5878,7 @@ CONTAINS
 
     !** SUBROUTINE PARAMETER DECLARATIONS:
         INTEGER(KIND=I8B), PARAMETER  :: Mask = INT(Z'00000000FFFFFFFF', KIND=I8B)
-        
+
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
         INTEGER(KIND=I4B)     :: Shift
         INTEGER(KIND=I8B)     :: NHi, NLo         ! N -> numerator
@@ -5426,13 +5888,13 @@ CONTAINS
         INTEGER(KIND=I8B)     :: QHi, QLo
 
     !** FLOW
-        
+
         ! initialize
         Denom = Divisor
         NHi   = DividendHi
         NLo   = DividendLo
         Shift = LEADZ(Denom)
-        
+
         IF (Shift /= 0) THEN
             Denom = SHIFTL(Denom, Shift)
             NHi = IOR(SHIFTL(NHi, Shift), SHIFTR(NLo, 64 - Shift))
@@ -5483,7 +5945,7 @@ CONTAINS
         ! - return -1 if LHS < RHS
         ! - return  0 if LHS == RHS
         ! - return +1 if LHS > RHS
-    
+
         IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
     !** SUBROUTINE ARGUMENT DECLARATIONS:
@@ -5492,9 +5954,9 @@ CONTAINS
 
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
         INTEGER(KIND=I8B)     :: ULHS, URHS
-        
+
     !** FLOW
-    
+
         ULHS = IEOR(LhsHi, MinI64)
         URHS = IEOR(RhsHi, MinI64)
         IF (ULHS < URHS) THEN
@@ -5516,7 +5978,7 @@ CONTAINS
                 Flag = 0
             END IF
         END IF
-    
+
         RETURN
 
     END FUNCTION CompareU128
@@ -5530,8 +5992,8 @@ END SUBROUTINE U128_DivMod_Java
 SUBROUTINE U128_DivMod_IntX(Dividend, Divisor, Quotient, Remainder)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform division of two UInt128 objects (Dividend / Divisor)
-    ! and return both the quotient and the remainder
+    !^ To perform division of two UInt128 objects (Dividend / Divisor)
+    !   and return both the quotient and the remainder.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -5548,7 +6010,7 @@ SUBROUTINE U128_DivMod_IntX(Dividend, Divisor, Quotient, Remainder)
     INTEGER(KIND=I8B)     :: V, R1, R2, Q1, Q2, LHS, RHS
 
 !** FLOW
-        
+
     IF (Divisor == ZeroU128) THEN
         ! division by zero
         Quotient  = ZeroU128
@@ -5557,7 +6019,7 @@ SUBROUTINE U128_DivMod_IntX(Dividend, Divisor, Quotient, Remainder)
         CALL DisplayContinueError('The divisor must not be zero.')
         RETURN
     END IF
-    
+
     IF (Divisor%High == 0) THEN
         LSh = LEADZ(Divisor%Low)
         IF (LSh == 0) THEN
@@ -5627,7 +6089,7 @@ SUBROUTINE U128_DivMod_IntX(Dividend, Divisor, Quotient, Remainder)
 
     V = Reciprocal_3By2(DenomHi, DenomLo)
     CALL UDivRem_3By2(NumerEx, NumerHi, NumerLo, DenomHi, DenomLo, V, Q2, R1, R2)
-    
+
     Quotient%High = 0_I8B
     Quotient%Low  = Q2
     Remainder%High = SHIFTR(R1, LSh)
@@ -5720,7 +6182,7 @@ SUBROUTINE U128_DivMod_IntX(Dividend, Divisor, Quotient, Remainder)
             END IF
         END IF
         R = V
-    
+
         RETURN
 
     END FUNCTION Reciprocal_3By2
@@ -5745,7 +6207,7 @@ SUBROUTINE U128_DivMod_IntX(Dividend, Divisor, Quotient, Remainder)
 
         ! Q128 = V*UHi
         CALL UMul128(V, UHi, QHi, QLo)
-    
+
         ! Q128 = Q128 + U128
         NewLo = QLo + ULo
         IF (IEOR(NewLo, MinI64) < IEOR(QLo, MinI64)) THEN
@@ -5754,7 +6216,7 @@ SUBROUTINE U128_DivMod_IntX(Dividend, Divisor, Quotient, Remainder)
             QHi = QHi + UHi
         END IF
         QLo = NewLo
-    
+
         QHi = QHi + 1_I8B
 
         R = ULo - QHi*D
@@ -5796,7 +6258,7 @@ SUBROUTINE U128_DivMod_IntX(Dividend, Divisor, Quotient, Remainder)
 
         ! Q128 = V*U2
         CALL UMul128(V, U2, QHi, QLo)
-    
+
         ! Q128 = Q128 + UInt128(U2, U1)
         NewLo = QLo + U1
         IF (IEOR(NewLo, MinI64) < IEOR(QLo, MinI64)) THEN
@@ -5805,7 +6267,7 @@ SUBROUTINE U128_DivMod_IntX(Dividend, Divisor, Quotient, Remainder)
             QHi = QHi + U2
         END IF
         QLo = NewLo
-    
+
         R1 = U1 - QHi * DHi
 
         ! T128 = DLo*QHi
@@ -5840,7 +6302,7 @@ SUBROUTINE U128_DivMod_IntX(Dividend, Divisor, Quotient, Remainder)
             END IF
             RLo = NewLo
         END IF
-    
+
         IF (RHi == DHi) THEN
             Flag = (IEOR(RLo, MinI64) >= IEOR(DLo, MinI64))
         ELSE
@@ -5877,19 +6339,20 @@ END SUBROUTINE U128_DivMod_IntX
 SUBROUTINE U128_Write(U128, Unit, IOStat, IOMsg, ShowComponent, Prefix)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To write 'UInt128' object to the screen (or the specified unit)
+    !! To write 'UInt128' object to the screen (or the specified unit).
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    TYPE(UInt128),                INTENT(IN)     :: U128
-    INTEGER(KIND=I4B),  OPTIONAL, INTENT(IN)     :: Unit            ! output logical unit
-    INTEGER(KIND=I4B),  OPTIONAL, INTENT(OUT)    :: IOStat          ! io stat
-    CHARACTER(LEN=*),   OPTIONAL, INTENT(OUT)    :: IOMsg           ! io message
-    LOGICAL,            OPTIONAL, INTENT(IN)     :: ShowComponent   ! flag
-                                                                    ! if flag is present and true, write compoents of the object
-                                                                    ! otherwise, write the object as a decimal string
-    CHARACTER(LEN=*),   OPTIONAL, INTENT(IN)     :: Prefix          ! prefix string
+    TYPE(UInt128),                INTENT(IN)     :: U128             !! UInt128 object
+    INTEGER(KIND=I4B),  OPTIONAL, INTENT(IN)     :: Unit            !! output logical unit
+    INTEGER(KIND=I4B),  OPTIONAL, INTENT(OUT)    :: IOStat          !! io stat
+    CHARACTER(LEN=*),   OPTIONAL, INTENT(OUT)    :: IOMsg           !! io message
+    LOGICAL,            OPTIONAL, INTENT(IN)     :: ShowComponent
+    !^ flag indicating whether to show components or not  
+    ! if flag is present and true, write compoents of the object  
+    ! otherwise, write the object as a decimal string
+    CHARACTER(LEN=*),   OPTIONAL, INTENT(IN)     :: Prefix          !! prefix string
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     LOGICAL                         :: AsString
@@ -5903,13 +6366,13 @@ SUBROUTINE U128_Write(U128, Unit, IOStat, IOMsg, ShowComponent, Prefix)
     ! set defaults
     OutUnit  = OUTPUT_UNIT
     AsString = TrueVal
-    
+
     ! check optional input
     IF (PRESENT(ShowComponent)) THEN
         IF (ShowComponent) AsString = FalseVal
     END IF
     IF (PRESENT(Unit)) OutUnit = Unit
-    
+
     ! write the object
     IF (AsString) THEN
         IF (PRESENT(Prefix)) THEN
@@ -5926,13 +6389,13 @@ SUBROUTINE U128_Write(U128, Unit, IOStat, IOMsg, ShowComponent, Prefix)
         WRITE(UNIT=OutUnit, FMT='(A, I0)', IOSTAT=IO_Stat, IOMSG=IO_Msg) &
               DispStr // 'Low value = ', U128%Low
     END IF
-    
+
     ! return output if requested
     IF (PRESENT(IOStat)) IOStat = IO_Stat
     IF (PRESENT(IOMsg))  IOMsg  = IO_Msg
- 
+
     RETURN
-            
+
 END SUBROUTINE U128_Write
 
 !******************************************************************************

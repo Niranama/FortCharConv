@@ -1,6 +1,6 @@
 
 MODULE Class_BaseRNG
-       
+
 !** PURPOSE OF THIS MODULE:
     ! This module contains an abstract class that provides the application interfaces
     ! (APIs) for a random number generator.  All random number generators should extend
@@ -63,9 +63,9 @@ MODULE Class_BaseRNG
     CHARACTER(LEN=*),  PARAMETER :: SET_ALPHANUM_CAP  = SET_ALPHABETS_CAP // SET_DEC_DIGITS
     CHARACTER(LEN=*),  PARAMETER :: SET_ALPHANUM_MIX  = SET_ALPHABETS_LOW // SET_DEC_DIGITS // SET_ALPHABETS_CAP
     ! huge (maximum) numbers for intrinsic types used to prevent overflow
-    REAL(KIND=SP),     PARAMETER :: Huge_RSP = HUGE(1.0_SP)  ! = 3.4028235E+38
-    REAL(KIND=DP),     PARAMETER :: Huge_RDP = HUGE(1.0_DP)  ! = 1.797693134862316E+308
-    REAL(KIND=QP),     PARAMETER :: Huge_RQP = HUGE(1.0_QP)  ! = 1.189731495357231765085759326628007E+4932
+!    REAL(KIND=SP),     PARAMETER :: Huge_RSP = HUGE(1.0_SP)  ! = 3.4028235E+38
+!    REAL(KIND=DP),     PARAMETER :: Huge_RDP = HUGE(1.0_DP)  ! = 1.797693134862316E+308
+!    REAL(KIND=QP),     PARAMETER :: Huge_RQP = HUGE(1.0_QP)  ! = 1.189731495357231765085759326628007E+4932
 
 !** DERIVED TYPE DEFINITIONS
     ! Abstract Random Number Generator
@@ -198,80 +198,96 @@ MODULE Class_BaseRNG
     END INTERFACE
     INTERFACE
         MODULE FUNCTION Default_NextGaussian(RNG) RESULT(RandNum)
-            IMPORT
+            !IMPORT
             CLASS(BaseRNG), INTENT(INOUT)   :: RNG
             REAL(KIND=DP)                   :: RandNum
         END FUNCTION
         MODULE FUNCTION Default_NextExponential(RNG) RESULT(RandNum)
-            IMPORT
+            !IMPORT
             CLASS(BaseRNG), INTENT(INOUT)   :: RNG
             REAL(KIND=DP)                   :: RandNum
         END FUNCTION
     END INTERFACE
     INTERFACE
         MODULE FUNCTION Mix_Murmur_64(Input) RESULT(Output)
-            IMPORT
+            !IMPORT
             INTEGER(KIND=I8B), INTENT(IN)   :: Input
             INTEGER(KIND=I8B)               :: Output
         END FUNCTION
         MODULE FUNCTION Mix_Stafford_13(Input) RESULT(Output)
-            IMPORT
+            !IMPORT
             INTEGER(KIND=I8B), INTENT(IN)   :: Input
             INTEGER(KIND=I8B)               :: Output
         END FUNCTION
         MODULE FUNCTION Mix_Lea_64(Input) RESULT(Output)
-            IMPORT
+            !IMPORT
             INTEGER(KIND=I8B), INTENT(IN)   :: Input
             INTEGER(KIND=I8B)               :: Output
         END FUNCTION
         MODULE FUNCTION Mix_Murmur_32(Input) RESULT(Output)
-            IMPORT
+            !IMPORT
             INTEGER(KIND=I4B), INTENT(IN)    :: Input
             INTEGER(KIND=I4B)                :: Output
         END FUNCTION
         MODULE FUNCTION Mix_Lea_32(Input) RESULT(Output)
-            IMPORT
+            !IMPORT
             INTEGER(KIND=I4B), INTENT(IN)    :: Input
             INTEGER(KIND=I4B)                :: Output
         END FUNCTION
         MODULE FUNCTION Initialize_Seed64(RNG) RESULT(Output)
-            IMPORT
+            !IMPORT
             CLASS(BaseRNG), INTENT(IN)  :: RNG
             INTEGER(KIND=I8B)           :: Output
         END FUNCTION
         MODULE FUNCTION ScrambleWell(Seed, Add) RESULT(Output)
-            IMPORT
+            !IMPORT
             INTEGER(KIND=I8B), INTENT(IN)    :: Seed     ! seed element
             INTEGER(KIND=I4B), INTENT(IN)    :: Add      ! offset
             INTEGER(KIND=I8B)                :: Output   ! the transformed seed element
         END FUNCTION
         MODULE SUBROUTINE Fill_State32(Seed, State)
-            IMPORT
+            !IMPORT
             INTEGER(KIND=I4B), INTENT(IN)    :: Seed(0:)
             INTEGER(KIND=I4B), INTENT(OUT)   :: State(0:)
         END SUBROUTINE
         MODULE SUBROUTINE Fill_State64(Seed, State)
-            IMPORT
+            !IMPORT
             INTEGER(KIND=I8B), INTENT(IN)   :: Seed(0:)
             INTEGER(KIND=I8B), INTENT(OUT)  :: State(0:)
         END SUBROUTINE
         MODULE SUBROUTINE Extend_Seed32(SeedIn, SeedOut)
-            IMPORT
+            !IMPORT
             INTEGER(KIND=I4B), INTENT(IN)    :: SeedIn(0:)
             INTEGER(KIND=I4B), INTENT(OUT)   :: SeedOut(0:)
         END SUBROUTINE
         MODULE SUBROUTINE Extend_Seed64(SeedIn, SeedOut)
-            IMPORT
+            !IMPORT
             INTEGER(KIND=I8B), INTENT(IN)   :: SeedIn(0:)
             INTEGER(KIND=I8B), INTENT(OUT)  :: SeedOut(0:)
         END SUBROUTINE
     END INTERFACE
 
 !** GENERIC DECLARATIONS:
-    GENERIC     :: Mix_Murmur   => Mix_Murmur_32, Mix_Murmur_64
-    GENERIC     :: Mix_Lea      => Mix_Lea_32,    Mix_Lea_64
-    GENERIC     :: Fill_State   => Fill_State32,  Fill_State64
-    GENERIC     :: Extend_Seed  => Extend_Seed32, Extend_Seed64
+    !GENERIC     :: Mix_Murmur   => Mix_Murmur_32, Mix_Murmur_64
+    !GENERIC     :: Mix_Lea      => Mix_Lea_32,    Mix_Lea_64
+    !GENERIC     :: Fill_State   => Fill_State32,  Fill_State64
+    !GENERIC     :: Extend_Seed  => Extend_Seed32, Extend_Seed64
+    INTERFACE Mix_Murmur
+        MODULE PROCEDURE Mix_Murmur_32
+        MODULE PROCEDURE Mix_Murmur_64
+    END INTERFACE
+    INTERFACE Mix_Lea
+        MODULE PROCEDURE Mix_Lea_32
+        MODULE PROCEDURE Mix_Lea_64
+    END INTERFACE
+    INTERFACE Fill_State
+        MODULE PROCEDURE Fill_State32
+        MODULE PROCEDURE Fill_State64
+    END INTERFACE
+    INTERFACE Extend_Seed
+        MODULE PROCEDURE Extend_Seed32
+        MODULE PROCEDURE Extend_Seed64
+    END INTERFACE
 
 !** MODULE VARIABLE DECLARATIONS:
     ! na
@@ -287,7 +303,7 @@ FUNCTION Default_NextLogical(RNG) RESULT(RandVal)
     ! uses the sign bit from a call to the 'NextInteger' procedure
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     LOGICAL                         :: RandVal  ! random value
@@ -296,9 +312,9 @@ FUNCTION Default_NextLogical(RNG) RESULT(RandVal)
     ! na
 
 ! FLOW
-    
+
     RandVal = (RNG%NextInteger() < 0)
-    
+
     RETURN
 
 END FUNCTION Default_NextLogical
@@ -312,7 +328,7 @@ SUBROUTINE Default_NextLogicalArray(RNG, BoolArray)
     ! based on calls to NextLogical()
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG          ! 'BaseRNG' object
     LOGICAL,        INTENT(OUT)     :: BoolArray(:) ! random numbers
@@ -321,12 +337,12 @@ SUBROUTINE Default_NextLogicalArray(RNG, BoolArray)
     INTEGER(KIND=I4B)    :: I
 
 ! FLOW
-    
+
     ! fill the array
     DO I = 1, SIZE(BoolArray)
         BoolArray(I) = RNG%NextLogical()
     END DO
-    
+
     RETURN
 
 END SUBROUTINE Default_NextLogicalArray
@@ -340,7 +356,7 @@ FUNCTION Default_NextByte(RNG) RESULT(RandNum)
     ! uses the 8 high-order bits from a call to the 'NextInteger' procedure
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     INTEGER(KIND=I1B)               :: RandNum  ! random number
@@ -349,9 +365,9 @@ FUNCTION Default_NextByte(RNG) RESULT(RandNum)
     ! na
 
 ! FLOW
-    
+
     RandNum = INT(SHIFTR(RNG%NextInteger(), 24), KIND=I1B)
-    
+
     RETURN
 
 END FUNCTION Default_NextByte
@@ -368,7 +384,7 @@ SUBROUTINE Default_NextByteArray(RNG, ByteArray)
     ! calls to the 'NextLong' procedure
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG),     INTENT(INOUT)   :: RNG              ! 'BaseRNG' object
     INTEGER(KIND=I1B),  INTENT(OUT)     :: ByteArray(0:)    ! random numbers
@@ -378,12 +394,12 @@ SUBROUTINE Default_NextByteArray(RNG, ByteArray)
     INTEGER(KIND=I8B)       :: RndLong
 
 ! FLOW
-    
+
     ! initialize
     I = 0_I4B
     ByteLen = SIZE(ByteArray, KIND=I4B)
     WordLen = SHIFTA(ByteLen, 3)
-    
+
     ! fill the byte array, 8 bytes at a time
     DO WHILE (WordLen > 0)
         WordLen = WordLen - 1
@@ -396,7 +412,7 @@ SUBROUTINE Default_NextByteArray(RNG, ByteArray)
             RndLong = SHIFTR(RndLong, 8)
         END DO
     END DO
-    
+
     ! fill the remaining bytes
     IF (I < ByteLen) THEN
         RndLong = RNG%NextLong()
@@ -406,7 +422,7 @@ SUBROUTINE Default_NextByteArray(RNG, ByteArray)
             RndLong = SHIFTR(RndLong, 8)
         END DO
     END IF
-    
+
     RETURN
 
 END SUBROUTINE Default_NextByteArray
@@ -420,7 +436,7 @@ FUNCTION Default_NextShort(RNG) RESULT(RandNum)
     ! uses the 16 high-order bits from a call to the 'NextInteger' procedure
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     INTEGER(KIND=I2B)               :: RandNum  ! random number
@@ -429,9 +445,9 @@ FUNCTION Default_NextShort(RNG) RESULT(RandNum)
     ! na
 
 ! FLOW
-    
+
     RandNum = INT(SHIFTR(RNG%NextInteger(), 16), KIND=I2B)
-    
+
     RETURN
 
 END FUNCTION Default_NextShort
@@ -448,7 +464,7 @@ SUBROUTINE Default_NextShortArray(RNG, ShortArray)
     ! calls to the 'NextLong' procedure
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG),     INTENT(INOUT)   :: RNG              ! 'BaseRNG' object
     INTEGER(KIND=I2B),  INTENT(OUT)     :: ShortArray(0:)   ! random numbers
@@ -458,12 +474,12 @@ SUBROUTINE Default_NextShortArray(RNG, ShortArray)
     INTEGER(KIND=I8B)       :: RndLong
 
 ! FLOW
-    
+
     ! initialize
     I = 0_I4B
     ShortLen = SIZE(ShortArray, KIND=I4B)
     WordLen  = SHIFTA(ShortLen, 2)
-    
+
     ! fill the short array, 4 elements at a time
     DO WHILE (WordLen > 0)
         WordLen = WordLen - 1
@@ -476,7 +492,7 @@ SUBROUTINE Default_NextShortArray(RNG, ShortArray)
             RndLong = SHIFTR(RndLong, 16)
         END DO
     END DO
-    
+
     ! fill the remaining elements
     IF (I < ShortLen) THEN
         RndLong = RNG%NextLong()
@@ -486,7 +502,7 @@ SUBROUTINE Default_NextShortArray(RNG, ShortArray)
             RndLong = SHIFTR(RndLong, 16)
         END DO
     END IF
-    
+
     RETURN
 
 END SUBROUTINE Default_NextShortArray
@@ -500,7 +516,7 @@ FUNCTION Default_NextIntegerUpper(RNG, Upper) RESULT(RandNum)
     ! 0 (inclusive) and the specified upper value (exclusive)
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG),     INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     INTEGER(KIND=I4B),  INTENT(IN)      :: Upper    ! upper bound of the generated value
@@ -515,7 +531,7 @@ FUNCTION Default_NextIntegerUpper(RNG, Upper) RESULT(RandNum)
     INTEGER(KIND=I8B)       :: M, L, T
 
 ! FLOW
-    
+
     ! check upper bound value
     IF (Upper <= 0) THEN
         CALL DisplayWarningError('Message from Routine '//'Default_NextIntegerUpper'//' in Module '//ModName//'.')
@@ -526,13 +542,13 @@ FUNCTION Default_NextIntegerUpper(RNG, Upper) RESULT(RandNum)
 
     ! Lemire (2019): Fast Random Integer Generation in an Interval
     ! https://arxiv.org/abs/1805.10941
-    M = IAND(RNG%NextInteger(), MaskL) * Upper
+    M = IAND(INT(RNG%NextInteger(), KIND=I8B), MaskL) * Upper
     L = IAND(M, MaskL)
     IF (L < Upper) THEN
         ! 2^32 % N
         T = MOD(POW_32, Upper)
         DO WHILE (L < T)
-            M = IAND(RNG%NextInteger(), MaskL) * Upper
+            M = IAND(INT(RNG%NextInteger(), KIND=I8B), MaskL) * Upper
             L = IAND(M, MaskL)
         END DO
     END IF
@@ -551,7 +567,7 @@ FUNCTION Default_NextIntegerBound(RNG, Lower, Upper) RESULT(RandNum)
     ! lower value (inclusive) and the specified upper value (exclusive)
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG),     INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     INTEGER(KIND=I4B),  INTENT(IN)      :: Lower    ! lower bound of the generated value
@@ -563,7 +579,7 @@ FUNCTION Default_NextIntegerBound(RNG, Lower, Upper) RESULT(RandNum)
     INTEGER(KIND=I4B)    :: N
 
 ! FLOW
-    
+
     ! check bound values
     IF (Lower >= Upper) THEN
         CALL DisplayWarningError('Message from Routine '//'Default_NextIntegerBound'//' in Module '//ModName//'.')
@@ -597,7 +613,7 @@ SUBROUTINE Default_NextIntegerArray(RNG, IntegerArray)
     ! based on calls to NextInteger()
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG),     INTENT(INOUT)   :: RNG              ! 'BaseRNG' object
     INTEGER(KIND=I4B),  INTENT(OUT)     :: IntegerArray(:)  ! random numbers
@@ -606,12 +622,12 @@ SUBROUTINE Default_NextIntegerArray(RNG, IntegerArray)
     INTEGER(KIND=I4B)    :: I
 
 ! FLOW
-    
+
     ! fill the array
     DO I = 1, SIZE(IntegerArray)
         IntegerArray(I) = RNG%NextInteger()
     END DO
-    
+
     RETURN
 
 END SUBROUTINE Default_NextIntegerArray
@@ -625,7 +641,7 @@ FUNCTION Default_NextLongUpper(RNG, Upper) RESULT(RandNum)
     ! 0 (inclusive) and the specified upper value (exclusive)
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG),     INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     INTEGER(KIND=I8B),  INTENT(IN)      :: Upper    ! upper bound of the generated value
@@ -636,7 +652,7 @@ FUNCTION Default_NextLongUpper(RNG, Upper) RESULT(RandNum)
     INTEGER(KIND=I8B)       :: Bits, Val
 
 ! FLOW
-    
+
     ! check upper bound value
     IF (Upper <= 0_I8B) THEN
         CALL DisplayWarningError('Message from Routine '//'Default_NextLongUpper'//' in Module '//ModName//'.')
@@ -666,7 +682,7 @@ FUNCTION Default_NextLongBound(RNG, Lower, Upper) RESULT(RandNum)
     ! lower value (inclusive) and the specified upper value (exclusive)
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG),     INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     INTEGER(KIND=I8B),  INTENT(IN)      :: Lower    ! lower bound of the generated value
@@ -678,7 +694,7 @@ FUNCTION Default_NextLongBound(RNG, Lower, Upper) RESULT(RandNum)
     INTEGER(KIND=I8B)    :: N
 
 ! FLOW
-    
+
     ! check bound values
     IF (Lower >= Upper) THEN
         CALL DisplayWarningError('Message from Routine '//'Default_NextLongBound'//' in Module '//ModName//'.')
@@ -712,7 +728,7 @@ SUBROUTINE Default_NextLongArray(RNG, LongArray)
     ! based on calls to NextLong()
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG),     INTENT(INOUT)   :: RNG          ! 'BaseRNG' object
     INTEGER(KIND=I8B),  INTENT(OUT)     :: LongArray(:) ! random numbers
@@ -721,12 +737,12 @@ SUBROUTINE Default_NextLongArray(RNG, LongArray)
     INTEGER(KIND=I4B)    :: I
 
 ! FLOW
-    
+
     ! fill the array
     DO I = 1, SIZE(LongArray)
         LongArray(I) = RNG%NextLong()
     END DO
-    
+
     RETURN
 
 END SUBROUTINE Default_NextLongArray
@@ -741,7 +757,7 @@ FUNCTION Default_NextSingle(RNG) RESULT(RandNum)
     ! bits from a call to the 'NextInteger' procedure
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     REAL(KIND=SP)                   :: RandNum  ! random number
@@ -751,14 +767,14 @@ FUNCTION Default_NextSingle(RNG) RESULT(RandNum)
     REAL(KIND=SP), PARAMETER  :: SNorm1 = 2.0_SP**(-24)
     REAL(KIND=SP), PARAMETER  :: SNorm2 = 1.0_SP/SHIFTL(1, 24)
     REAL(KIND=SP), PARAMETER  :: SNorm3 = 0.5_SP*EPSILON(1.0_SP)
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     ! na
 
 ! FLOW
-    
+
     RandNum = SHIFTR(RNG%NextInteger(), 8)*SNorm1
-    
+
     RETURN
 
 END FUNCTION Default_NextSingle
@@ -771,8 +787,11 @@ FUNCTION Default_NextSingleUpper(RNG, Upper) RESULT(RandNum)
     ! To generate a random 32-bit-floating-point value in the range between
     ! 0 (inclusive) and the specified upper value (exclusive)
 
+!** USE STATEMENTS:
+    USE, INTRINSIC :: IEEE_ARITHMETIC
+
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     REAL(KIND=SP),  INTENT(IN)      :: Upper    ! upper bound of the generated value
@@ -783,7 +802,7 @@ FUNCTION Default_NextSingleUpper(RNG, Upper) RESULT(RandNum)
     ! na
 
 ! FLOW
-    
+
     ! check upper bound value
     ! negation of the logic will detect NaN/Inifinity
     IF (.NOT.((Upper > 0.0_SP).AND.(Upper <= Huge_RSP))) THEN
@@ -792,11 +811,11 @@ FUNCTION Default_NextSingleUpper(RNG, Upper) RESULT(RandNum)
         RandNum = 0.0_SP
         RETURN
     END IF
-    
+
     RandNum = RNG%NextSingle()*Upper
     IF (RandNum >= Upper) THEN
         ! correct rounding
-        RandNum = IEEE_NEXT_DOWN(Upper)
+        RandNum = IEEE_NEXT_DOWN_SP(Upper)
     END IF
 
     RETURN
@@ -812,7 +831,7 @@ FUNCTION Default_NextSingleBound(RNG, Lower, Upper) RESULT(RandNum)
     ! lower value (inclusive) and the specified upper value (exclusive)
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     REAL(KIND=SP),  INTENT(IN)      :: Lower    ! lower bound of the generated value
@@ -824,7 +843,7 @@ FUNCTION Default_NextSingleBound(RNG, Lower, Upper) RESULT(RandNum)
     ! na
 
 ! FLOW
-    
+
     ! check bound values
     IF ((Lower >= Upper).OR.(.NOT.IEEE_IS_FINITE(Lower)).OR.(.NOT.IEEE_IS_FINITE(Upper))) THEN
         CALL DisplayWarningError('Message from Routine '//'Default_NextSingleBound'//' in Module '//ModName//'.')
@@ -839,7 +858,7 @@ FUNCTION Default_NextSingleBound(RNG, Lower, Upper) RESULT(RandNum)
     RandNum = (1.0_SP - RandNum) * Lower + RandNum * Upper
     IF (RandNum >= Upper) THEN
         ! correct rounding
-        RandNum = IEEE_NEXT_DOWN(Upper)
+        RandNum = IEEE_NEXT_DOWN_SP(Upper)
     END IF
 
     RETURN
@@ -855,7 +874,7 @@ SUBROUTINE Default_NextSingleArray(RNG, SingleArray)
     ! single values based on calls to NextSingle()
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG              ! 'BaseRNG' object
     REAL(KIND=SP),  INTENT(OUT)     :: SingleArray(:)   ! random numbers
@@ -864,12 +883,12 @@ SUBROUTINE Default_NextSingleArray(RNG, SingleArray)
     INTEGER(KIND=I4B)    :: I
 
 ! FLOW
-    
+
     ! fill the array
     DO I = 1, SIZE(SingleArray)
         SingleArray(I) = RNG%NextSingle()
     END DO
-    
+
     RETURN
 
 END SUBROUTINE Default_NextSingleArray
@@ -883,7 +902,7 @@ FUNCTION Default_NextDoubleUpper(RNG, Upper) RESULT(RandNum)
     ! 0 (inclusive) and the specified upper value (exclusive)
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     REAL(KIND=DP),  INTENT(IN)      :: Upper    ! upper bound of the generated value
@@ -894,20 +913,20 @@ FUNCTION Default_NextDoubleUpper(RNG, Upper) RESULT(RandNum)
     ! na
 
 ! FLOW
-    
+
     ! check upper bound value
-    ! negation of the logic will detect NaN/Inifinity
+    ! negation of the logic will detect NaN/Infinity
     IF (.NOT.((Upper > 0.0_DP).AND.(Upper <= Huge_RDP))) THEN
         CALL DisplayWarningError('Message from Routine '//'Default_NextDoubleUpper'//' in Module '//ModName//'.')
         CALL DisplayContinueError('The upper-bound value must be positive and finite.')
         RandNum = 0.0_DP
         RETURN
     END IF
-    
+
     RandNum = RNG%NextDouble()*Upper
     IF (RandNum >= Upper) THEN
         ! correct rounding
-        RandNum = IEEE_NEXT_DOWN(Upper)
+        RandNum = IEEE_NEXT_DOWN_DP(Upper)
     END IF
 
     RETURN
@@ -923,7 +942,7 @@ FUNCTION Default_NextDoubleBound(RNG, Lower, Upper) RESULT(RandNum)
     ! lower value (inclusive) and the specified upper value (exclusive)
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     REAL(KIND=DP),  INTENT(IN)      :: Lower    ! lower bound of the generated value
@@ -935,7 +954,7 @@ FUNCTION Default_NextDoubleBound(RNG, Lower, Upper) RESULT(RandNum)
     ! na
 
 ! FLOW
-    
+
     ! check bound values
     IF ((Lower >= Upper).OR.(.NOT.IEEE_IS_FINITE(Lower)).OR.(.NOT.IEEE_IS_FINITE(Upper))) THEN
         CALL DisplayWarningError('Message from Routine '//'Default_NextDoubleBound'//' in Module '//ModName//'.')
@@ -950,7 +969,7 @@ FUNCTION Default_NextDoubleBound(RNG, Lower, Upper) RESULT(RandNum)
     RandNum = (1.0_DP - RandNum) * Lower + RandNum * Upper
     IF (RandNum >= Upper) THEN
         ! correct rounding
-        RandNum = IEEE_NEXT_DOWN(Upper)
+        RandNum = IEEE_NEXT_DOWN_DP(Upper)
     END IF
 
     RETURN
@@ -966,7 +985,7 @@ SUBROUTINE Default_NextDoubleArray(RNG, DoubleArray)
     ! single values based on calls to NextDouble()
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG              ! 'BaseRNG' object
     REAL(KIND=DP),  INTENT(OUT)     :: DoubleArray(:)   ! random numbers
@@ -975,12 +994,12 @@ SUBROUTINE Default_NextDoubleArray(RNG, DoubleArray)
     INTEGER(KIND=I4B)    :: I
 
 ! FLOW
-    
+
     ! fill the array
     DO I = 1, SIZE(DoubleArray)
         DoubleArray(I) = RNG%NextDouble()
     END DO
-    
+
     RETURN
 
 END SUBROUTINE Default_NextDoubleArray
@@ -994,7 +1013,7 @@ FUNCTION Default_NextQuadUpper(RNG, Upper) RESULT(RandNum)
     ! 0 (inclusive) and the specified upper value (exclusive)
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     REAL(KIND=QP),  INTENT(IN)      :: Upper    ! upper bound of the generated value
@@ -1005,20 +1024,20 @@ FUNCTION Default_NextQuadUpper(RNG, Upper) RESULT(RandNum)
     ! na
 
 ! FLOW
-    
+
     ! check upper bound value
-    ! negation of the logic will detect NaN/Inifinity
+    ! negation of the logic will detect NaN/Infinity
     IF (.NOT.((Upper > 0.0_QP).AND.(Upper <= Huge_RQP))) THEN
         CALL DisplayWarningError('Message from Routine '//'Default_NextQuadUpper'//' in Module '//ModName//'.')
         CALL DisplayContinueError('The upper-bound value must be positive and finite.')
         RandNum = 0.0_QP
         RETURN
     END IF
-    
+
     RandNum = RNG%NextQuad()*Upper
     IF (RandNum >= Upper) THEN
         ! correct rounding
-        RandNum = IEEE_NEXT_DOWN(Upper)
+        RandNum = IEEE_NEXT_DOWN_QP(Upper)
     END IF
 
     RETURN
@@ -1034,7 +1053,7 @@ FUNCTION Default_NextQuadBound(RNG, Lower, Upper) RESULT(RandNum)
     ! lower value (inclusive) and the specified upper value (exclusive)
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     REAL(KIND=QP),  INTENT(IN)      :: Lower    ! lower bound of the generated value
@@ -1046,7 +1065,7 @@ FUNCTION Default_NextQuadBound(RNG, Lower, Upper) RESULT(RandNum)
     ! na
 
 ! FLOW
-    
+
     ! check bound values
     IF ((Lower >= Upper).OR.(.NOT.IEEE_IS_FINITE(Lower)).OR.(.NOT.IEEE_IS_FINITE(Upper))) THEN
         CALL DisplayWarningError('Message from Routine '//'Default_NextQuadBound'//' in Module '//ModName//'.')
@@ -1061,11 +1080,11 @@ FUNCTION Default_NextQuadBound(RNG, Lower, Upper) RESULT(RandNum)
     RandNum = (1.0_QP - RandNum) * Lower + RandNum * Upper
     IF (RandNum >= Upper) THEN
         ! correct rounding
-        RandNum = IEEE_NEXT_DOWN(Upper)
+        RandNum = IEEE_NEXT_DOWN_QP(Upper)
     END IF
 
     RETURN
-
+    
 END FUNCTION Default_NextQuadBound
 
 !******************************************************************************
@@ -1077,7 +1096,7 @@ SUBROUTINE Default_NextQuadArray(RNG, QuadArray)
     ! single values based on calls to NextQuad()
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG          ! 'BaseRNG' object
     REAL(KIND=QP),  INTENT(OUT)     :: QuadArray(:) ! random numbers
@@ -1086,12 +1105,12 @@ SUBROUTINE Default_NextQuadArray(RNG, QuadArray)
     INTEGER(KIND=I4B)    :: I
 
 ! FLOW
-    
+
     ! fill the array
     DO I = 1, SIZE(QuadArray)
         QuadArray(I) = RNG%NextQuad()
     END DO
-    
+
     RETURN
 
 END SUBROUTINE Default_NextQuadArray
@@ -1105,7 +1124,7 @@ FUNCTION Default_NextI128Upper(RNG, Upper) RESULT(RandNum)
     ! 0 (inclusive) and the specified upper value (exclusive)
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     TYPE(SInt128),  INTENT(IN)      :: Upper    ! upper bound of the generated value
@@ -1116,7 +1135,7 @@ FUNCTION Default_NextI128Upper(RNG, Upper) RESULT(RandNum)
     TYPE(SInt128)   :: Bits, Val
 
 ! FLOW
-    
+
     ! check upper bound value
     IF (Upper <= ZeroI128) THEN
         CALL DisplayWarningError('Message from Routine '//'Default_NextI128Upper'//' in Module '//ModName//'.')
@@ -1146,7 +1165,7 @@ FUNCTION Default_NextI128Bound(RNG, Lower, Upper) RESULT(RandNum)
 ! lower value (inclusive) and the specified upper value (exclusive)
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     TYPE(SInt128),  INTENT(IN)      :: Lower    ! lower bound of the generated value
@@ -1158,7 +1177,7 @@ FUNCTION Default_NextI128Bound(RNG, Lower, Upper) RESULT(RandNum)
     TYPE(SInt128)   :: N
 
 ! FLOW
-    
+
     ! check bound values
     IF (Lower >= Upper) THEN
         CALL DisplayWarningError('Message from Routine '//'Default_NextI128Bound'//' in Module '//ModName//'.')
@@ -1192,7 +1211,7 @@ SUBROUTINE Default_NextI128Array(RNG, I128Array)
     ! based on calls to NextI128()
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG          ! 'BaseRNG' object
     TYPE(SInt128),  INTENT(OUT)     :: I128Array(:) ! random numbers
@@ -1201,12 +1220,12 @@ SUBROUTINE Default_NextI128Array(RNG, I128Array)
     INTEGER(KIND=I4B)    :: I
 
 ! FLOW
-    
+
     ! fill the array
     DO I = 1, SIZE(I128Array)
         I128Array(I) = RNG%NextI128()
     END DO
-    
+
     RETURN
 
 END SUBROUTINE Default_NextI128Array
@@ -1220,7 +1239,7 @@ FUNCTION Default_NextU128Upper(RNG, Upper) RESULT(RandNum)
     ! 0 (inclusive) and the specified upper value (exclusive)
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     TYPE(UInt128),  INTENT(IN)      :: Upper    ! upper bound of the generated value
@@ -1231,7 +1250,7 @@ FUNCTION Default_NextU128Upper(RNG, Upper) RESULT(RandNum)
     TYPE(UInt128)   :: Bits, Val
 
 ! FLOW
-    
+
     ! check upper bound value
     IF (Upper == ZeroU128) THEN
         CALL DisplayWarningError('Message from Routine '//'Default_NextU128Upper'//' in Module '//ModName//'.')
@@ -1261,7 +1280,7 @@ FUNCTION Default_NextU128Bound(RNG, Lower, Upper) RESULT(RandNum)
     ! lower value (inclusive) and the specified upper value (exclusive)
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     TYPE(UInt128),  INTENT(IN)      :: Lower    ! lower bound of the generated value
@@ -1273,7 +1292,7 @@ FUNCTION Default_NextU128Bound(RNG, Lower, Upper) RESULT(RandNum)
     ! na
 
 ! FLOW
-    
+
     ! check bound values
     IF (Lower .UGE. Upper) THEN
         CALL DisplayWarningError('Message from Routine '//'Default_NextU128Bound'//' in Module '//ModName//'.')
@@ -1297,7 +1316,7 @@ SUBROUTINE Default_NextU128Array(RNG, U128Array)
     ! based on calls to NextU128()
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG), INTENT(INOUT)   :: RNG          ! 'BaseRNG' object
     TYPE(UInt128),  INTENT(OUT)     :: U128Array(:) ! random numbers
@@ -1306,12 +1325,12 @@ SUBROUTINE Default_NextU128Array(RNG, U128Array)
     INTEGER(KIND=I4B)    :: I
 
 ! FLOW
-    
+
     ! fill the array
     DO I = 1, SIZE(U128Array)
         U128Array(I) = RNG%NextU128()
     END DO
-    
+
     RETURN
 
 END SUBROUTINE Default_NextU128Array
@@ -1325,7 +1344,7 @@ FUNCTION Default_NextString(RNG, StrType, StrLen, MaxLen) RESULT(RandStr)
     !   input if they are present; otherwise, according default settings)
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BaseRNG),              INTENT(INOUT)   :: RNG      ! 'BaseRNG' object
     INTEGER(KIND=I4B), OPTIONAL, INTENT(IN)      :: StrType  ! type of string (1-6)
@@ -1340,7 +1359,7 @@ FUNCTION Default_NextString(RNG, StrType, StrLen, MaxLen) RESULT(RandStr)
     INTEGER(KIND=I4B)               :: CharSetLen
 
 ! FLOW
-    
+
     LenMax = 0
     ! check input string length whether it is present and valid
     IF (PRESENT(StrLen)) THEN
@@ -1359,7 +1378,7 @@ FUNCTION Default_NextString(RNG, StrType, StrLen, MaxLen) RESULT(RandStr)
         IF (LenMax == 0) LenMax = 100
         OutLen = RNG%NextInteger(0, LenMax)
     END IF
-    
+
     ! determine character set
     IF (PRESENT(StrType)) THEN
         SELECT CASE (StrType)
@@ -1397,6 +1416,100 @@ END FUNCTION Default_NextString
 
 !******************************************************************************
 
-END MODULE Class_BaseRNG
+FUNCTION IEEE_NEXT_DOWN_SP(X) RESULT(XNext)
+
+!** PURPOSE OF THIS SUBROUTINE:
+    ! To emulate IEEE_NEXT_DOWN intrinsic function since GFortran does not have one.
+
+    IMPLICIT NONE
+
+!** SUBROUTINE ARGUMENT DECLARATIONS:
+    REAL(KIND=SP), INTENT(IN)   :: X
+    REAL(KIND=SP)               :: XNext
+
+!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
+    REAL(KIND=SP)       :: RVal
+    INTEGER(KIND=I4B)   :: IVal
+    EQUIVALENCE(IVal, RVal)
+
+! FLOW
+
+    ! get input
+    RVal = X
+    ! get next down
+    IF (IVal > 0) IVal = IVal - 1
+    ! set output
+    XNext = RVal
     
+    RETURN
+
+END FUNCTION
+
+!******************************************************************************
+
+FUNCTION IEEE_NEXT_DOWN_DP(X) RESULT(XNext)
+
+!** PURPOSE OF THIS SUBROUTINE:
+    ! To emulate IEEE_NEXT_DOWN intrinsic function since GFortran does not have one.
+
+    IMPLICIT NONE
+
+!** SUBROUTINE ARGUMENT DECLARATIONS:
+    REAL(KIND=DP), INTENT(IN)   :: X
+    REAL(KIND=DP)               :: XNext
+
+!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
+    REAL(KIND=DP)       :: RVal
+    INTEGER(KIND=I8B)   :: IVal
+    EQUIVALENCE(IVal, RVal)
+
+! FLOW
+
+    ! get input
+    RVal = X
+    ! get next down
+    IF (IVal > 0) IVal = IVal - 1
+    ! set output
+    XNext = RVal
+    
+    RETURN
+
+END FUNCTION
+
+!******************************************************************************
+
+FUNCTION IEEE_NEXT_DOWN_QP(X) RESULT(XNext)
+
+!** PURPOSE OF THIS SUBROUTINE:
+    ! To emulate IEEE_NEXT_DOWN intrinsic function since GFortran does not have one.
+
+    IMPLICIT NONE
+
+!** SUBROUTINE ARGUMENT DECLARATIONS:
+    REAL(KIND=QP), INTENT(IN)   :: X
+    REAL(KIND=QP)               :: XNext
+
+!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
+    REAL(KIND=QP)       :: RVal
+    INTEGER(KIND=I8B)   :: IVal(2)
+    EQUIVALENCE(IVal, RVal)
+
+! FLOW
+
+    ! get input
+    RVal = X
+    ! assuming little-endian order; get next down
+    ! (if big-endian order just replace IVal(2) by IVal(1) in the following statement)
+    IF (IVal(2) > 0) IVal(2) = IVal(2) - 1
+    ! set output
+    XNext = RVal
+    
+    RETURN
+
+END FUNCTION
+
+!******************************************************************************
+
+END MODULE Class_BaseRNG
+
 !******************************************************************************

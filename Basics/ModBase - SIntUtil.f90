@@ -1,8 +1,8 @@
 
 MODULE ModBase_SIntUtil
 
-!** PURPOSE OF THIS MODULE:
-    ! contains various utility routines relating to (signed) integers.
+!^ **PURPOSE OF THIS MODULE**:  
+    ! This module contains various utility routines relating to (signed) integers.
 
 !** USE STATEMENTS:
     USE ModBase_Common
@@ -29,15 +29,15 @@ MODULE ModBase_SIntUtil
 
 !** MODULE PARAMETERS:
     ! maximum values
-    INTEGER(KIND=I1B), PARAMETER    :: MAX_I8  = INT(Z'7F', KIND=I1B)               ! 127
-    INTEGER(KIND=I2B), PARAMETER    :: MAX_I16 = INT(Z'7FFF', KIND=I2B)             ! 32767
-    INTEGER(KIND=I4B), PARAMETER    :: MAX_I32 = INT(Z'7FFFFFFF', KIND=I4B)         ! 2147483647
-    INTEGER(KIND=I8B), PARAMETER    :: MAX_I64 = INT(Z'7FFFFFFFFFFFFFFF', KIND=I8B) ! 9223372036854775807
+    INTEGER(KIND=I1B), PARAMETER    :: MAX_I8  = INT(Z'7F', KIND=I1B)               !! 127
+    INTEGER(KIND=I2B), PARAMETER    :: MAX_I16 = INT(Z'7FFF', KIND=I2B)             !! 32767
+    INTEGER(KIND=I4B), PARAMETER    :: MAX_I32 = INT(Z'7FFFFFFF', KIND=I4B)         !! 2147483647
+    INTEGER(KIND=I8B), PARAMETER    :: MAX_I64 = INT(Z'7FFFFFFFFFFFFFFF', KIND=I8B) !! 9223372036854775807
     ! minimum values
-    INTEGER(KIND=I1B), PARAMETER    :: MIN_I8  = INT(Z'80', KIND=I1B)               ! -128
-    INTEGER(KIND=I2B), PARAMETER    :: MIN_I16 = INT(Z'8000', KIND=I2B)             ! -32768
-    INTEGER(KIND=I4B), PARAMETER    :: MIN_I32 = INT(Z'80000000', KIND=I4B)         ! -2147483648
-    INTEGER(KIND=I8B), PARAMETER    :: MIN_I64 = INT(Z'8000000000000000', KIND=I8B) ! -9223372036854775808
+    INTEGER(KIND=I1B), PARAMETER    :: MIN_I8  = INT(Z'80', KIND=I1B)               !! -128
+    INTEGER(KIND=I2B), PARAMETER    :: MIN_I16 = INT(Z'8000', KIND=I2B)             !! -32768
+    INTEGER(KIND=I4B), PARAMETER    :: MIN_I32 = INT(Z'80000000', KIND=I4B)         !! -2147483648
+    INTEGER(KIND=I8B), PARAMETER    :: MIN_I64 = INT(Z'8000000000000000', KIND=I8B) !! -9223372036854775808
     ! tables of digit characters
     CHARACTER(LEN=2), PARAMETER  :: Char2Digits(0:99) = [           &
         '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', &
@@ -55,16 +55,84 @@ MODULE ModBase_SIntUtil
     ! na
 
 !** INTERFACE/GENERIC DEFINITIONS:
-    GENERIC :: Compare          => I8_Compare,        I16_Compare, &
-                                   I32_Compare,       I64_Compare
-    GENERIC :: HighestOneBit    => I32_HighestOneBit, I64_HighestOneBit
-    GENERIC :: LowestOneBit     => I32_LowestOneBit,  I64_LowestOneBit
-    GENERIC :: ReverseBits      => I32_ReverseBits,   I64_ReverseBits
-    GENERIC :: ReverseBytes     => I32_ReverseBytes,  I64_ReverseBytes
-    GENERIC :: SigNum           => I32_SigNum,        I64_SigNum
-	GENERIC :: ToHexStrSigned   => I32_ToHexString,   I64_ToHexString
-    GENERIC :: ToDecStrSigned   => I32_ToDecString,   I64_ToDecString
-    
+    INTERFACE Compare
+        !^ **Function Interface**: Compare  
+        !  **Purpose**:  To compare two signed integers of the same kind and return  
+        !   -1 if LHS < RHS  
+        !    0 if LHS == RHS  
+        !    1 if LHS > RHS  
+        !  **Usage**:  
+        !   --->    Flag = Compare(LHS, RHS)  
+        !   --->    IF (Compare(LHS, RHS) /= 0) DoSomething
+        MODULE PROCEDURE    I8_Compare
+        MODULE PROCEDURE    I16_Compare
+        MODULE PROCEDURE    I32_Compare
+        MODULE PROCEDURE    I64_Compare
+    END INTERFACE
+    INTERFACE HighestOneBit
+        !^ **Function Interface**: HighestOneBit  
+        !  **Purpose**:  To return an integer value (same kind as the specified integer value) with at most  
+        !   a single one-bit, in the position of the highest-order (leftmost) one-bit in the input.  
+        !  **Usage**:  
+        !   --->    OUTPUT = HighestOneBit(INPUT)
+        MODULE PROCEDURE    I32_HighestOneBit
+        MODULE PROCEDURE    I64_HighestOneBit
+    END INTERFACE
+    INTERFACE LowestOneBit
+        !^ **Function Interface**: LowestOneBit  
+        !  **Purpose**:  To return an integer value (same kind as the specified integer value) with at most  
+        !   a single one-bit, in the position of the lowest-order (rightmost) one-bit in the input.  
+        !  **Usage**:  
+        !   --->    OUTPUT = LowestOneBit(INPUT)
+        MODULE PROCEDURE    I32_LowestOneBit
+        MODULE PROCEDURE    I64_LowestOneBit
+    END INTERFACE
+    INTERFACE ReverseBits
+        !^ **Function Interface**: ReverseBits  
+        !  **Purpose**:  To return an integer value (same kind as the specified integer value) obtained by  
+        !    reversing the order of the bits in the two's complement binary representation of the input.  
+        !  **Usage**:  
+        !   --->    OUTPUT = ReverseBits(INPUT)
+        MODULE PROCEDURE    I32_ReverseBits
+        MODULE PROCEDURE    I64_ReverseBits
+    END INTERFACE
+    INTERFACE ReverseBytes
+        !^ **Function Interface**: ReverseBits  
+        !  **Purpose**:  To return an integer value (same kind as the specified integer value) obtained by  
+        !    reversing the order of the bytes in the two's complement binary representation of the input.  
+        !  **Usage**:  
+        !   --->    OUTPUT = ReverseBytes(INPUT)
+        MODULE PROCEDURE    I32_ReverseBytes
+        MODULE PROCEDURE    I64_ReverseBytes
+    END INTERFACE
+    INTERFACE SigNum
+        !^ **Function Interface**: SigNum  
+        !  **Purpose**:  To return the sign of the specified input where the return value is  
+        !   -1 if the specified value is negative  
+        !    0 if the specified value is zero  
+        !    1 if the specified value is positive  
+        !  **Usage**:  
+        !   --->    SignFlag = SigNum(INPUT)
+        MODULE PROCEDURE    I32_SigNum
+        MODULE PROCEDURE    I64_SigNum
+    END INTERFACE
+    INTERFACE ToHexStrSigned
+        !^ **Function Interface**: ToHexStrSigned  
+        !  **Purpose**:  To convert a signed integer to a hexadecimal string  
+        !  **Usage**:  
+        !   --->    Str = ToHexStrSigned(I32)
+        MODULE PROCEDURE    I32_ToHexString
+        MODULE PROCEDURE    I64_ToHexString
+    END INTERFACE
+    INTERFACE ToDecStrSigned
+        !^ **Function Interface**: ToDecStrSigned  
+        !  **Purpose**:  To convert a signed integer to a decimal string  
+        !  **Usage**:  
+        !   --->    Str = ToDecStrSigned(I64)
+        MODULE PROCEDURE    I32_ToDecString
+        MODULE PROCEDURE    I64_ToDecString
+    END INTERFACE
+
 !** MODULE VARIABLE DECLARATIONS:
     ! na
 
@@ -73,7 +141,7 @@ MODULE ModBase_SIntUtil
 !** MODULE ELEMENTS SUBROUTINES or FUNCTIONS:
 
 !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-!                               Comparision
+!                               comparison
 !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 PURE FUNCTION I8_Compare(LHS, RHS) RESULT(Flag)
@@ -81,11 +149,11 @@ PURE FUNCTION I8_Compare(LHS, RHS) RESULT(Flag)
 !DIR$ ATTRIBUTES FORCEINLINE :: I8_Compare
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To compare LHS and RHS.
-    ! - return -1 if LHS < RHS
-    ! - return  0 if LHS == RHS
+    !^ To compare LHS and RHS.  
+    ! - return -1 if LHS < RHS  
+    ! - return  0 if LHS == RHS  
     ! - return +1 if LHS > RHS
-    
+
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
@@ -94,9 +162,9 @@ PURE FUNCTION I8_Compare(LHS, RHS) RESULT(Flag)
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     ! na
-        
+
 !** FLOW
-    
+
     IF (LHS < RHS) THEN
         Flag = -1
     ELSEIF (LHS > RHS) THEN
@@ -104,7 +172,7 @@ PURE FUNCTION I8_Compare(LHS, RHS) RESULT(Flag)
     ELSE
         Flag = 0
     END IF
-    
+
     RETURN
 
 END FUNCTION I8_Compare
@@ -116,11 +184,11 @@ PURE FUNCTION I16_Compare(LHS, RHS) RESULT(Flag)
 !DIR$ ATTRIBUTES FORCEINLINE :: I16_Compare
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To compare LHS and RHS.
-    ! - return -1 if LHS < RHS
-    ! - return  0 if LHS == RHS
+    !^ To compare LHS and RHS.  
+    ! - return -1 if LHS < RHS  
+    ! - return  0 if LHS == RHS  
     ! - return +1 if LHS > RHS
-    
+
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
@@ -129,9 +197,9 @@ PURE FUNCTION I16_Compare(LHS, RHS) RESULT(Flag)
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     ! na
-        
+
 !** FLOW
-    
+
     IF (LHS < RHS) THEN
         Flag = -1
     ELSEIF (LHS > RHS) THEN
@@ -139,7 +207,7 @@ PURE FUNCTION I16_Compare(LHS, RHS) RESULT(Flag)
     ELSE
         Flag = 0
     END IF
-    
+
     RETURN
 
 END FUNCTION I16_Compare
@@ -151,11 +219,11 @@ PURE FUNCTION I32_Compare(LHS, RHS) RESULT(Flag)
 !DIR$ ATTRIBUTES FORCEINLINE :: I32_Compare
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To compare LHS and RHS.
-    ! - return -1 if LHS < RHS
-    ! - return  0 if LHS == RHS
+    !^ To compare LHS and RHS.  
+    ! - return -1 if LHS < RHS  
+    ! - return  0 if LHS == RHS  
     ! - return +1 if LHS > RHS
-    
+
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
@@ -164,9 +232,9 @@ PURE FUNCTION I32_Compare(LHS, RHS) RESULT(Flag)
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     ! na
-        
+
 !** FLOW
-    
+
     IF (LHS < RHS) THEN
         Flag = -1
     ELSEIF (LHS > RHS) THEN
@@ -174,7 +242,7 @@ PURE FUNCTION I32_Compare(LHS, RHS) RESULT(Flag)
     ELSE
         Flag = 0
     END IF
-    
+
     RETURN
 
 END FUNCTION I32_Compare
@@ -186,11 +254,11 @@ PURE FUNCTION I64_Compare(LHS, RHS) RESULT(Flag)
 !DIR$ ATTRIBUTES FORCEINLINE :: I64_Compare
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To compare LHS and RHS.
-    ! - return -1 if LHS < RHS
-    ! - return  0 if LHS == RHS
+    !^ To compare LHS and RHS.  
+    ! - return -1 if LHS < RHS  
+    ! - return  0 if LHS == RHS  
     ! - return +1 if LHS > RHS
-    
+
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
@@ -199,9 +267,9 @@ PURE FUNCTION I64_Compare(LHS, RHS) RESULT(Flag)
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     ! na
-        
+
 !** FLOW
-    
+
     IF (LHS < RHS) THEN
         Flag = -1
     ELSEIF (LHS > RHS) THEN
@@ -209,7 +277,7 @@ PURE FUNCTION I64_Compare(LHS, RHS) RESULT(Flag)
     ELSE
         Flag = 0
     END IF
-    
+
     RETURN
 
 END FUNCTION I64_Compare
@@ -223,11 +291,11 @@ PURE FUNCTION I64_HighestOneBit(InVal) RESULT(OutVal)
 !DIR$ ATTRIBUTES FORCEINLINE :: I64_HighestOneBit
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To return an 64-bit integer value with at most a single one-bit, in the
-    ! position of the highest-order ("leftmost") one-bit in the specified
+    !^ To return an 64-bit integer value with at most a single one-bit, in the
+    ! position of the highest-order (leftmost) one-bit in the specified
     ! 64-bit integer value.  To return zero if the specified value has no
     ! one-bits in its two's complement binary representation, that is, if it
-    ! is equal to zero.
+    ! is equal to zero.  
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -241,7 +309,7 @@ PURE FUNCTION I64_HighestOneBit(InVal) RESULT(OutVal)
 !** FLOW
 
     OutVal = IAND(InVal, SHIFTR(MIN_I64, LEADZ(InVal)))
-    
+
     RETURN
 
 END FUNCTION I64_HighestOneBit
@@ -253,8 +321,8 @@ PURE FUNCTION I32_HighestOneBit(InVal) RESULT(OutVal)
 !DIR$ ATTRIBUTES FORCEINLINE :: I32_HighestOneBit
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To return an 32-bit integer value with at most a single one-bit, in the
-    ! position of the highest-order ("leftmost") one-bit in the specified
+    !^ To return an 32-bit integer value with at most a single one-bit, in the
+    ! position of the highest-order (leftmost) one-bit in the specified
     ! 32-bit integer value.  To return zero if the specified value has no
     ! one-bits in its two's complement binary representation, that is, if it
     ! is equal to zero.
@@ -271,7 +339,7 @@ PURE FUNCTION I32_HighestOneBit(InVal) RESULT(OutVal)
 !** FLOW
 
     OutVal = IAND(InVal, SHIFTR(MIN_I32, LEADZ(InVal)))
-    
+
     RETURN
 
 END FUNCTION I32_HighestOneBit
@@ -283,8 +351,8 @@ PURE FUNCTION I64_LowestOneBit(InVal) RESULT(OutVal)
 !DIR$ ATTRIBUTES FORCEINLINE :: I64_LowestOneBit
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To return an 64-bit integer value with at most a single one-bit, in the
-    ! position of the lowest-order ("rightmost") one-bit in the specified
+    !^ To return an 64-bit integer value with at most a single one-bit, in the
+    ! position of the lowest-order (rightmost) one-bit in the specified
     ! 64-bit integer value.  To return zero if the specified value has no
     ! one-bits in its two's complement binary representation, that is, if it
     ! is equal to zero.
@@ -301,7 +369,7 @@ PURE FUNCTION I64_LowestOneBit(InVal) RESULT(OutVal)
 !** FLOW
 
     OutVal = IAND(InVal, -InVal)
-    
+
     RETURN
 
 END FUNCTION I64_LowestOneBit
@@ -313,8 +381,8 @@ PURE FUNCTION I32_LowestOneBit(InVal) RESULT(OutVal)
 !DIR$ ATTRIBUTES FORCEINLINE :: I32_LowestOneBit
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To return an 32-bit integer value with at most a single one-bit, in the
-    ! position of the lowest-order ("rightmost") one-bit in the specified
+    !^ To return an 32-bit integer value with at most a single one-bit, in the
+    ! position of the lowest-order (rightmost) one-bit in the specified
     ! 32-bit integer value.  To return zero if the specified value has no
     ! one-bits in its two's complement binary representation, that is, if it
     ! is equal to zero.
@@ -331,7 +399,7 @@ PURE FUNCTION I32_LowestOneBit(InVal) RESULT(OutVal)
 !** FLOW
 
     OutVal = IAND(InVal, -InVal)
-    
+
     RETURN
 
 END FUNCTION I32_LowestOneBit
@@ -343,7 +411,7 @@ PURE FUNCTION I64_ReverseBits(InVal) RESULT(OutVal)
 !DIR$ ATTRIBUTES FORCEINLINE :: I64_ReverseBits
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To return an 64-bit integer value obtained by reversing the order of the
+    !^ To return an 64-bit integer value obtained by reversing the order of the
     ! bits in the two's complement binary representation of the specified value.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
@@ -378,7 +446,7 @@ PURE FUNCTION I32_ReverseBits(InVal) RESULT(OutVal)
 !DIR$ ATTRIBUTES FORCEINLINE :: I32_ReverseBits
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To return an 32-bit integer value obtained by reversing the order of the
+    !^ To return an 32-bit integer value obtained by reversing the order of the
     ! bits in the two's complement binary representation of the specified value.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
@@ -416,7 +484,7 @@ PURE FUNCTION I64_ReverseBytes(InVal) RESULT(OutVal)
 !DIR$ ATTRIBUTES FORCEINLINE :: I64_ReverseBytes
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To return an 64-bit integer value obtained by reversing the order of the
+    !^ To return an 64-bit integer value obtained by reversing the order of the
     ! bytes in the two's complement representation of the specified value.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
@@ -437,7 +505,7 @@ PURE FUNCTION I64_ReverseBytes(InVal) RESULT(OutVal)
     OutVal = IOR(SHIFTL(IAND(InVal, C1), 8), IAND(SHIFTR(InVal, 8), C1))
     OutVal = IOR(IOR(IOR(SHIFTL(OutVal, 48), SHIFTL(IAND(OutVal, C2), 16)), &
                      IAND(SHIFTR(OutVal, 16), C2)), SHIFTR(OutVal, 48))
-    
+
 ! alternative implementation
 !    OutVal = 0
 !    CALL MVBITS(InVal, 56, 8, OutVal,  0)
@@ -460,7 +528,7 @@ PURE FUNCTION I32_ReverseBytes(InVal) RESULT(OutVal)
 !DIR$ ATTRIBUTES FORCEINLINE :: I32_ReverseBytes
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To return an 32-bit integer value obtained by reversing the order of the
+    !^ To return an 32-bit integer value obtained by reversing the order of the
     ! bytes in the two's complement representation of the specified value.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
@@ -479,7 +547,7 @@ PURE FUNCTION I32_ReverseBytes(InVal) RESULT(OutVal)
 
     OutVal = IOR(IOR(IOR(SHIFTL(InVal, 24), SHIFTL(IAND(InVal, C), 8)), &
                      IAND(SHIFTR(InVal, 8), C)), SHIFTR(InVal, 24))
-    
+
 ! alternative implementation
 !    OutVal = 0
 !    CALL MVBITS(InVal, 24, 8, OutVal,  0)
@@ -498,9 +566,10 @@ PURE FUNCTION I64_SigNum(Val) RESULT(Sign)
 !DIR$ ATTRIBUTES FORCEINLINE :: I64_SigNum
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To return the signum function of the specified value where the
-    ! return value is -1 if the specified value is negative; 0 if the
-    ! specified value is zero; and 1 if the specified value is positive.
+    !^ To return the sign of the specified input where the return value is  
+    !   -1 if the specified value is negative  
+    !    0 if the specified value is zero  
+    !    1 if the specified value is positive.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -525,9 +594,10 @@ PURE FUNCTION I32_SigNum(Val) RESULT(Sign)
 !DIR$ ATTRIBUTES FORCEINLINE :: I32_SigNum
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To return the signum function of the specified value where the
-    ! return value is -1 if the specified value is negative; 0 if the
-    ! specified value is zero; and 1 if the specified value is positive.
+    !^ To return the sign of the specified input where the return value is  
+    !   -1 if the specified value is negative  
+    !    0 if the specified value is zero  
+    !    1 if the specified value is positive.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -553,7 +623,7 @@ END FUNCTION I32_SigNum
 PURE FUNCTION I64_ToHexString(Number) RESULT(cStr)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a signed 64-bit integer number to a hexadecimal string
+    !! To convert a signed 64-bit integer number to a hexadecimal string
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -592,7 +662,7 @@ PURE FUNCTION I64_ToHexString(Number) RESULT(cStr)
         PosNum = Number
     END IF
     Indx = MaxLen
-    
+
     ! start the conversion
     DO
         ! save current number
@@ -606,7 +676,7 @@ PURE FUNCTION I64_ToHexString(Number) RESULT(cStr)
         Indx = Indx - 1
         IF (PosNum == 0_I8B) EXIT
     END DO
-    
+
     ! allocate the resulting string and transfer
     ! characters from the working string
     Indx = Indx + 1
@@ -615,7 +685,7 @@ PURE FUNCTION I64_ToHexString(Number) RESULT(cStr)
     ELSE
         cStr = wStr(Indx:MaxLen)
     END IF
-    
+
     RETURN
 
 END FUNCTION I64_ToHexString
@@ -625,7 +695,7 @@ END FUNCTION I64_ToHexString
 PURE FUNCTION I32_ToHexString(Number) RESULT(cStr)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a signed 32-bit integer number to a hexadecimal string
+    !! To convert a signed 32-bit integer number to a hexadecimal string
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -664,7 +734,7 @@ PURE FUNCTION I32_ToHexString(Number) RESULT(cStr)
         PosNum = Number
     END IF
     Indx = MaxLen
-    
+
     ! start the conversion
     DO
         ! save current number
@@ -678,7 +748,7 @@ PURE FUNCTION I32_ToHexString(Number) RESULT(cStr)
         Indx = Indx - 1
         IF (PosNum == 0) EXIT
     END DO
-    
+
     ! allocate the resulting string and transfer
     ! characters from the working string
     Indx = Indx + 1
@@ -687,7 +757,7 @@ PURE FUNCTION I32_ToHexString(Number) RESULT(cStr)
     ELSE
         cStr = wStr(Indx:MaxLen)
     END IF
-    
+
     RETURN
 
 END FUNCTION I32_ToHexString
@@ -699,7 +769,7 @@ END FUNCTION I32_ToHexString
 FUNCTION I32_ToDecString(Number) RESULT(cStr)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an integer number to decimal string
+    !! To convert an integer number to decimal string
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -709,7 +779,7 @@ FUNCTION I32_ToDecString(Number) RESULT(cStr)
 
 !** SUBROUTINE PARAMETER DECLARATIONS:
     INTEGER(KIND=I4B), PARAMETER    :: MaxLen = 10
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     CHARACTER(LEN=MaxLen)   :: wStr
     INTEGER(KIND=I4B)       :: PosNum
@@ -719,10 +789,10 @@ FUNCTION I32_ToDecString(Number) RESULT(cStr)
     INTEGER(KIND=I4B)       :: AABBCC, DDEE, EE
 
 !** FLOW
-    
+
     ! set positive number
     PosNum = ABS(Number)
-    
+
     ! start the conversion
     IF (PosNum < 100) THEN              ! 1-2 digits
         wStr(1:2) = Char2Digits(PosNum)
@@ -773,7 +843,7 @@ FUNCTION I32_ToDecString(Number) RESULT(cStr)
 
     Start = 1
     IF (wStr(1:1) == '0') Start = 2
-        
+
     IF (Number < 0) THEN
         IF (Number == MIN_I32) THEN
             cStr = '-2147483648'
@@ -783,7 +853,7 @@ FUNCTION I32_ToDecString(Number) RESULT(cStr)
     ELSE
         cStr = wStr(Start:Finish)
     END IF
-    
+
     RETURN
 
 END FUNCTION I32_ToDecString
@@ -793,7 +863,7 @@ END FUNCTION I32_ToDecString
 FUNCTION I64_ToDecString(Number) RESULT(cStr)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert an integer number to decimal string
+    !! To convert an integer number to decimal string
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -803,7 +873,7 @@ FUNCTION I64_ToDecString(Number) RESULT(cStr)
 
 !** SUBROUTINE PARAMETER DECLARATIONS:
     INTEGER(KIND=I4B), PARAMETER    :: MaxLen = 20
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     CHARACTER(LEN=MaxLen)   :: wStr
     INTEGER(KIND=I8B)       :: PosNum, TmpNum, HiNum, LoNum, MidNum
@@ -813,7 +883,7 @@ FUNCTION I64_ToDecString(Number) RESULT(cStr)
 
     ! set positive number
     PosNum = ABS(Number)
-    
+
     ! start conversion and store digits in working string
     IF (PosNum < 100000000_I8B) THEN                                 ! 1-8 digits
         Start = 12 + Write_1_to_8_Digits(INT(PosNum, KIND=I4B), wStr(13:20))
@@ -831,7 +901,7 @@ FUNCTION I64_ToDecString(Number) RESULT(cStr)
         CALL Write_4_Digits(INT(MidNum, KIND=I4B), wStr(9:12))
         Start  = Write_5_to_8_Digits(INT(HiNum, KIND=I4B), wStr(1:8))
     END IF
-    
+
     ! transfer to output string
     IF (Number < 0_I8B) THEN
         IF (Number == MIN_I64) THEN
@@ -842,9 +912,9 @@ FUNCTION I64_ToDecString(Number) RESULT(cStr)
     ELSE
         cStr = wStr(Start:MaxLen)
     END IF
-    
+
     RETURN
-    
+
     CONTAINS
 
     SUBROUTINE Write_8_Digits(Number, cStr)
@@ -865,7 +935,7 @@ FUNCTION I64_ToDecString(Number) RESULT(cStr)
         INTEGER(KIND=I4B)   :: AABB, CCDD       ! working variables
 
     !** FLOW
-    
+
         AABB = INT(SHIFTR(INT(Number, KIND=I8B)*109951163_I8B, 40), KIND=I4B)   ! Number / 10000
         CCDD = Number - AABB*10000                                              ! MOD(Number, 10000)
         AA = SHIFTR(AABB*5243, 19)                                              ! AABB / 100
@@ -876,7 +946,7 @@ FUNCTION I64_ToDecString(Number) RESULT(cStr)
         cStr(3:4) = Char2Digits(BB)
         cStr(5:6) = Char2Digits(CC)
         cStr(7:8) = Char2Digits(DD)
-        
+
         RETURN
 
     END SUBROUTINE Write_8_Digits
@@ -900,12 +970,12 @@ FUNCTION I64_ToDecString(Number) RESULT(cStr)
         INTEGER(KIND=I4B)   :: AA, BB   ! working indices
 
     !** FLOW
-    
+
         AA = SHIFTR(Number*5243, 19)            ! Number / 100
         BB = Number - AA*100                    ! MOD(Number, 100)
         cStr(1:2) = Char2Digits(AA)
         cStr(3:4) = Char2Digits(BB)
-        
+
         RETURN
 
     END SUBROUTINE Write_4_Digits
@@ -931,7 +1001,7 @@ FUNCTION I64_ToDecString(Number) RESULT(cStr)
         INTEGER(KIND=I4B)   :: AABB, BBCC, CCDD ! working variables
 
     !** FLOW
-    
+
         IF (Number < 100) THEN                                      ! 1-2 digits
             AA = Number
             IF (AA < 10) THEN
@@ -990,7 +1060,7 @@ FUNCTION I64_ToDecString(Number) RESULT(cStr)
                 Start = 1
             END IF
         END IF
-        
+
         RETURN
 
     END FUNCTION Write_1_to_8_Digits
@@ -1016,7 +1086,7 @@ FUNCTION I64_ToDecString(Number) RESULT(cStr)
         INTEGER(KIND=I4B)   :: AABB, BBCC, CCDD ! working variables
 
     !** FLOW
-    
+
         IF (Number < 1000000) THEN                                  ! 5-6 digits
             AA = INT(SHIFTR(INT(Number, KIND=I8B)*429497_I8B, 32), KIND=I4B)    ! Number / 10000
             BBCC = Number - AA*10000                                            ! MOD(Number, 10000)
@@ -1054,7 +1124,7 @@ FUNCTION I64_ToDecString(Number) RESULT(cStr)
                 Start = 1
             END IF
         END IF
-        
+
         RETURN
 
     END FUNCTION Write_5_to_8_Digits
@@ -1070,15 +1140,15 @@ END FUNCTION I64_ToDecString
 FUNCTION I32_FromChar(cStr, ErrFlag, ErrMsg) RESULT(Number)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a decimal string to an integer value
+    !! To convert a decimal string to an integer value
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     ! character string
-    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  ! true if input is not invalid
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   ! message if input is not invalid
-    INTEGER(KIND=I4B)                                       :: Number   ! number
+    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     !! character string
+    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  !! true if input is not invalid
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   !! message if input is not invalid
+    INTEGER(KIND=I4B)                                       :: Number   !! number
 
 !** SUBROUTINE PARAMETER DECLARATIONS:
     INTEGER(KIND=I4B), PARAMETER    :: MaxDigit = 10
@@ -1099,7 +1169,7 @@ FUNCTION I32_FromChar(cStr, ErrFlag, ErrMsg) RESULT(Number)
     ! get valid string length by removing the trailing space(s)
     StrLen = LEN_TRIM(cStr)
     IF (PRESENT(ErrFlag)) ErrFlag = FalseVal
-    
+
     ! check whether there are spaces in front of the number
     ! (only allow space(s) in front of the number but no spaces inside it)
     Indx = 1
@@ -1116,7 +1186,7 @@ FUNCTION I32_FromChar(cStr, ErrFlag, ErrMsg) RESULT(Number)
             RETURN
         END IF
     END IF
-    
+
     ! check for sign
     Sign  = 1
     CurChr => cStr(Indx:Indx)
@@ -1139,7 +1209,7 @@ FUNCTION I32_FromChar(cStr, ErrFlag, ErrMsg) RESULT(Number)
             RETURN
         END IF
     END IF
-    
+
     ! check for leading zero(s)
     Number = 0
     IF (cStr(Indx:Indx) == '0') THEN
@@ -1156,7 +1226,7 @@ FUNCTION I32_FromChar(cStr, ErrFlag, ErrMsg) RESULT(Number)
             RETURN
         END IF
     END IF
-    
+
     ! compute value of the input string
     IStart   = 0
     NumDigit = 0
@@ -1234,15 +1304,15 @@ END FUNCTION I32_FromChar
 FUNCTION I64_FromChar(cStr, ErrFlag, ErrMsg) RESULT(Number)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a decimal string to an integer value
+    !! To convert a decimal string to an integer value
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     ! character string
-    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  ! true if input is not invalid
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   ! message if input is not invalid
-    INTEGER(KIND=I8B)                                       :: Number   ! number
+    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     !! character string
+    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  !! true if input is not invalid
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   !! message if input is not invalid
+    INTEGER(KIND=I8B)                                       :: Number   !! number
 
 !** SUBROUTINE PARAMETER DECLARATIONS:
     INTEGER(KIND=I4B), PARAMETER    :: MaxDigit = 19
@@ -1263,7 +1333,7 @@ FUNCTION I64_FromChar(cStr, ErrFlag, ErrMsg) RESULT(Number)
     ! get valid string length by removing the trailing space(s)
     StrLen = LEN_TRIM(cStr)
     IF (PRESENT(ErrFlag)) ErrFlag = FalseVal
-    
+
     ! check whether there are spaces in front of the number
     ! (only allow space(s) in front of the number but no spaces inside it)
     Indx = 1
@@ -1280,7 +1350,7 @@ FUNCTION I64_FromChar(cStr, ErrFlag, ErrMsg) RESULT(Number)
             RETURN
         END IF
     END IF
-    
+
     ! check for sign
     Sign  = 1_I8B
     CurChr => cStr(Indx:Indx)
@@ -1303,7 +1373,7 @@ FUNCTION I64_FromChar(cStr, ErrFlag, ErrMsg) RESULT(Number)
             RETURN
         END IF
     END IF
-    
+
     ! check for leading zero(s)
     Number = 0_I8B
     IF (cStr(Indx:Indx) == '0') THEN
@@ -1320,7 +1390,7 @@ FUNCTION I64_FromChar(cStr, ErrFlag, ErrMsg) RESULT(Number)
             RETURN
         END IF
     END IF
-    
+
     ! compute value of the input string
     IStart   = 0
     NumDigit = 0

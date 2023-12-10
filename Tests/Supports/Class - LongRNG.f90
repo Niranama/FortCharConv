@@ -130,10 +130,10 @@ FUNCTION Default_NextDouble(RNG) RESULT(RandNum)
         
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(LongRNG), INTENT(INOUT)   :: RNG      ! 'LongRNG' object
-    REAL(KIND=DP)                         :: RandNum  ! random number
+    REAL(KIND=DP)                   :: RandNum  ! random number
 
 !** SUBROUTINE PARAMETER DECLARATIONS:
-    ! although these three parameters use different formalas, they are essentially the same.
+    ! although these three parameters use different formulas, they are essentially the same.
     REAL(KIND=DP), PARAMETER  :: DNorm1 = 2.0_DP**(-53)
     REAL(KIND=DP), PARAMETER  :: DNorm2 = 1.0_DP/SHIFTL(1_I8B, 53)
     REAL(KIND=DP), PARAMETER  :: DNorm3 = 0.5_DP*EPSILON(1.0_DP)
@@ -207,7 +207,7 @@ FUNCTION Default_NextQuad(RNG) RESULT(RandNum)
     REAL(KIND=QP)                   :: RandNum  ! random number
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    ! although these three parameters use different formalas, they are essentially the same.
+    ! although these three parameters use different formulas, they are essentially the same.
     REAL(KIND=QP), PARAMETER    :: QNorm1 = 2.0_QP**(-113)
 !    REAL(KIND=QP), PARAMETER    :: QNorm2 = 1.0_QP/ToR128(SHIFTL(OneI128, 113))  ! can't be parameter
     REAL(KIND=QP), PARAMETER    :: QNorm3 = 0.5_QP*EPSILON(1.0_QP)

@@ -1,7 +1,7 @@
 
 MODULE ModBase_Error_Handlers
-       
-!** PURPOSE OF THIS MODULE:
+
+!^ **PURPOSE OF THIS MODULE**:  
     ! contains routines and parameters for error handling tasks
 
 !** USE STATEMENTS:
@@ -31,19 +31,19 @@ MODULE ModBase_Error_Handlers
 
 !** MODULE PARAMETERS:
     ! parameters for error level
-	INTEGER(KIND=I1B), PARAMETER    :: ErrNone    = 0
-    INTEGER(KIND=I1B), PARAMETER    :: ErrWarning = 1
-    INTEGER(KIND=I1B), PARAMETER    :: ErrSevere  = 2
-    INTEGER(KIND=I1B), PARAMETER    :: ErrFatal   = 3
+	INTEGER(KIND=I1B), PARAMETER    :: ErrNone    = 0   !! no error level
+    INTEGER(KIND=I1B), PARAMETER    :: ErrWarning = 1   !! warning error level
+    INTEGER(KIND=I1B), PARAMETER    :: ErrSevere  = 2   !! severe error level
+    INTEGER(KIND=I1B), PARAMETER    :: ErrFatal   = 3   !! fatal error level
     ! name of error file
-    CHARACTER(LEN=*),  PARAMETER    :: ErrFilename = 'General_Error.txt'
+    CHARACTER(LEN=*),  PARAMETER    :: ErrFilename = 'ErrorLog.txt'
 
 !** DERIVED TYPE DEFINITIONS
     ! na
 
 !** INTERFACE DEFINITIONS:
     ! na
-    
+
 !** MODULE VARIABLE DECLARATIONS:
     LOGICAL     :: StopOnError = FalseVal
     LOGICAL     :: FatalError  = FalseVal
@@ -57,7 +57,7 @@ MODULE ModBase_Error_Handlers
 SUBROUTINE DisplayErrorMessage(ErrorMessage,OutUnit)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To display the error message on the "standard error output" unit
+    !^ To display the error message on the "standard error output" unit
     !   or the indicated file unit number if specified.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
@@ -65,10 +65,10 @@ SUBROUTINE DisplayErrorMessage(ErrorMessage,OutUnit)
 !** SUBROUTINE ARGUMENT DEFINITIONS:
     CHARACTER(LEN=*),            INTENT(IN)     :: ErrorMessage
     INTEGER(KIND=I4B), OPTIONAL, INTENT(INOUT)  :: OutUnit
-          
+
 !** SUBROUTINE PARAMETER DEFINITIONS:
     CHARACTER(LEN=*), PARAMETER :: ErrorFormat = '(2X,A)'
-  
+
 !** SUBROUTINE LOCAL VARIABLE DECLARATIONS:
     LOGICAL             :: FileOpened
     LOGICAL             :: Existing
@@ -76,12 +76,12 @@ SUBROUTINE DisplayErrorMessage(ErrorMessage,OutUnit)
     INTEGER(KIND=I4B)   :: ErrorUnit
 
 !** FLOW
-    
+
     IF (PRESENT(OutUnit)) THEN
-        
+
         ! first, check whether the specified unit number is connected to an opened file
         INQUIRE(UNIT=OutUnit, OPENED=FileOpened, IOStat=IOS)
-        
+
         IF (FileOpened.AND.(IOS == 0)) THEN
 
             ! simply write message to the specified file unit number
@@ -96,22 +96,22 @@ SUBROUTINE DisplayErrorMessage(ErrorMessage,OutUnit)
             WRITE(OutUnit, ErrorFormat) TRIM(ErrorMessage)
 
         END IF
-        
+
     ELSE
-        
+
         ! first, check whether the General Error Report file is opened
         INQUIRE(FILE=ErrFilename, EXIST=Existing, OPENED=FileOpened, IOStat=IOS)
-        
+
         IF (FileOpened.AND.(IOS == 0)) THEN
-            
+
             ! get existing unit number for the opened file
             INQUIRE(FILE=ErrFilename, NUMBER=ErrorUnit)
-            
+
             ! then write message to the General Error Report file
             WRITE(ErrorUnit, ErrorFormat) TRIM(ErrorMessage)
-            
+
         ELSE
-            
+
             ! open file
             IF (Existing) THEN
                 OPEN(NEWUNIT=ErrorUnit, FILE=ErrFilename, POSITION='APPEND')
@@ -129,9 +129,9 @@ SUBROUTINE DisplayErrorMessage(ErrorMessage,OutUnit)
 
             ! then write message to the General Error Report file
             WRITE(ErrorUnit, ErrorFormat) TRIM(ErrorMessage)
-            
+
         END IF
-        
+
     ENDIF
 
     RETURN
@@ -143,14 +143,14 @@ END SUBROUTINE DisplayErrorMessage
 SUBROUTINE DisplayWarningError(ErrorMessage,OutUnit)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To display a 'Warning Error' message.
+    !^ To display a 'Warning Error' message.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DEFINITIONS:
     CHARACTER(LEN=*),            INTENT(IN)     :: ErrorMessage
     INTEGER(KIND=I4B), OPTIONAL, INTENT(INOUT)  :: OutUnit
- 
+
 !** SUBROUTINE LOCAL VARIABLE DECLARATIONS:
     ! na
 
@@ -167,22 +167,22 @@ END SUBROUTINE DisplayWarningError
 SUBROUTINE DisplayFatalError(ErrorMessage,OutUnit)
 
 !** URPOSE OF THIS SUBROUTINE:
-    ! To display a 'Fatal Error' message.
-          
+    !^ To display a 'Fatal Error' message.
+
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DEFINITIONS:
     CHARACTER(LEN=*),            INTENT(IN)     :: ErrorMessage
     INTEGER(KIND=I4B), OPTIONAL, INTENT(INOUT)  :: OutUnit
-          
+
 !** SUBROUTINE LOCAL VARIABLE DECLARATIONS:
     ! na
-  
+
 !** FLOW
 
     ! display message
     CALL DisplayErrorMessage(' ++ FATAL ++ : ' // ErrorMessage, OutUnit)
-    
+
     ! set flag
     FatalError = TrueVal
 
@@ -195,17 +195,17 @@ END SUBROUTINE DisplayFatalError
 SUBROUTINE DisplaySevereError(ErrorMessage,OutUnit)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To display a 'Severe Error' message.
+    !^ To display a 'Severe Error' message.
 
 	IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DEFINITIONS:
     CHARACTER(LEN=*),            INTENT(IN)     :: ErrorMessage
     INTEGER(KIND=I4B), OPTIONAL, INTENT(INOUT)  :: OutUnit
-          
+
 !** SUBROUTINE LOCAL VARIABLE DECLARATIONS:
     ! na
-  
+
 !** FLOW
 
 	CALL DisplayErrorMessage(' ++ SEVERE ++ : ' // ErrorMessage, OutUnit)
@@ -219,7 +219,7 @@ END SUBROUTINE DisplaySevereError
 SUBROUTINE DisplayContinueError(ErrorMessage,OutUnit)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To display a 'Continued Error' message.
+    !^ To display a 'Continued Error' message.
 
 	IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -234,7 +234,7 @@ SUBROUTINE DisplayContinueError(ErrorMessage,OutUnit)
 
     ! display message
 	CALL DisplayErrorMessage(' +++++ : ' // ErrorMessage, OutUnit)
-    
+
     ! check error flags
     IF (StopOnError.AND.FatalError) THEN
         CALL AbortProgram(OutUnit)
@@ -252,17 +252,17 @@ END SUBROUTINE DisplayContinueError
 SUBROUTINE DisplayMessage(Message,OutUnit)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To display a (informative) message on designated output Files.
-          
+    !^ To display a (informative) message on designated output Files.
+
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DEFINITIONS:
     CHARACTER(LEN=*),            INTENT(IN)     :: Message
     INTEGER(KIND=I4B), OPTIONAL, INTENT(INOUT)  :: OutUnit
-          
+
 !** SUBROUTINE LOCAL VARIABLE DECLARATIONS:
     ! na
-  
+
 !** FLOW
 
     CALL DisplayErrorMessage(Message, OutUnit)
@@ -276,32 +276,32 @@ END SUBROUTINE DisplayMessage
 SUBROUTINE CloseErrorFile
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! This subroutine closes the general error file.
+    !^ This subroutine closes the general error file.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DEFINITIONS:
     ! na
-          
+
 !** SUBROUTINE LOCAL VARIABLE DECLARATIONS:
     LOGICAL             :: FileOpened
     INTEGER(KIND=I4B)   :: IOS
     INTEGER(KIND=I4B)   :: ErrorUnit
-   
+
 !** FLOW
 
     INQUIRE(FILE=ErrFilename, OPENED=FileOpened, IOStat=IOS)
-        
+
     IF (FileOpened.AND.(IOS == 0)) THEN
-            
+
         ! get existing unit number for the opened file
         INQUIRE(FILE=ErrFilename, NUMBER=ErrorUnit)
-            
+
         ! then close the General Error Report file
         CLOSE(ErrorUnit)
 
     END IF
-    
+
     RETURN
 
 END SUBROUTINE CloseErrorFile
@@ -311,13 +311,13 @@ END SUBROUTINE CloseErrorFile
 SUBROUTINE AbortProgram(OutUnit)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! This subroutine causes the program to halt due to a fatal error.
+    !^ This subroutine causes the program to halt due to a fatal error.
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DEFINITIONS:
 	INTEGER(KIND=I4B), OPTIONAL, INTENT(INOUT)  :: OutUnit
-          
+
 !** SUBROUTINE LOCAL VARIABLE DECLARATIONS:
     CHARACTER(LEN=:), ALLOCATABLE   :: StopMessage
 
@@ -337,7 +337,7 @@ END SUBROUTINE AbortProgram
 SUBROUTINE SetStopOnError(Flag)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To set StopOnError flag (module variable).
+    !^ To set StopOnError flag (module variable).
 
 	IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -360,32 +360,32 @@ END SUBROUTINE SetStopOnError
 SUBROUTINE CloseMiscOpenFiles
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! This subroutine scans potential Unit numbers and closes
+    !^ This subroutine scans potential Unit numbers and closes
     !   any that are still open.
 
 !** METHODOLOGY EMPLOYED:
     ! Use INQUIRE to determine if file is open.
-          
+
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DEFINITIONS:
     ! na
-          
+
 !** SUBROUTINE PARAMETER DEFINITIONS:
     INTEGER(KIND=I4B), PARAMETER    :: MaxUnitNumber = 1000
-  
+
 !** SUBROUTINE LOCAL VARIABLE DECLARATIONS:
     LOGICAL             :: EXIST, OPENED
     INTEGER(KIND=I4B)   :: UnitNumber
     INTEGER(KIND=I4B)   :: IOS
-   
+
 !** FLOW
 
     DO UnitNumber = 1, MaxUnitNumber
         INQUIRE(Unit=UnitNumber, EXIST=EXIST,  OPENED=OPENED, IOStat=IOS)
         IF (EXIST.AND.OPENED.AND.(IOS == 0)) CLOSE(UnitNumber)
     END DO
-   
+
     RETURN
 
 END SUBROUTINE CloseMiscOpenFiles

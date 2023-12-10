@@ -1,98 +1,88 @@
 
 MODULE ModBase_RealSP_CharConv
 
-!** PURPOSE OF THIS MODULE:
+!^ **PURPOSE OF THIS MODULE**:  
     ! This module contains routines that perform a conversion between a 32-bit
-    ! floating point number and a string.
-
-!** REFERENCE TECHNICAL ARTICLES:
-    ! [1]  Junekey Jeon.  "Dragonbox: A New Floating-Point Binary-to-Decimal Conversion Algorithm".
-    !       https://github.com/jk-jeon/dragonbox/blob/master/other_files/Dragonbox.pdf
-    ! [2]  Ulf Adams.  "Ryu: Fast Float-to-String Conversion".
-    !       https://dl.acm.org/doi/10.1145/3192366.3192369
-    ! [3]  Raffaello Giulietti.  "The Schubfach way to render doubles".
-    !       https://drive.google.com/open?id=1luHhyQF9zKlM8yJ1nebU0OgVYhfC6CBN
-    ! [4]  Clinger WD. How to Read Floating Point Numbers Accurately. SIGPLAN Not 2004 Apr;39(4):360–371.
-    !       https://doi.org/10.1145/989393.989430
-    ! [5]  Daniel Lemire.  "Number Parsing at a Gigabyte per Second", Software: Practice and
-    !   Experience 51 (8), 2021.
-    !       https://arxiv.org/abs/2101.11408
-    ! [6]  Noble Mushtak and Daniel Lemire.  "Fast Number Parsing Without Fallback", Software: Practice
-    !   and Experience 53 (7), 2023.
-    !       https://arxiv.org/abs/2212.06644
-    ! [7]  Bouvier & Zimmermann.  "Division-Free Binary-to-Decimal Conversion".
-    !       https://hal.inria.fr/hal-00864293v1/document
-    ! [8]  Hacker's Delight, 2nd Edition.
-    ! [9]  Nigel Tao.  "The Eisel-Lemire ParseNumberF64 Algorithm".
-    !       https://nigeltao.github.io/blog/2020/eisel-lemire.html
-    ! [10] Nigel Tao.  "ParseNumberF64 by Simple Decimal Conversion".
-    !       https://nigeltao.github.io/blog/2020/parse-number-f64-simple.html
-
-!** REFERENCE CODE IMPLEMENTATION:
-    ! [11] DragonBox: C++ reference implementation.  https://github.com/jk-jeon/dragonbox
-    ! [12] Ryu: C reference implementation.  https://github.com/ulfjack/ryu
-    ! [13] Schubfach: Java reference implementation.  https://github.com/c4f7fcce9cb06515/Schubfach
-    ! [14] Drachennest: Different algorithms for converting binary to decimal floating-point numbers.
-    !   https://github.com/abolz/Drachennest
-    ! [15] Number Conversion Benchmark in C.  https://github.com/ibireme/c_numconv_benchmark
-    ! [16] Fast_Float Number Parsing Library.  https://github.com/fastfloat/fast_float
-    ! [17] Fast_Double_Parser.  https://github.com/lemire/fast_double_parser
-    ! [18] The LLVM Project (LibC).  https://github.com/llvm/llvm-project/tree/main/libc/src/__support
-    ! [19] Double Conversion: Efficient binary-decimal and decimal-binary conversion routines for IEEE doubles.
-    !   https://github.com/google/double-conversion
-    ! [20] fmt: A modern formatting library.  https://github.com/fmtlib/fmt
-
-!** TECHNICAL AND IMPLEMENTATION NOTES:
-    ! On the output to string:
-    ! 1) Three routines are available to convert a real (floating-point) number into a string.
+    !   floating point number and a string.  
+    !    
+!^ **REFERENCE TECHNICAL ARTICLES**:  
+    ! [1]  Junekey Jeon.  [Dragonbox: A New Floating-Point Binary-to-Decimal Conversion Algorithm](https://github.com/jk-jeon/dragonbox/blob/master/other_files/Dragonbox.pdf)  
+    ! [2]  Ulf Adams.  [Ryu: Fast Float-to-String Conversion](https://dl.acm.org/doi/10.1145/3192366.3192369)  
+    ! [3]  Raffaello Giulietti.  [The Schubfach way to render doubles](https://drive.google.com/open?id=1luHhyQF9zKlM8yJ1nebU0OgVYhfC6CBN)  
+    ! [4]  Clinger WD. [How to Read Floating Point Numbers Accurately](https://doi.org/10.1145/989393.989430),
+    !   SIGPLAN Not 2004 Apr;39(4):360â€“371.  
+    ! [5]  Daniel Lemire.  [Number Parsing at a Gigabyte per Second](https://arxiv.org/abs/2101.11408),
+    !   Software: Practice and Experience 51 (8), 2021.  
+    ! [6]  Noble Mushtak and Daniel Lemire.  [Fast Number Parsing Without Fallback](https://arxiv.org/abs/2212.06644),
+    !   Software: Practice and Experience 53 (7), 2023.  
+    ! [7]  Bouvier & Zimmermann.  [Division-Free Binary-to-Decimal Conversion](https://hal.inria.fr/hal-00864293v1/document)  
+    ! [8]  Hacker's Delight, 2nd Edition.  
+    ! [9]  Nigel Tao.  [The Eisel-Lemire ParseNumberF64 Algorithm](https://nigeltao.github.io/blog/2020/eisel-lemire.html)  
+    ! [10] Nigel Tao.  [ParseNumberF64 by Simple Decimal Conversion](https://nigeltao.github.io/blog/2020/parse-number-f64-simple.html)  
+    !    
+!^ **REFERENCE CODE IMPLEMENTATION**:  
+    ! [11] [DragonBox: C++ reference implementation](https://github.com/jk-jeon/dragonbox)  
+    ! [12] [Ryu: C reference implementation](https://github.com/ulfjack/ryu)  
+    ! [13] [Schubfach: Java reference implementation](https://github.com/c4f7fcce9cb06515/Schubfach)  
+    ! [14] [Drachennest: Different algorithms for converting binary to decimal floating-point numbers](https://github.com/abolz/Drachennest)  
+    ! [15] [Number Conversion Benchmark in C](https://github.com/ibireme/c_numconv_benchmark)  
+    ! [16] [fast_float number parsing library: 4x faster than strtod](https://github.com/fastfloat/fast_float)  
+    ! [17] [fast_double_parser: 4x faster than strtod](https://github.com/lemire/fast_double_parser)  
+    ! [18] [The LLVM Project: LibC Support](https://github.com/llvm/llvm-project/tree/main/libc/src/__support)  
+    ! [19] [Double Conversion: Efficient binary-decimal and decimal-binary conversion routines for IEEE doubles](https://github.com/google/double-conversion)  
+    ! [20] [fmt: A modern formatting library](https://github.com/fmtlib/fmt)  
+    !    
+!^ **TECHNICAL AND IMPLEMENTATION NOTES**:  
+    ! ***On the output to string***:  
+    ! 1) Three routines are available to convert a real (floating-point) number into a string.  
     !    - "RealToString_DragonBox" is based on the Dragonbox binary-to-decimal conversion algorithm [1]
-    !      and the reference implementation [11, 14, 20]
+    !      and the reference implementation [11, 14, 20]  
     !    - "RealToString_Ryu" is based on the Ryu binary-to-decimal conversion algorithm [2]
-    !      and the reference implementation [12, 14]
+    !      and the reference implementation [12, 14]  
     !    - "RealToString_Schubfach" is based on the Schubfach binary-to-decimal conversion algorithm [3]
-    !      and the reference implementation [13, 14, 15]
+    !      and the reference implementation [13, 14, 15]  
     ! 2) All three binary-to-decimal conversion algorithms employed here produce the so-called shortest
     !    output representation that provide an error-free write-read cycle.  This means that any correct
     !    parsers (e.g. RealFromString routines) will read in the output string and return the original
-    !    real (floating-poing) number.
-    ! 3) Although the DragonBox reference implemntation provides several modes of rounding, only the
-    !    round-to-nearest mode is implemented here (the other two algorithms also ues this mode).
-    ! 4) Although the Ryu reference implemntation provides several conversion output formats (Shortest,
+    !    real (floating-point) number.  
+    ! 3) Although the DragonBox reference implementation provides several modes of rounding, only the
+    !    round-to-nearest mode is implemented here (the other two algorithms also use this mode).  
+    ! 4) Although the Ryu reference implementation provides several conversion output formats (Shortest,
     !    Scientific, Fixed), only the shortest representation (as mentioned above) is implemented.
     !    Therefore, all three routines will produces the output string in a format similar to "G0" format
-    !    specification in Fortran.
+    !    specification in Fortran.  
     ! 5) Actually, the RealToString routines have an optional "format" argument that we can use to specify
     !    whether to output the string in "General (G)" or "Scientific (ES)" format.  However, because they
     !    always produce the shortest output, no input argument to the routines is provided to specify
-    !    the desired number of significant digits as typically done in Fortran format specifications.
-    ! On the input from string:
+    !    the desired number of significant digits as typically done in Fortran format specifications.  
+    ! ***On the input from string***:  
     ! 1) Four routines are available to convert a string into a real (floating-point) number.  All four
     !    routines utilize the so-call Clinger's fast-path algorithm [4].  Three of them (except "YY") employ
     !    the so-call Eisel-Lemire decimal-to-binary conversion algorithm [5, 9] but are based on different
     !    reference implementation.  When the Eisel-Lemire (or YY's fast-path) algorithm is NOT valid, three
     !    of the routines (except "LibC") use multi-precision (unsigned) integer arithmetic (i.e. BigUInt)
-    !    whereas "LibC" employs the so-call Simple Decimal Conversion algorithm [10].
-    !    - "RealFromString_FastFloat" is based on the reference implementation [16]
-    !    - "RealFromString_LibC" is based on the reference implementation [18]
-    !    - "RealFromString_YY" is based on the reference implementation [15, 19]
-    !    - "RealFromString_Lemire" is based on the reference implementation [17, 19]
+    !    whereas "LibC" employs the so-call Simple Decimal Conversion algorithm [10].  
+    !    - "RealFromString_FastFloat" is based on the reference implementation [16]  
+    !    - "RealFromString_LibC" is based on the reference implementation [18]  
+    !    - "RealFromString_YY" is based on the reference implementation [15, 19]  
+    !    - "RealFromString_Lemire" is based on the reference implementation [17, 19]  
     ! 2) The RealFromString routines have an optional "parsing" argument that we can use to specify how
-    !    the routines interpret the input string.
+    !    the routines interpret the input string.  
     ! 3) The "Parse_Fortran_String" routine is called when the optional "parsing" argument is not specified
     !    (i.e. the default option) or "FortNum (or 1)" value is supplied as the parsing argument.  The routine
     !    will interpret the input string as a valid Fortran real (floating point) number if it has one of
-    !    the two following forms:
-    !    <1> A number without exponent part -> [S]N[N...]
-    !    <2> A number with exponent part    -> [S]N[N...]E[S]N[N...]
-    !       Where
-    !       [ ] indicates an optional field
-    !       S is a sign indicator (required if negative '-', optional if positive '+').
+    !    the two following forms:  
+    !    <1> A number without exponent part -> [S]N[N...]  
+    !    <2> A number with exponent part    -> [S]N[N...]E[S]N[N...]  
+    !       where  
+    !       [ ] indicates an optional field  
+    !       S is a sign indicator (required if negative '-', optional if positive '+').  
     !       N is a decimal digit (0 through 9). A decimal point (a period) may appear anywhere
-    !           after the sign (but before the exponent).
-    !       E is an exponent indicator (either 'e' or 'E')
-    !    The valid number is similar to "Real" Fortran constant (literal) with some small differences.
-    !    - A whole number without a decimal point (i.e. "Integer" constant) is considered valid.
-    !    - The optional kind parameter (_k) is not allowed here.
+    !           after the sign (but before the exponent).  
+    !       E is an exponent indicator (either 'e' or 'E')  
+    !    The valid number is similar to "Real" Fortran constant (literal) with some small differences.  
+    !    - A whole number without a decimal point (i.e. "Integer" constant) is considered valid.  
+    !    - The optional kind parameter (e.g. 10.0_DP) is not allowed here.  
     !    Leading and/or trailing space(s) are allowed.  For example, "  1.23" and "1.23   " are considered
     !    valid.  However, no space is allowed inside the supposedly valid number.  For instance, "1 .2 3"
     !    is considered NOT valid. Therefore, this routine is not totally compatible with Fortran READ statement
@@ -101,56 +91,56 @@ MODULE ModBase_RealSP_CharConv
     !    Then, the input will be pre-processed according to the flag.  Nonetheless, this routine neglects
     !    this optional input because it will make the routine much less efficient due to the fact that
     !    we will need to scan the whole string twice and we will also need to copy the input string into
-    !    a buffer string and working with the buffer instead of directly handling the input string.
+    !    a buffer string and working with the buffer instead of directly handling the input string.  
     ! 4) The "Parse_FPlus_String" routine is called when "FPlusNum (or 2)" value is supplied as the parsing
     !    argument.  The routine will parse a valid Fortran real (floating point) number with more relaxed
     !    rules than those used in "Parse_Fortran_Number" routine. The relaxed rules consider the following
-    !    numbers as valid:
+    !    numbers as valid:  
     !    - a number expressed in the scientific format can use 'd', 'D', 'q' and 'Q'
-    !      in place of 'e' or 'E'.
+    !      in place of 'e' or 'E'.  
     !    - a number with '+' or '-' after digits (e.g. 1.23-20 or 123+50) is considered to
-    !      be expressed in a valid number expressed in the scientific format
+    !      be expressed in a valid number expressed in the scientific format.  
     !    - digits before any invalid character encountered are treated as a valid number
     !      and any characters after the first encounter (including the first invalid one)
     !      are neglected.  therefore, for example, a '12.56ax-300' is considered to be
-    !      a valid number with a value of 12.56.
+    !      a valid number with a value of 12.56.  
     ! 5) The "Parse_JSON_String" routine is called when "JsonNum (or 3)" value is supplied as the parsing
     !    argument.  The routine will parse a valid JSON floating point number where its differences from
-    !    from Fortran number are as follows:
-    !    - leading and trailing spaces are not allowed.
-    !    - a plus sign as the first character is not allowed.
+    !    from Fortran number are as follows:  
+    !    - leading and trailing spaces are not allowed.  
+    !    - a plus sign as the first character is not allowed.  
     !    - leading zero(s) is not allowed (if 0 is the first character, the second one
-    !      must either be a period or an exponent indicator.)
-    !    - a period must be followed by at least one digit.
-
-!** USAGE:
-    ! On the output to string:
-    ! => cStr = RealXP_ToString_DragonBox(Number, IsScientific)
-    ! => cStr = RealXP_ToString_Ryu(Number, IsScientific)
-    ! => cStr = RealXP_ToString_Schubfach(Number, IsScientific)
-    !   where
-    !   "cStr" is an "allocatable" character string representing the output string
-    !   "Number" is a real number representing the floating point value
+    !      must either be a period or an exponent indicator.)  
+    !    - a period must be followed by at least one digit.  
+    !    
+!^ **USAGE**:  
+    ! ***On the output to string***:  
+    ! => cStr = RealXP_ToString_DragonBox(Number, IsScientific)  
+    ! => cStr = RealXP_ToString_Ryu(Number, IsScientific)  
+    ! => cStr = RealXP_ToString_Schubfach(Number, IsScientific)  
+    !   where  
+    !   "cStr" is an "allocatable" character string representing the output string  
+    !   "Number" is a real number representing the floating point value  
     !   "IsScientific" is a logical flag (optional argument) indicating whether
-    !       the output string is in "General" or "Scientific" format.
-    !       If present and true, the output string is in "Scientific" format.
-    !       Otherwise, the output string is in "General" format.
-    ! On the input from string:
-    ! => Number = RealXP_FromString_FastFloat(cStr, ParseOpt, ErrFlag, ErrMsg)
-    ! => Number = RealXP_FromString_LibC(cStr, ParseOpt, ErrFlag, ErrMsg)
-    ! => Number = RealXP_FromString_YY(cStr, ParseOpt, ErrFlag, ErrMsg)
-    ! => Number = RealXP_FromString_Lemire(cStr, ParseOpt, ErrFlag, ErrMsg)
-    !   where
-    !   "Number" is a real number representing the floating point value if the input string is valid
-    !   "cStr" is a character string representing the floating-point number string
+    !       the output string is in "General" or "Scientific" format.  
+    !       If present and true, the output string is in "Scientific" format.  
+    !       Otherwise, the output string is in "General" format.  
+    ! ***On the input from string***:  
+    ! => Number = RealXP_FromString_FastFloat(cStr, ParseOpt, ErrFlag, ErrMsg)  
+    ! => Number = RealXP_FromString_LibC(cStr, ParseOpt, ErrFlag, ErrMsg)  
+    ! => Number = RealXP_FromString_YY(cStr, ParseOpt, ErrFlag, ErrMsg)  
+    ! => Number = RealXP_FromString_Lemire(cStr, ParseOpt, ErrFlag, ErrMsg)  
+    !   where  
+    !   "Number" is a real number representing the floating point value if the input string is valid  
+    !   "cStr" is a character string representing the floating-point number string  
     !   "ParseOpt" is an integer input flag (optional) indicating how to interpret the input string.
     !       The valid value is FortNum (1), FPlusNum (2) or JsonNum (3).
-    !       If not specified and invalid, the routines will interpret the input string as a Fortran number.
+    !       If not specified and invalid, the routines will interpret the input string as a Fortran number.  
     !   "ErrFlag" is a logical output flag (optional) indicating whether there is an error in parsing
-    !       the input string.  True if the string represents a valid number.  False, otherwise.
+    !       the input string.  True if the string represents a valid number.  False, otherwise.  
     !   "ErrMsg" is an allocatable output character string (optional) that returns a message that describe
-    !       the result of parsing the input string.
-    ! NOTE: "XP" in the routine names shown above indicate the precision of the real number.
+    !       the result of parsing the input string.  
+    ! **NOTE**: "XP" in the routine names shown above indicate the precision of the real number.
     !   The actual name will either be "RealSP_...", "RealDP_..." or "RealQP_..." for single-precision,
     !   double-precision and quadruple-precision number, respectively.
 
@@ -176,12 +166,12 @@ MODULE ModBase_RealSP_CharConv
     PUBLIC :: RealSP_FromString_Lemire
 
     PRIVATE          ! by default, hide all data and routines except those declared explicitly
-    
+
 !** MODULE PARAMETERS:
     ! options for type of number to be parsed
-    INTEGER(KIND=I4B), PARAMETER, PUBLIC  :: FortNum  = 1     ! strict fortran number
-    INTEGER(KIND=I4B), PARAMETER, PUBLIC  :: FPlusNum = 2     ! relaxed fortran number
-    INTEGER(KIND=I4B), PARAMETER, PUBLIC  :: JsonNum  = 3     ! json number
+    INTEGER(KIND=I4B), PARAMETER, PUBLIC  :: FortNum  = 1     ! strict Fortran number
+    INTEGER(KIND=I4B), PARAMETER, PUBLIC  :: FPlusNum = 2     ! relaxed Fortran number
+    INTEGER(KIND=I4B), PARAMETER, PUBLIC  :: JsonNum  = 3     ! JSON number
     ! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ! +++ parameters used to convert bit widths to whole decimal digits +++
     INTEGER(KIND=I8B), PARAMETER  :: LB2To10_M1 = 301029995664_I8B     ! LogBaseTenOfTwoTimesTenToThe12th
@@ -214,13 +204,19 @@ MODULE ModBase_RealSP_CharConv
     INTEGER(KIND=I4B), PARAMETER  :: ExceptionalExponent = INT(Z'7FFFFFFF', KIND=I4B)
     ! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ! +++ maximum and minimum (positive) parameters +++
+    ! note:  These parameters are stored in an integer data type that have the same number of bits to
+    !        a real data type of the floating point number.
+    !# minimum value of subnormal floating point number
     INTEGER(KIND=I4B), PARAMETER, PUBLIC  :: MinSubnormal = 1
+    !# maximum value of subnormal floating point number
     INTEGER(KIND=I4B), PARAMETER, PUBLIC  :: MaxSubnormal = SHIFTL(1, SignificandBits) - 1
+    !# minimum value of normal floating point number
     INTEGER(KIND=I4B), PARAMETER, PUBLIC  :: MinNormal    = SHIFTL(1, SignificandBits)
+    !# maximum value of normal floating point number
     INTEGER(KIND=I4B), PARAMETER, PUBLIC  :: MaxNormal    = IOR(SHIFTL((MaxExponent - 1), SignificandBits), MaxSubnormal)
     ! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ! -------------------------------------------------------------------------
-    ! -----   parameters for high-precision decmial conversion algorithm  -----
+    ! -----   parameters for high-precision decimal conversion algorithm  -----
     ! -------------------------------------------------------------------------
     ! 150 is an arbitrary number of digits, but should be large enough for any practical number.
     ! Important note: a number of digits large enough to represent the smallest subnormal
@@ -344,7 +340,27 @@ MODULE ModBase_RealSP_CharConv
     INTEGER(KIND=I8B), PARAMETER  :: MaxMant                    = MAX_U64
     INTEGER(KIND=I8B), PARAMETER  :: NotOneMant                 = NOT(1_I8B)
     INTEGER(KIND=I8B), PARAMETER  :: NotSigHidBitMask           = NOT(SHIFTL(1_I8B, SignificandBits))
-    INTEGER(KIND=I8B), PARAMETER  :: Powers_of_Ten_Uint64(0:19) = [(10_I8B**Idx, Idx = 0, 19)]
+    INTEGER(KIND=I8B), PARAMETER  :: Powers_of_Ten_Uint64(0:19) = &
+        [0_I8B, &
+         10_I8B, &
+         100_I8B, &
+         1000_I8B, &
+         10000_I8B, &
+         100000_I8B, &
+         1000000_I8B, &
+         10000000_I8B, &
+         100000000_I8B, &
+         1000000000_I8B, &
+         10000000000_I8B, &
+         100000000000_I8B, &
+         1000000000000_I8B, &
+         10000000000000_I8B, &
+         100000000000000_I8B, &
+         1000000000000000_I8B, &
+         10000000000000000_I8B, &
+         100000000000000000_I8B, &
+         1000000000000000000_I8B, &
+         -8446744073709551616_I8B]
     ! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ! ------------------------------------------------
     ! -----   YY/Lemire-Algorithm's parameters   -----
@@ -378,7 +394,7 @@ MODULE ModBase_RealSP_CharConv
                                             ! significand is based on a truncated string
     END TYPE StringAux
     ! ----------------------------------------------------------------------------
-    ! -----   derived types for high-precision decmial conversion algorithm  -----
+    ! -----   derived types for high-precision decimal conversion algorithm  -----
     ! ----------------------------------------------------------------------------
     TYPE HPDecimal
         INTEGER(KIND=I4B)   :: NumDigits = 0
@@ -398,7 +414,7 @@ MODULE ModBase_RealSP_CharConv
     ! ----------------------------------------------------------------------------
     ! -----   derived types for FastFloat algorithm                          -----
     ! ----------------------------------------------------------------------------
-    ! a multiprecision (fixed capacity) unsigned integer where its representation are:
+    ! a multi-precision (fixed capacity) unsigned integer where its representation are:
     ! - Base is 2**64.
     ! - Magnitude as array in little endian order.
     ! - The 'Length' first 'Digit' count as the number.
@@ -449,7 +465,7 @@ MODULE ModBase_RealSP_CharConv
     ! na
 
 !** INTERFACE/GENERIC DEFINITIONS:
-    ! interfaces to routines used by FastFloat algorithm  
+    ! interfaces to routines used by FastFloat algorithm
     ABSTRACT INTERFACE
         SUBROUTINE CB_Round(E, M, Min)
             IMPORT
@@ -467,6 +483,769 @@ MODULE ModBase_RealSP_CharConv
     CONTAINS
 
 !** MODULE ELEMENTS SUBROUTINES OR FUNCTIONS:
+
+!------------------------------------------------------------------------------
+!
+!                       REAL32-TO-STRING MAIN ROUTINES
+!
+!------------------------------------------------------------------------------
+
+FUNCTION RealSP_ToString_DragonBox(Number, IsScientific) RESULT(cStr)
+
+!** PURPOSE OF THIS SUBROUTINE:
+!^ To convert a single-precision floating-point value to a character (decimal) string
+! using the DragonBox algorithm.
+
+    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
+
+!** SUBROUTINE ARGUMENT DECLARATIONS:
+    REAL(KIND=SP),     INTENT(IN)   :: Number       !! number
+    LOGICAL, OPTIONAL, INTENT(IN)   :: IsScientific
+    !^ format flag  
+    ! true  if to write the given number in scientific format  
+    ! false if to write the given number in general format  
+    ! default is false
+    CHARACTER(LEN=:), ALLOCATABLE   :: cStr         !! character string
+
+!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
+    INTEGER(KIND=I4B)   :: RawBin       ! raw IEEE binary floating point representation
+    INTEGER(KIND=I4B)   :: SigRaw       ! raw (biased) significand in base 2
+    INTEGER(KIND=I4B)   :: ExpRaw       ! raw (biased) exponent in base 2
+    INTEGER(KIND=I4B)   :: SigBin       ! (unbiased) significand in base 2
+    INTEGER(KIND=I4B)   :: ExpBin       ! (unbiased) exponent in base 2
+    LOGICAL             :: Negative     ! sign flag (true if real value is negative)
+    INTEGER(KIND=I4B)   :: SigDec       ! significand in base 10
+    INTEGER(KIND=I4B)   :: ExpDec       ! exponent in base 10
+    LOGICAL             :: ConvFlag     ! conversion flag (true if bin2dec conversion is needed)
+    REAL(KIND=SP)       :: FloatVal     ! working real (for conversion to binary representation)
+    EQUIVALENCE(RawBin, FloatVal)
+    INTEGER(KIND=I4B)   :: wPos
+    CHARACTER(LEN=48)   :: wStr         ! working string
+    INTEGER(KIND=I4B)   :: wLen         ! length of string
+
+!** FLOW
+
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ conversion of real value to its binary representation  +++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! get raw IEEE binary floating point representation (little-endian order)
+    FloatVal = Number
+
+! decompose the representation into its parts
+    Negative = IAND(RawBin, SignMask) /= 0_I4B
+    SigRaw   = IAND(RawBin, SignificandMask)
+    ExpRaw   = INT(SHIFTR(IAND(RawBin, ExponentMask), SignificandBits), KIND=I4B)
+
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ conversion from binary to decimal representation +++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    ConvFlag = TrueVal
+! check for special cases
+    IF ((ExpRaw == 0).AND.(SigRaw == 0_I4B)) THEN
+! zero
+        SigDec = 0_I4B
+        ExpDec = 0
+        ConvFlag = FalseVal
+    ELSEIF (ExpRaw == MaxExponent) THEN
+! NaN or Infinity
+        SigDec = SigRaw
+        ExpDec = ExceptionalExponent
+        ConvFlag = FalseVal
+    END IF
+
+! get exponent and mantissa
+    IF (ExpRaw /= 0) THEN
+! normal number
+        SigBin = IOR(SigRaw, SigHidBitMask)
+        ExpBin = ExpRaw - ExponentBias - SignificandBits
+        IF ((-SignificandBits <= ExpBin).AND.(ExpBin <= 0)) THEN
+            IF (TRAILZ(SigBin) >= -ExpBin)THEN
+! fast path for small integer number (without fraction?)
+                SigDec = SHIFTR(SigBin, -ExpBin)
+                ExpDec = 0
+                ConvFlag = FalseVal
+            END IF
+        END IF
+    ELSE
+! subnormal number
+        SigBin = SigRaw
+        ExpBin = 1 - ExponentBias - SignificandBits
+    END IF
+
+    IF (ConvFlag) THEN
+! perform binary-to-decimal conversion
+        CALL Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
+    END IF
+
+! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ conversion from decimal representation to decimal string  +++++
+! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! write output
+    IF (Negative) THEN
+        wStr(1:1) = '-'
+        wPos = 2
+    ELSE
+        wPos = 1
+    END IF
+    wLen = (wPos - 1) + WRITE_RealSP(SigDec, ExpDec, wStr(wPos:), IsScientific)
+
+! set output
+    cStr = wStr(1:wLen)
+
+    RETURN
+
+END FUNCTION RealSP_ToString_DragonBox
+
+!******************************************************************************
+
+FUNCTION RealSP_ToString_Ryu(Number, IsScientific) RESULT(cStr)
+
+!** PURPOSE OF THIS SUBROUTINE:
+!^ To convert a single-precision floating-point value to a character (decimal) string
+! using the Ryu algorithm.
+
+    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
+
+!** SUBROUTINE ARGUMENT DECLARATIONS:
+    REAL(KIND=SP),     INTENT(IN)   :: Number       !! number
+    LOGICAL, OPTIONAL, INTENT(IN)   :: IsScientific
+    !^ format flag  
+    ! true  if to write the given number in scientific format  
+    ! false if to write the given number in general format  
+    ! default is false
+    CHARACTER(LEN=:), ALLOCATABLE   :: cStr         !! character string
+
+!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
+    INTEGER(KIND=I4B)   :: RawBin       ! raw IEEE binary floating point representation
+    INTEGER(KIND=I4B)   :: SigRaw       ! raw (biased) significand in base 2
+    INTEGER(KIND=I4B)   :: ExpRaw       ! raw (biased) exponent in base 2
+    INTEGER(KIND=I4B)   :: SigBin       ! (unbiased) significand in base 2
+    INTEGER(KIND=I4B)   :: ExpBin       ! (unbiased) exponent in base 2
+    LOGICAL             :: Negative     ! sign flag (true if real value is negative)
+    INTEGER(KIND=I4B)   :: SigDec       ! significand in base 10
+    INTEGER(KIND=I4B)   :: ExpDec       ! exponent in base 10
+    LOGICAL             :: ConvFlag     ! conversion flag (true if bin2dec conversion is needed)
+    REAL(KIND=SP)       :: FloatVal     ! working real (for conversion to binary representation)
+    EQUIVALENCE(RawBin, FloatVal)
+    INTEGER(KIND=I4B)   :: wPos
+    CHARACTER(LEN=48)   :: wStr         ! working string
+    INTEGER(KIND=I4B)   :: wLen         ! length of string
+
+!** FLOW
+
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ conversion of real value to its binary representation  +++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! get raw IEEE binary floating point representation (little-endian order)
+    FloatVal = Number
+
+! decompose the representation into its parts
+    Negative = IAND(RawBin, SignMask) /= 0_I4B
+    SigRaw   = IAND(RawBin, SignificandMask)
+    ExpRaw   = INT(SHIFTR(IAND(RawBin, ExponentMask), SignificandBits), KIND=I4B)
+
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ conversion from binary to decimal representation +++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    ConvFlag = TrueVal
+! check for special cases
+    IF ((ExpRaw == 0).AND.(SigRaw == 0_I4B)) THEN
+! zero
+        SigDec = 0_I4B
+        ExpDec = 0
+        ConvFlag = FalseVal
+    ELSEIF (ExpRaw == MaxExponent) THEN
+! NaN or Infinity
+        SigDec = SigRaw
+        ExpDec = ExceptionalExponent
+        ConvFlag = FalseVal
+    END IF
+
+! get exponent and mantissa
+    IF (ExpRaw /= 0) THEN
+! normal number
+        SigBin = IOR(SigRaw, SigHidBitMask)
+        ExpBin = ExpRaw - ExponentBias - SignificandBits
+        IF ((-SignificandBits <= ExpBin).AND.(ExpBin <= 0)) THEN
+            IF (TRAILZ(SigBin) >= -ExpBin)THEN
+! fast path for small integer number (without fraction?)
+                SigDec = SHIFTR(SigBin, -ExpBin)
+                ExpDec = 0
+                ConvFlag = FalseVal
+            END IF
+        END IF
+    ELSE
+! subnormal number
+        SigBin = SigRaw
+        ExpBin = 1 - ExponentBias - SignificandBits
+    END IF
+
+    IF (ConvFlag) THEN
+! perform binary-to-decimal conversion
+        CALL Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
+    END IF
+
+! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ conversion from decimal representation to decimal string  +++++
+! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! write output
+    IF (Negative) THEN
+        wStr(1:1) = '-'
+        wPos = 2
+    ELSE
+        wPos = 1
+    END IF
+    wLen = (wPos - 1) + WRITE_RealSP(SigDec, ExpDec, wStr(wPos:), IsScientific)
+
+! set output
+    cStr = wStr(1:wLen)
+
+    RETURN
+
+END FUNCTION RealSP_ToString_Ryu
+
+!******************************************************************************
+
+FUNCTION RealSP_ToString_Schubfach(Number, IsScientific) RESULT(cStr)
+
+!** PURPOSE OF THIS SUBROUTINE:
+!^ To convert a single-precision floating-point value to a character (decimal) string
+! using the Schubfach algorithm.
+
+    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
+
+!** SUBROUTINE ARGUMENT DECLARATIONS:
+    REAL(KIND=SP),     INTENT(IN)   :: Number       !! number
+    LOGICAL, OPTIONAL, INTENT(IN)   :: IsScientific
+    !^ format flag  
+    ! true  if to write the given number in scientific format  
+    ! false if to write the given number in general format  
+    ! default is false
+    CHARACTER(LEN=:), ALLOCATABLE   :: cStr         !! character string
+
+!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
+    INTEGER(KIND=I4B)   :: RawBin       ! raw IEEE binary floating point representation
+    INTEGER(KIND=I4B)   :: SigRaw       ! raw (biased) significand in base 2
+    INTEGER(KIND=I4B)   :: ExpRaw       ! raw (biased) exponent in base 2
+    INTEGER(KIND=I4B)   :: SigBin       ! (unbiased) significand in base 2
+    INTEGER(KIND=I4B)   :: ExpBin       ! (unbiased) exponent in base 2
+    LOGICAL             :: Negative     ! sign flag (true if real value is negative)
+    INTEGER(KIND=I4B)   :: SigDec       ! significand in base 10
+    INTEGER(KIND=I4B)   :: ExpDec       ! exponent in base 10
+    LOGICAL             :: ConvFlag     ! conversion flag (true if bin2dec conversion is needed)
+    REAL(KIND=SP)       :: FloatVal     ! working real (for conversion to binary representation)
+    EQUIVALENCE(RawBin, FloatVal)
+    INTEGER(KIND=I4B)   :: wPos
+    CHARACTER(LEN=48)   :: wStr         ! working string
+    INTEGER(KIND=I4B)   :: wLen         ! length of string
+
+!** FLOW
+
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ conversion of real value to its binary representation  +++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! get raw IEEE binary floating point representation (little-endian order)
+    FloatVal = Number
+
+! decompose the representation into its parts
+    Negative = IAND(RawBin, SignMask) /= 0_I4B
+    SigRaw   = IAND(RawBin, SignificandMask)
+    ExpRaw   = INT(SHIFTR(IAND(RawBin, ExponentMask), SignificandBits), KIND=I4B)
+
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ conversion from binary to decimal representation +++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    ConvFlag = TrueVal
+! check for special cases
+    IF ((ExpRaw == 0).AND.(SigRaw == 0_I4B)) THEN
+! zero
+        SigDec = 0_I4B
+        ExpDec = 0
+        ConvFlag = FalseVal
+    ELSEIF (ExpRaw == MaxExponent) THEN
+! NaN or Infinity
+        SigDec = SigRaw
+        ExpDec = ExceptionalExponent
+        ConvFlag = FalseVal
+    END IF
+
+! get exponent and mantissa
+    IF (ExpRaw /= 0) THEN
+! normal number
+        SigBin = IOR(SigRaw, SigHidBitMask)
+        ExpBin = ExpRaw - ExponentBias - SignificandBits
+        IF ((-SignificandBits <= ExpBin).AND.(ExpBin <= 0)) THEN
+            IF (TRAILZ(SigBin) >= -ExpBin)THEN
+! fast path for small integer number (without fraction?)
+                SigDec = SHIFTR(SigBin, -ExpBin)
+                ExpDec = 0
+                ConvFlag = FalseVal
+            END IF
+        END IF
+    ELSE
+! subnormal number
+        SigBin = SigRaw
+        ExpBin = 1 - ExponentBias - SignificandBits
+    END IF
+
+    IF (ConvFlag) THEN
+! perform binary-to-decimal conversion
+        CALL Bin2Dec_Schubfach(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
+    END IF
+
+! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ conversion from decimal representation to decimal string  +++++
+! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! write output
+    IF (Negative) THEN
+        wStr(1:1) = '-'
+        wPos = 2
+    ELSE
+        wPos = 1
+    END IF
+    wLen = (wPos - 1) + WRITE_RealSP(SigDec, ExpDec, wStr(wPos:), IsScientific)
+
+! set output
+    cStr = wStr(1:wLen)
+
+    RETURN
+
+END FUNCTION RealSP_ToString_Schubfach
+
+!------------------------------------------------------------------------------
+!
+!                       REAL64-FROM-STRING MAIN ROUTINES
+!
+!------------------------------------------------------------------------------
+
+FUNCTION RealSP_FromString_FastFloat(cStr, ParseOpt, ErrFlag, ErrMsg) RESULT(Number)
+
+!** PURPOSE OF THIS SUBROUTINE:
+!^ To convert a character (decimal) string to a single-precision floating-point value
+! using the FastFloat algorithm.
+
+    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
+
+!** SUBROUTINE ARGUMENT DECLARATIONS:
+    CHARACTER(LEN=*),                        INTENT(IN)    :: cStr      !! input string
+    INTEGER(KIND=I4B),             OPTIONAL, INTENT(IN)    :: ParseOpt  !! parsing option
+    LOGICAL,                       OPTIONAL, INTENT(OUT)   :: ErrFlag   !! error flag
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)   :: ErrMsg    !! error message
+    REAL(KIND=SP)                                          :: Number    !! floating point number
+
+!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
+    INTEGER(KIND=I4B)   :: SigDec       ! significand in base 10
+    INTEGER(KIND=I4B)   :: ExpDec       ! exponent in base 10
+    LOGICAL             :: Negative     ! sign flag (true if real value is negative)
+    INTEGER(KIND=I8B)   :: SigBin64     ! (unbiased) significand in base 2
+    INTEGER(KIND=I4B)   :: SigBin       ! (unbiased) significand in base 2
+    INTEGER(KIND=I4B)   :: ExpBin       ! (unbiased) exponent in base 2
+    TYPE(StringAux)     :: Aux          ! auxialiary string information
+    LOGICAL             :: Valid
+    LOGICAL             :: SlowPath
+    INTEGER(KIND=I4B)   :: ParseFormat
+    INTEGER(KIND=I4B)   :: RawVal       ! raw IEEE binary floating point representation
+    REAL(KIND=SP)       :: FloatVal     ! working real (for conversion from binary representation)
+    EQUIVALENCE(RawVal, FloatVal)
+
+!** FLOW
+
+! check and set optional input (parsing format)
+    ParseFormat = FortNum
+    IF (PRESENT(ParseOpt)) THEN
+        IF ((ParseOpt >= 1).AND.(ParseOpt <= 3)) ParseFormat = ParseOpt
+    END IF
+
+! parse floating-point-number string
+    SELECT CASE (ParseFormat)
+    CASE (FortNum)
+        Valid = Parse_Fortran_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
+    CASE (FPlusNum)
+        Valid = Parse_FPlus_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
+    CASE (JsonNum)
+        Valid = Parse_JSON_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
+    END SELECT
+    IF (PRESENT(ErrFlag)) ErrFlag = .NOT.Valid
+
+    IF (Valid) THEN
+! ++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ perform decimal to binary conversion +++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++
+! set flag
+        SlowPath = TrueVal
+
+! If the exponent is too large and can't be represented in this size of
+! float, return inf. These bounds are relatively loose, but are mostly
+! serving as a first pass. Some close numbers getting through is okay.
+        IF (ExpDec > Exponent_UppBound) THEN
+! infinity
+            SigBin = 0_I4B
+            ExpBin = MaxExponent
+            SlowPath = FalseVal
+! If the exponent is too small even for a subnormal, return 0.
+        ELSEIF (ExpDec < Exponent_LowBound) THEN
+! zero
+            SigBin = 0_I4B
+            ExpBin = 0
+            SlowPath = FalseVal
+        ELSEIF (.NOT.Aux%Truncated) THEN
+            IF (Dec2Bin_Clinger(SigDec, ExpDec, SigBin, ExpBin)) THEN
+! clinger's fast path is valid
+                SlowPath = FalseVal
+            END IF
+        END IF
+
+! perform decimal to binary conversion using FastFloat algorithm if SlowPath is true
+! IF (SlowPath) CALL Dec2Bin_FastFloat(SigDec, ExpDec, cStr, Aux%Truncated, Aux%Indices, SigBin, ExpBin)
+        IF (SlowPath) THEN
+            CALL Dec2Bin_FastFloat(INT(SigDec, KIND=I8B), ExpDec, cStr, Aux%Truncated, Aux%Indices, SigBin64, ExpBin)
+            SigBin = INT(SigBin64, KIND=I4B)
+        END IF
+
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++ convert binary representation into real number +++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! construct raw binary representation of floating point number
+! set sign bit
+        IF (Negative) THEN
+            RawVal = SignMask
+        ELSE
+            RawVal = 0_I4B
+        END IF
+! add exponent bits
+        RawVal = IOR(RawVal, SHIFTL(INT(ExpBin, KIND=I4B), SignificandBits))
+! add (both implicit and explicit) significand bits
+        RawVal = IOR(RawVal, IAND(SigBin, SignificandMask))
+! convert raw binary representation to floating point number (little-endian order)
+        Number = FloatVal
+    ELSE
+! handle special cases (infinity or NaN)
+        Number = Handle_Invalid_String(cStr, Aux%Start, Negative)
+    END IF
+
+    RETURN
+
+END FUNCTION RealSP_FromString_FastFloat
+
+!******************************************************************************
+
+FUNCTION RealSP_FromString_LibC(cStr, ParseOpt, ErrFlag, ErrMsg) RESULT(Number)
+
+!** PURPOSE OF THIS SUBROUTINE:
+!^ To convert a character (decimal) string to a single-precision floating-point value
+! using the LibC algorithm.
+
+    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
+
+!** SUBROUTINE ARGUMENT DECLARATIONS:
+    CHARACTER(LEN=*),                        INTENT(IN)    :: cStr      !! input string
+    INTEGER(KIND=I4B),             OPTIONAL, INTENT(IN)    :: ParseOpt  !! parsing option
+    LOGICAL,                       OPTIONAL, INTENT(OUT)   :: ErrFlag   !! error flag
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)   :: ErrMsg    !! error message
+    REAL(KIND=SP)                                          :: Number    !! floating point number
+
+!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
+    INTEGER(KIND=I4B)   :: SigDec       ! significand in base 10
+    INTEGER(KIND=I4B)   :: ExpDec       ! exponent in base 10
+    LOGICAL             :: Negative     ! sign flag (true if real value is negative)
+    INTEGER(KIND=I4B)   :: SigBin       ! (unbiased) significand in base 2
+    INTEGER(KIND=I4B)   :: ExpBin       ! (unbiased) exponent in base 2
+    TYPE(StringAux)     :: Aux          ! auxialiary string information
+    LOGICAL             :: Valid
+    LOGICAL             :: SlowPath
+    INTEGER(KIND=I4B)   :: ParseFormat
+    INTEGER(KIND=I4B)   :: RawVal       ! raw IEEE binary floating point representation
+    REAL(KIND=SP)       :: FloatVal     ! working real (for conversion from binary representation)
+    EQUIVALENCE(RawVal, FloatVal)
+
+!** FLOW
+
+! check and set optional input (parsing format)
+    ParseFormat = FortNum
+    IF (PRESENT(ParseOpt)) THEN
+        IF ((ParseOpt >= 1).AND.(ParseOpt <= 3)) ParseFormat = ParseOpt
+    END IF
+
+! parse floating-point-number string
+    SELECT CASE (ParseFormat)
+    CASE (FortNum)
+        Valid = Parse_Fortran_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
+    CASE (FPlusNum)
+        Valid = Parse_FPlus_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
+    CASE (JsonNum)
+        Valid = Parse_JSON_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
+    END SELECT
+    IF (PRESENT(ErrFlag)) ErrFlag = .NOT.Valid
+
+    IF (Valid) THEN
+! ++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ perform decimal to binary conversion +++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++
+! set flag
+        SlowPath = TrueVal
+
+! If the exponent is too large and can't be represented in this size of
+! float, return inf. These bounds are relatively loose, but are mostly
+! serving as a first pass. Some close numbers getting through is okay.
+        IF (ExpDec > Exponent_UppBound) THEN
+! infinity
+            SigBin = 0_I4B
+            ExpBin = MaxExponent
+            SlowPath = FalseVal
+! If the exponent is too small even for a subnormal, return 0.
+        ELSEIF (ExpDec < Exponent_LowBound) THEN
+! zero
+            SigBin = 0_I4B
+            ExpBin = 0
+            SlowPath = FalseVal
+        ELSEIF (.NOT.Aux%Truncated) THEN
+            IF (Dec2Bin_Clinger(SigDec, ExpDec, SigBin, ExpBin)) THEN
+! clinger's fast path is valid
+                SlowPath = FalseVal
+            END IF
+        END IF
+
+! perform decimal to binary conversion using LibC algorithm if SlowPath is true
+        IF (SlowPath) CALL Dec2Bin_LibC(SigDec, ExpDec, cStr, Aux%Start, Aux%Truncated, SigBin, ExpBin)
+
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++ convert binary representation into real number +++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! construct raw binary representation of floating point number
+! set sign bit
+        IF (Negative) THEN
+            RawVal = SignMask
+        ELSE
+            RawVal = 0_I4B
+        END IF
+! add exponent bits
+        RawVal = IOR(RawVal, SHIFTL(INT(ExpBin, KIND=I4B), SignificandBits))
+! add (both implicit and explicit) significand bits
+        RawVal = IOR(RawVal, IAND(SigBin, SignificandMask))
+! convert raw binary representation to floating point number (little-endian order)
+        Number = FloatVal
+    ELSE
+! handle special cases (infinity or NaN)
+        Number = Handle_Invalid_String(cStr, Aux%Start, Negative)
+    END IF
+
+    RETURN
+
+END FUNCTION RealSP_FromString_LibC
+
+!******************************************************************************
+
+FUNCTION RealSP_FromString_YY(cStr, ParseOpt, ErrFlag, ErrMsg) RESULT(Number)
+
+!** PURPOSE OF THIS SUBROUTINE:
+!^ To convert a character (decimal) string to a single-precision floating-point value
+! using the YY algorithm.
+
+    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
+
+!** SUBROUTINE ARGUMENT DECLARATIONS:
+    CHARACTER(LEN=*),                        INTENT(IN)    :: cStr      !! input string
+    INTEGER(KIND=I4B),             OPTIONAL, INTENT(IN)    :: ParseOpt  !! parsing option
+    LOGICAL,                       OPTIONAL, INTENT(OUT)   :: ErrFlag   !! error flag
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)   :: ErrMsg    !! error message
+    REAL(KIND=SP)                                          :: Number    !! floating point number
+
+!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
+    INTEGER(KIND=I4B)   :: SigDec       ! significand in base 10
+    INTEGER(KIND=I4B)   :: ExpDec       ! exponent in base 10
+    LOGICAL             :: Negative     ! sign flag (true if real value is negative)
+    INTEGER(KIND=I4B)   :: SigBin       ! (unbiased) significand in base 2
+    INTEGER(KIND=I4B)   :: ExpBin       ! (unbiased) exponent in base 2
+    TYPE(StringAux)     :: Aux          ! auxialiary string information
+    LOGICAL             :: Valid
+    LOGICAL             :: SlowPath
+    INTEGER(KIND=I4B)   :: ParseFormat
+    INTEGER(KIND=I4B)   :: RawVal       ! raw IEEE binary floating point representation
+    REAL(KIND=SP)       :: FloatVal     ! working real (for conversion from binary representation)
+    EQUIVALENCE(RawVal, FloatVal)
+
+!** FLOW
+
+! check and set optional input (parsing format)
+    ParseFormat = FortNum
+    IF (PRESENT(ParseOpt)) THEN
+        IF ((ParseOpt >= 1).AND.(ParseOpt <= 3)) ParseFormat = ParseOpt
+    END IF
+
+! parse floating-point-number string
+    SELECT CASE (ParseFormat)
+    CASE (FortNum)
+        Valid = Parse_Fortran_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
+    CASE (FPlusNum)
+        Valid = Parse_FPlus_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
+    CASE (JsonNum)
+        Valid = Parse_JSON_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
+    END SELECT
+    IF (PRESENT(ErrFlag)) ErrFlag = .NOT.Valid
+
+    IF (Valid) THEN
+! ++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ perform decimal to binary conversion +++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++
+! set flag
+        SlowPath = TrueVal
+
+! If the exponent is too large and can't be represented in this size of
+! float, return inf. These bounds are relatively loose, but are mostly
+! serving as a first pass. Some close numbers getting through is okay.
+        IF (ExpDec > Exponent_UppBound) THEN
+! infinity
+            SigBin = 0_I4B
+            ExpBin = MaxExponent
+            SlowPath = FalseVal
+! If the exponent is too small even for a subnormal, return 0.
+        ELSEIF (ExpDec < Exponent_LowBound) THEN
+! zero
+            SigBin = 0_I4B
+            ExpBin = 0
+            SlowPath = FalseVal
+        ELSEIF (.NOT.Aux%Truncated) THEN
+            IF (Dec2Bin_Clinger(SigDec, ExpDec, SigBin, ExpBin)) THEN
+! clinger's fast path is valid
+                SlowPath = FalseVal
+            END IF
+        END IF
+
+        IF (SlowPath) THEN
+! +++ perform decimal to binary conversion using YY's algorithm +++
+            RawVal = Dec2Bin_YY(SigDec, ExpDec, Negative, cStr, Aux)
+        ELSE
+! +++ construct raw binary representation of floating point number +++
+! set sign bit
+            IF (Negative) THEN
+                RawVal = SignMask
+            ELSE
+                RawVal = 0_I4B
+            END IF
+! add exponent bits
+            RawVal = IOR(RawVal, SHIFTL(INT(ExpBin, KIND=I4B), SignificandBits))
+! add (both implicit and explicit) significand bits
+            RawVal = IOR(RawVal, IAND(SigBin, SignificandMask))
+        END IF
+
+! convert raw binary representation to floating point number (little-endian order)
+        Number = FloatVal
+    ELSE
+! handle special cases (infinity or NaN)
+        Number = Handle_Invalid_String(cStr, Aux%Start, Negative)
+    END IF
+
+    RETURN
+
+END FUNCTION RealSP_FromString_YY
+
+!******************************************************************************
+
+FUNCTION RealSP_FromString_Lemire(cStr, ParseOpt, ErrFlag, ErrMsg) RESULT(Number)
+
+!** PURPOSE OF THIS SUBROUTINE:
+!^ To convert a character (decimal) string to a single-precision floating-point value
+! using the Lemire algorithm.
+
+    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
+
+!** SUBROUTINE ARGUMENT DECLARATIONS:
+    CHARACTER(LEN=*),                        INTENT(IN)    :: cStr      !! input string
+    INTEGER(KIND=I4B),             OPTIONAL, INTENT(IN)    :: ParseOpt  !! parsing option
+    LOGICAL,                       OPTIONAL, INTENT(OUT)   :: ErrFlag   !! error flag
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)   :: ErrMsg    !! error message
+    REAL(KIND=SP)                                          :: Number    !! floating point number
+
+!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
+    INTEGER(KIND=I4B)   :: SigDec       ! significand in base 10
+    INTEGER(KIND=I4B)   :: ExpDec       ! exponent in base 10
+    LOGICAL             :: Negative     ! sign flag (true if real value is negative)
+    INTEGER(KIND=I4B)   :: SigBin       ! (unbiased) significand in base 2
+    INTEGER(KIND=I4B)   :: ExpBin       ! (unbiased) exponent in base 2
+    TYPE(StringAux)     :: Aux          ! auxialiary string information
+    LOGICAL             :: Valid
+    LOGICAL             :: SlowPath
+    INTEGER(KIND=I4B)   :: ParseFormat
+    INTEGER(KIND=I4B)   :: RawVal       ! raw IEEE binary floating point representation
+    REAL(KIND=SP)       :: FloatVal     ! working real (for conversion from binary representation)
+    EQUIVALENCE(RawVal, FloatVal)
+
+!** FLOW
+
+! check and set optional input (parsing format)
+    ParseFormat = FortNum
+    IF (PRESENT(ParseOpt)) THEN
+        IF ((ParseOpt >= 1).AND.(ParseOpt <= 3)) ParseFormat = ParseOpt
+    END IF
+
+! parse floating-point-number string
+    SELECT CASE (ParseFormat)
+    CASE (FortNum)
+        Valid = Parse_Fortran_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
+    CASE (FPlusNum)
+        Valid = Parse_FPlus_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
+    CASE (JsonNum)
+        Valid = Parse_JSON_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
+    END SELECT
+    IF (PRESENT(ErrFlag)) ErrFlag = .NOT.Valid
+
+    IF (Valid) THEN
+! ++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ perform decimal to binary conversion +++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++
+! set flag
+        SlowPath = TrueVal
+
+! If the exponent is too large and can't be represented in this size of
+! float, return inf. These bounds are relatively loose, but are mostly
+! serving as a first pass. Some close numbers getting through is okay.
+        IF (ExpDec > Exponent_UppBound) THEN
+! infinity
+            SigBin = 0_I4B
+            ExpBin = MaxExponent
+            SlowPath = FalseVal
+! If the exponent is too small even for a subnormal, return 0.
+        ELSEIF (ExpDec < Exponent_LowBound) THEN
+! zero
+            SigBin = 0_I4B
+            ExpBin = 0
+            SlowPath = FalseVal
+        ELSEIF (.NOT.Aux%Truncated) THEN
+            IF (Dec2Bin_Clinger(SigDec, ExpDec, SigBin, ExpBin)) THEN
+! clinger's fast path is valid
+                SlowPath = FalseVal
+            END IF
+        END IF
+
+        IF (SlowPath) THEN
+! +++ perform decimal to binary conversion using Lemire's algorithm +++
+            RawVal = Dec2Bin_Lemire(SigDec, ExpDec, Negative, cStr, Aux)
+        ELSE
+! +++ construct raw binary representation of floating point number +++
+! set sign bit
+            IF (Negative) THEN
+                RawVal = SignMask
+            ELSE
+                RawVal = 0_I4B
+            END IF
+! add exponent bits
+            RawVal = IOR(RawVal, SHIFTL(INT(ExpBin, KIND=I4B), SignificandBits))
+! add (both implicit and explicit) significand bits
+            RawVal = IOR(RawVal, IAND(SigBin, SignificandMask))
+        END IF
+
+! convert raw binary representation to floating point number (little-endian order)
+        Number = FloatVal
+    ELSE
+! handle special cases (infinity or NaN)
+        Number = Handle_Invalid_String(cStr, Aux%Start, Negative)
+    END IF
+
+    RETURN
+
+END FUNCTION RealSP_FromString_Lemire
+
+!******************************************************************************
 
 !------------------------------------------------------------------------------
 !
@@ -504,54 +1283,16 @@ FUNCTION Parse_Eight_Digits_Unrolled(InVal) RESULT(OutVal)
 ! na
 
 !** FLOW
-        
+
     OutVal = SHIFTR(IAND(SHIFTR(IAND(SHIFTR(IAND(InVal, K1)*M1, 8), K2)*M2, 16), K3)*M3, 32)
 ! alternative implementation
 !    OutVal = InVal - Sub
 !    OutVal = (OutVal*10) + SHIFTR(OutVal, 8)    ! OutVal = (OutVal * 2561) >> 8
 !    OutVal = SHIFTR(((IAND(OutVal, Mask)*Mul1) + (IAND(SHIFTR(OutVal, 16), Mask)*Mul2)), 32)
-    
+
     RETURN
 
 END FUNCTION Parse_Eight_Digits_Unrolled
-
-!******************************************************************************
-
-FUNCTION Is_Made_Of_Eight_Digits(InVal) RESULT(Flag)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: Is_Made_Of_Eight_Digits
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To check whether we can process eight digits immediately
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I8B), INTENT(IN) :: InVal
-    LOGICAL                       :: Flag
-
-!** SUBROUTINE PARAMETER DECLARATIONS:
-    INTEGER(KIND=I8B), PARAMETER  :: C1 = INT(Z'F0F0F0F0F0F0F0F0', KIND=I8B)
-    INTEGER(KIND=I8B), PARAMETER  :: C2 = INT(Z'3333333333333333', KIND=I8B)
-    INTEGER(KIND=I8B), PARAMETER  :: C3 = INT(Z'0606060606060606', KIND=I8B)
-!    INTEGER(KIND=I8B), PARAMETER  :: K1 = INT(Z'4646464646464646', KIND=I8B)
-!    INTEGER(KIND=I8B), PARAMETER  :: K2 = INT(Z'3030303030303030', KIND=I8B)
-!    INTEGER(KIND=I8B), PARAMETER  :: K3 = INT(Z'8080808080808080', KIND=I8B)
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-! na
-
-!** FLOW
-        
-    Flag = IOR(IAND(InVal, C1), SHIFTR(IAND((InVal + C3), C1), 4)) ==  C2
-! alternative implementations
-!    Flag = (IAND(InVal, C1) == K2).AND.(IAND(InVal + C3, C1) ==  K2)
-!    Flag = (IAND(IOR((InVal + K1), (InVal - K2)), K3) == 0_I8B)
-!    Flag = IAND(IAND(InVal, InVal + C3), C1) == C2
-
-    RETURN
-
-END FUNCTION Is_Made_Of_Eight_Digits
 
 !******************************************************************************
 
@@ -579,11 +1320,11 @@ FUNCTION Floor_Log10_ThreeQuartersPow2(E) RESULT(K)
 ! na
 
 !** FLOW
-    
+
     K = INT(SHIFTA(INT(E, KIND=I8B)*Multiplier + Addend, Shift), KIND=I4B)
-    
+
     RETURN
-    
+
 END FUNCTION Floor_Log10_ThreeQuartersPow2
 
 !******************************************************************************
@@ -610,11 +1351,11 @@ FUNCTION Floor_Log10_Pow2(E) RESULT(K)
 ! na
 
 !** FLOW
-    
+
     K = INT(SHIFTA(INT(E, KIND=I8B)*Multiplier, Shift), KIND=I4B)
-    
+
     RETURN
-    
+
 END FUNCTION Floor_Log10_Pow2
 
 !******************************************************************************
@@ -641,11 +1382,11 @@ FUNCTION Floor_Log2_Pow10(K) RESULT(E)
 ! na
 
 !** FLOW
-    
+
     E = INT(SHIFTA(INT(K, KIND=I8B)*Multiplier, Shift), KIND=I4B)
-    
+
     RETURN
-    
+
 END FUNCTION Floor_Log2_Pow10
 
 !******************************************************************************
@@ -672,11 +1413,11 @@ FUNCTION Floor_Log2_Pow5(P) RESULT(E)
 ! na
 
 !** FLOW
-    
+
     E = INT(SHIFTA(INT(P, KIND=I8B)*Multiplier, Shift), KIND=I4B)
-    
+
     RETURN
-    
+
 END FUNCTION Floor_Log2_Pow5
 
 !******************************************************************************
@@ -697,78 +1438,20 @@ FUNCTION Floor_Log10_Pow5(E) RESULT(K)
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I4B), PARAMETER  :: Shift      = 48
     INTEGER(KIND=I8B), PARAMETER  :: Multiplier = 196742565691928_I8B
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
 ! na
 
 !** FLOW
-    
+
 ! The first value this approximation fails for is 5^2621 which is just greater than 10^1832.
     K = INT(SHIFTR(INT(E, KIND=I8B)*Multiplier, Shift), KIND=I4B)
-    
+
     RETURN
-    
+
 END FUNCTION Floor_Log10_Pow5
 
 !******************************************************************************
-
-FUNCTION Ceiling_Log2_Pow5(P) RESULT(E)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: Ceiling_Log2_Pow5
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To compute E = CEILING(LOG2(5**P))
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN) :: P    ! base-5 exponent
-    INTEGER(KIND=I4B)             :: E    ! base-2 exponent
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-! na
-
-!** FLOW
-    
-    E = Floor_Log2_Pow5(P) + 1
-    
-    RETURN
-    
-END FUNCTION Ceiling_Log2_Pow5
-
-!******************************************************************************
-
-FUNCTION Pow5Bits(Exp) RESULT(Pow5)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: Pow5Bits
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To compute Pow5 = Ceiling(Log2(5**Exp)).
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN) :: Exp       ! 0 <= Exp <= 32768
-    INTEGER(KIND=I4B)             :: Pow5
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-! Multiplier = FLOOR(LOG2(5) * 2**Shift)
-    INTEGER(KIND=I4B), PARAMETER  :: Shift      = 46
-    INTEGER(KIND=I8B), PARAMETER  :: Multiplier = 163391164108059_I8B
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-! na
-
-!** FLOW
-    
-! note: this is similar to 'Ceiling_Log2_Pow5' but only for positive Exp
-    Pow5 = INT(SHIFTR(Exp*Multiplier, Shift) + 1_I8B, KIND=I4B)
-    
-    RETURN
-
-END FUNCTION Pow5Bits
-
-!**************************************************************************
 
 SUBROUTINE MultiplyBasic(X, XLen, Y, YLen, Z)
 
@@ -788,7 +1471,7 @@ SUBROUTINE MultiplyBasic(X, XLen, Y, YLen, Z)
 
 !** SUBROUTINE PARAMETER DECLARATIONS:
     INTEGER(KIND=I8B), PARAMETER  :: MinI64   = INT(Z'8000000000000000', KIND=I8B)   ! min signed 64-bit
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I8B)     :: Carry64, ProductHi, ProductLo, Sum
     INTEGER(KIND=I4B)     :: I, J
@@ -855,7 +1538,7 @@ SUBROUTINE ShiftRight(X, ShiftPos)
         IF (LargeShift > 0) CALL ShiftLarge(X, LargeShift)
         IF (SmallShift > 0) CALL ShiftSmall(X, SmallShift)
     END IF
-        
+
     RETURN
     CONTAINS
 
@@ -877,15 +1560,15 @@ SUBROUTINE ShiftRight(X, ShiftPos)
         INTEGER(KIND=I8B)     :: Nxt
 
     !** FLOW
-        
+
         XLen = SIZE(X)
-	    Nxt = X(0)
+        Nxt = X(0)
         DO I = 0, XLen-2
             X(I) = IOR(SHIFTR(Nxt, Shift), SHIFTL(X(I+1), 64-Shift))
             Nxt = X(I+1)
         END DO
         X(XLen-1) = SHIFTR(X(XLen-1), Shift)
-    
+
         RETURN
 
     END SUBROUTINE ShiftSmall
@@ -910,9 +1593,9 @@ SUBROUTINE ShiftRight(X, ShiftPos)
         INTEGER(KIND=I4B)     :: Index, XLen
 
     !** FLOW
-    
+
         XLen = SIZE(X)
-	    DO Index = 0, XLen-Shift-1
+        DO Index = 0, XLen-Shift-1
             X(Index) = X(Shift+Index)
         END DO
         X(XLen-Shift:) = 0_I8B
@@ -932,7 +1615,7 @@ SUBROUTINE Multiply_N_ShiftRight(X, XLen, Y, YLen, Shift, Z)
 !DIR$ ATTRIBUTES INLINE :: Multiply_N_ShiftRight
 
 !** PURPOSE OF THIS SUBROUTINE:
-! To perform multiplication and then rigth shift
+! To perform multiplication and then right shift
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -975,19 +1658,19 @@ SUBROUTINE Increment_Value(X)
     INTEGER(KIND=I8B)     :: Sum, Carry
 
 !** FLOW
-	
+
     XLen = SIZE(X)
     Sum = X(0) + 1_I8B
-	Carry = SHIFTR(IOR(IAND(X(0), 1_I8B), IAND(IOR(X(0), 1_I8B), NOT(Sum))), 63)
-	X(0) = Sum
-	IF (Carry /= 0_I8B) THEN
-		I = 1_I4B
+    Carry = SHIFTR(IOR(IAND(X(0), 1_I8B), IAND(IOR(X(0), 1_I8B), NOT(Sum))), 63)
+    X(0) = Sum
+    IF (Carry /= 0_I8B) THEN
+        I = 1_I4B
         DO
             X(I) = X(I) + 1_I8B
             IF (.NOT.((I < XLen).AND.(X(I) == 0))) EXIT
             I = I + 1_I4B
         END DO
-	END IF
+    END IF
 
     RETURN
 
@@ -1047,7 +1730,7 @@ FUNCTION Get_Pow10_128Bits(K) RESULT(Pow10)
     INTEGER(KIND=I8B)     :: Pow10Cache(0:1)  ! the power of ten in little-endian order
 
 !** FLOW
-    
+
     IF ((K >= Pow10_256_Small_MinExp).AND.(K <= Pow10_256_Small_MaxExp)) THEN
 ! get only the upper 128 bits
         Pow10Cache(0:1) = Pow10_256_Small_Table(2:3, K)
@@ -1082,12 +1765,12 @@ SUBROUTINE Compute_Pow10_128Bits(K, Pow10)
     INTEGER(KIND=I8B)     :: Pow10_256(0:3)
 
 !** FLOW
-    
+
 ! compute essential indices
     Pow10_Index = (K - Pow10_256_Compressed_MinExp) / Pow5_128_Size
     KBase = Pow10_Index * Pow5_128_Size + Pow10_256_Compressed_MinExp
     Offset = K - KBase
-    
+
 ! get base cache (only upper 128 bits) where table data is stored in little-endian
 ! order (i.e. the least significant byte is 0 and the most significant byte is 3)
     Pow10_Cache(0:1) = Pow10_256_Compressed_Table(2:3, Pow10_Index)
@@ -1104,9 +1787,9 @@ SUBROUTINE Compute_Pow10_128Bits(K, Pow10)
     CALL Multiply_N_ShiftRight(Pow10_Cache, 2, Pow5, 2, Alpha, Pow10_256)
     Pow10(0:1) = Pow10_256(0:1)
     CALL Increment_Value(Pow10)
-    
+
     RETURN
-    
+
 END SUBROUTINE Compute_Pow10_128Bits
 
 !******************************************************************************
@@ -1129,7 +1812,7 @@ FUNCTION Handle_Invalid_String(cStr, Start, Negative) RESULT(RealNum)
     INTEGER(KIND=I4B)    :: Ptr, Q
 
 !** FLOW
-    
+
 ! Could not parse a decimal floating-point number.  Start has been
 ! advanced over any leading spaces.
     Ptr = Start
@@ -1183,7 +1866,7 @@ FUNCTION Handle_Invalid_String(cStr, Start, Negative) RESULT(RealNum)
             RealNum = IEEE_VALUE(0.0_SP, IEEE_SIGNALING_NAN)
         END IF
     END IF
-    
+
     RETURN
 
 CONTAINS
@@ -1206,7 +1889,7 @@ CONTAINS
     ! na
 
     !** FLOW:
-    
+
         Flag = (INDEX(SET_SIGNS, Chr) /= 0)
 
         RETURN
@@ -1225,7 +1908,7 @@ CONTAINS
     !** SUBROUTINE ARGUMENT DECLARATIONS:
         CHARACTER(LEN=1),  INTENT(IN)  :: ChrIn
         CHARACTER(LEN=1)               :: ChrOut
-        
+
     !** SUBROUTINE PARAMETER DECLARATIONS:
         CHARACTER(LEN=*), PARAMETER  :: SET_ALPHABETS_LOWER = 'abcdefghijklmnopqrstuvwxyz'
         CHARACTER(LEN=*), PARAMETER  :: SET_ALPHABETS_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -1275,40 +1958,12 @@ FUNCTION RawFP_BiasedExponent(RawVal) RESULT(BiasedExponent)
 ! na
 
 !** FLOW
-    
+
     BiasedExponent = INT(SHIFTR(IAND(RawVal, ExponentMask), SignificandBits), KIND=I4B)
 
     RETURN
-    
+
 END FUNCTION RawFP_BiasedExponent
-
-!******************************************************************************
-
-FUNCTION RawFP_UnbiasedExponent(RawVal) RESULT(UnbiasedExponent)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: RawFP_UnbiasedExponent
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To determine the unbiased exponent of the floating point value
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN)   :: RawVal
-    INTEGER(KIND=I4B)               :: UnbiasedExponent
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-    INTEGER(KIND=I4B)     :: BiasedExponent
-
-!** FLOW
-    
-    BiasedExponent   = RawFP_BiasedExponent(RawVal)
-    UnbiasedExponent = BiasedExponent - ExponentBias
-    IF (BiasedExponent == 0) UnbiasedExponent = UnbiasedExponent + 1
-
-    RETURN
-    
-END FUNCTION RawFP_UnbiasedExponent
 
 !******************************************************************************
 
@@ -1329,303 +1984,12 @@ FUNCTION RawFP_Significand(RawVal) RESULT(Significand)
 ! na
 
 !** FLOW
-    
+
     Significand = IAND(RawVal, SignificandMask)
 
     RETURN
-    
+
 END FUNCTION RawFP_Significand
-
-!******************************************************************************
-
-FUNCTION RawFP_Fraction(RawVal) RESULT(Fraction)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: RawFP_Fraction
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To determine the fraction part of the floating point value
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN)   :: RawVal
-    INTEGER(KIND=I4B)               :: Fraction
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-! na
-
-!** FLOW
-    
-    Fraction = RawFP_Significand(RawVal)
-    IF (RawFP_BiasedExponent(RawVal) > 0) Fraction = IOR(Fraction, SigHidBitMask)
-
-    RETURN
-    
-END FUNCTION RawFP_Fraction
-
-!******************************************************************************
-
-FUNCTION RawFP_IsZero(RawVal) RESULT(Flag)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: RawFP_IsZero
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To determine whether the input value is zero
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN)   :: RawVal
-    LOGICAL                         :: Flag
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-! na
-
-!** FLOW
-    
-! Remove sign bit by shift
-    Flag = SHIFTL(RawVal, 1) == 0_I4B
-
-    RETURN
-    
-END FUNCTION RawFP_IsZero
-
-!******************************************************************************
-
-FUNCTION RawFP_IsNaN(RawVal) RESULT(Flag)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: RawFP_IsNaN
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To determine whether the input value is not a number
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN)   :: RawVal
-    LOGICAL                         :: Flag
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-! na
-
-!** FLOW
-    
-    Flag = (RawFP_BiasedExponent(RawVal) == MaxExponent).AND. &
-           (RawFP_Significand(RawVal) /= 0_I4B)
-
-    RETURN
-    
-END FUNCTION RawFP_IsNaN
-
-!******************************************************************************
-
-FUNCTION RawFP_IsQuietNaN(RawVal) RESULT(Flag)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: RawFP_IsQuietNaN
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To determine whether the input value is a quiet NaN
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN)   :: RawVal
-    LOGICAL                         :: Flag
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-! na
-
-!** FLOW
-    
-    Flag = IAND(RawVal, ExpMantMask) == IOR(ExponentMask, QuietNaNMask)
-
-    RETURN
-    
-END FUNCTION RawFP_IsQuietNaN
-
-!******************************************************************************
-
-FUNCTION RawFP_IsInfinite(RawVal) RESULT(Flag)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: RawFP_IsInfinite
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To determine whether the input value is infinite
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN)   :: RawVal
-    LOGICAL                         :: Flag
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-! na
-
-!** FLOW
-    
-    Flag = (RawFP_BiasedExponent(RawVal) == MaxExponent).AND. &
-           (RawFP_Significand(RawVal) == 0_I4B)
-
-    RETURN
-    
-END FUNCTION RawFP_IsInfinite
-
-!******************************************************************************
-
-FUNCTION RawFP_IsInfOrNaN(RawVal) RESULT(Flag)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: RawFP_IsInfOrNaN
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To determine whether the input value is infinite or NaN
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN)   :: RawVal
-    LOGICAL                         :: Flag
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-! na
-
-!** FLOW
-    
-    Flag = IAND(RawVal, ExponentMask) == ExponentMask
-
-    RETURN
-    
-END FUNCTION RawFP_IsInfOrNaN
-
-!******************************************************************************
-
-FUNCTION RawFP_IsMaximalFiniteMagnitude(RawVal) RESULT(Flag)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: RawFP_IsMaximalFiniteMagnitude
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To determine whether the input value is equal to the maximal finite magnitude
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN)   :: RawVal
-    LOGICAL                         :: Flag
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-! na
-
-!** FLOW
-    
-    Flag = (RawFP_BiasedExponent(RawVal) == (MaxExponent - 1)).AND. &
-           (RawFP_Significand(RawVal) == SignificandMask)
-
-    RETURN
-    
-END FUNCTION RawFP_IsMaximalFiniteMagnitude
-
-!******************************************************************************
-
-FUNCTION RawFP_IsNegative(RawVal) RESULT(Flag)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: RawFP_IsNegative
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To determine whether the input value is negative
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN)   :: RawVal
-    LOGICAL                         :: Flag
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-! na
-
-!** FLOW
-    
-    Flag = IAND(RawVal, SignMask) /= 0_I4B
-
-    RETURN
-    
-END FUNCTION RawFP_IsNegative
-
-!******************************************************************************
-
-FUNCTION RawFP_Negate(InRaw) RESULT(OutRaw)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: RawFP_Negate
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To negate the input value
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN)   :: InRaw
-    INTEGER(KIND=I4B)               :: OutRaw
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-! na
-
-!** FLOW
-    
-    OutRaw = IEOR(InRaw, SignMask)
-
-    RETURN
-    
-END FUNCTION RawFP_Negate
-
-!******************************************************************************
-
-FUNCTION RawFP_NeighborLow(InRaw) RESULT(OutRaw)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: RawFP_NeighborLow
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To determine the nearest floating point value that is smaller than the input value
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN)   :: InRaw
-    INTEGER(KIND=I4B)               :: OutRaw
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-! na
-
-!** FLOW
-    
-    OutRaw = InRaw - 1_I4B
-
-    RETURN
-    
-END FUNCTION RawFP_NeighborLow
-
-!******************************************************************************
-
-FUNCTION RawFP_NeighborHigh(InRaw) RESULT(OutRaw)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: RawFP_NeighborHigh
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To determine the nearest floating point value that is greater than the input value
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN)   :: InRaw
-    INTEGER(KIND=I4B)               :: OutRaw
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-! na
-
-!** FLOW
-    
-    OutRaw = InRaw + 1_I4B
-    
-    RETURN
-    
-END FUNCTION RawFP_NeighborHigh
 
 !******************************************************************************
 
@@ -1647,7 +2011,7 @@ FUNCTION RawFP_Construct(FpBin) RESULT(RawVal)
 ! na
 
 !** FLOW
-    
+
 ! set sign bit
     IF (FpBin%Negative) THEN
         RawVal = SignMask
@@ -1658,42 +2022,10 @@ FUNCTION RawFP_Construct(FpBin) RESULT(RawVal)
     RawVal = IOR(RawVal, SHIFTL(INT(FpBin%Exponent, KIND=I4B), SignificandBits))
 ! add (both implicit and explicit) significand bits
     RawVal = IOR(RawVal, IAND(FpBin%Significand, SignificandMask))
-    
+
     RETURN
-    
+
 END FUNCTION RawFP_Construct
-
-!******************************************************************************
-
-FUNCTION RawFP_Decompose(RawVal) RESULT(FpBin)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: RawFP_Decompose
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To decompose a raw binary floating point number into
-! its three parts
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    INTEGER(KIND=I4B), INTENT(IN)   :: RawVal
-    TYPE(BinRep)                    :: FpBin
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-! na
-
-!** FLOW
-    
-! set sign
-    FpBin%Negative    = IAND(RawVal, SignMask) /= 0_I4B
-! set significand
-    FpBin%Significand = RawFP_Significand(RawVal)
-! set exponent
-    FpBin%Exponent    = RawFP_BiasedExponent(RawVal)
-    
-    RETURN
-    
-END FUNCTION RawFP_Decompose
 
 !******************************************************************************
 
@@ -1774,7 +2106,7 @@ FUNCTION RawFP_SetZero(Negative) RESULT(RawVal)
 ! na
 
 !** FLOW
-    
+
     IF (Negative) THEN
         RawVal = SignMask
     ELSE
@@ -1804,7 +2136,7 @@ FUNCTION RawFP_SetInfinity(Negative) RESULT(RawVal)
     INTEGER(KIND=I4B)       :: Exponent
 
 !** FLOW
-    
+
 ! set sign of infinity
     RawVal = RawFP_SetZero(Negative)
 ! set infinity biased exponent
@@ -1815,40 +2147,6 @@ FUNCTION RawFP_SetInfinity(Negative) RESULT(RawVal)
     RETURN
 
 END FUNCTION RawFP_SetInfinity
-
-!******************************************************************************
-
-FUNCTION RawFP_SetNaN(Quiet) RESULT(RawVal)
-
-!DIR$ ATTRIBUTES FORCEINLINE :: RawFP_SetNaN
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To set value to NaN
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    LOGICAL, INTENT(IN)     :: Quiet
-    INTEGER(KIND=I4B)       :: RawVal
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-    INTEGER(KIND=I4B)   :: Mantissa
-
-!** FLOW
-    
-! set infinity biased exponent
-    RawVal = RawFP_SetInfinity(FalseVal)
-! set NaN significand
-    RawVal = IOR(RawVal, SHIFTL(1_I4B, SignificandBits - 2))
-    IF (Quiet) THEN
-        Mantissa = IAND(QuietNaNMask, SignificandMask)
-        RawVal = IAND(RawVal, NOT(SignificandMask))
-        RawVal = IOR(RawVal, Mantissa)
-    END IF
-
-    RETURN
-
-END FUNCTION RawFP_SetNaN
 
 !******************************************************************************
 
@@ -1869,7 +2167,7 @@ FUNCTION HPDec_Should_Round_Up(HP, RoundToDigit) RESULT(Flag)
 ! na
 
 !** FLOW
-    
+
     IF ((RoundToDigit < 0).OR.(RoundToDigit >= HP%NumDigits)) THEN
         Flag = FalseVal
         RETURN
@@ -1895,11 +2193,11 @@ FUNCTION HPDec_Should_Round_Up(HP, RoundToDigit) RESULT(Flag)
         RETURN
     END IF
 ! If there are digits after roundToDigit, they must be non-zero since we
-! trim trailing zeroes after all operations that change digits.
+! trim trailing zeros after all operations that change digits.
     Flag = HP%Digits(RoundToDigit) >= 5
-    
+
     RETURN
-    
+
 END FUNCTION HPDec_Should_Round_Up
 
 !******************************************************************************
@@ -1913,7 +2211,7 @@ FUNCTION HPDec_Get_Num_New_Digits(HP, LShiftAmount) RESULT(NewDigits)
     CLASS(HPDecimal),   INTENT(IN)  :: HP
     INTEGER(KIND=I4B),  INTENT(IN)  :: LShiftAmount
     INTEGER(KIND=I4B)               :: NewDigits
-    
+
 !** SUBROUTINE PARAMETER DECLARATIONS:
     INTEGER(KIND=I4B), PARAMETER    :: A0 = IACHAR('0')
 
@@ -1924,7 +2222,7 @@ FUNCTION HPDec_Get_Num_New_Digits(HP, LShiftAmount) RESULT(NewDigits)
     INTEGER(KIND=I4B)               :: Length
 
 !** FLOW
-    
+
     Length      = LShift_Length(LShiftAmount)
     PowerOfFive = LShift_PowFive(LShiftAmount)(1:Length)
     NewDigits   = LShift_Digits(LShiftAmount)
@@ -1943,9 +2241,9 @@ FUNCTION HPDec_Get_Num_New_Digits(HP, LShiftAmount) RESULT(NewDigits)
         END IF
         Indx = Indx + 1
     END DO
-    
+
     RETURN
-    
+
 END FUNCTION HPDec_Get_Num_New_Digits
 
 !******************************************************************************
@@ -1961,16 +2259,16 @@ SUBROUTINE HPDec_Trim_Trailing_Zeroes(HP)
 ! na
 
 !** FLOW
-    
+
     DO WHILE ((HP%NumDigits > 0).AND.(HP%Digits(HP%NumDigits - 1) == 0))
         HP%NumDigits = HP%NumDigits - 1
     END DO
     IF (HP%NumDigits == 0) THEN
         HP%DecimalPoint = 0
     END IF
-    
+
     RETURN
-    
+
 END SUBROUTINE HPDec_Trim_Trailing_Zeroes
 
 !******************************************************************************
@@ -1993,7 +2291,7 @@ SUBROUTINE HPDec_Right_Shift(HP, ShiftAmount)
     INTEGER(KIND=I8B)     :: WriteDigit
 
 !** FLOW
-    
+
 ! initialize
     ReadIndx = 0
     WriteIndx = 0
@@ -2045,7 +2343,7 @@ SUBROUTINE HPDec_Right_Shift(HP, ShiftAmount)
     CALL HP%TrimTrailingZeroes()
 
     RETURN
-    
+
 END SUBROUTINE HPDec_Right_Shift
 
 !******************************************************************************
@@ -2068,7 +2366,7 @@ SUBROUTINE HPDec_Left_Shift(HP, ShiftAmount)
     INTEGER(KIND=I8B)     :: WriteDigit
 
 !** FLOW
-    
+
 ! initialize
     NewDigits = HP%GetNumNewDigits(ShiftAmount)
     ReadIndx  = HP%NumDigits - 1
@@ -2121,7 +2419,7 @@ SUBROUTINE HPDec_Left_Shift(HP, ShiftAmount)
     CALL HP%TrimTrailingZeroes()
 
     RETURN
-    
+
 END SUBROUTINE HPDec_Left_Shift
 
 !******************************************************************************
@@ -2236,7 +2534,7 @@ SUBROUTINE HPDec_Construct(HP, cStr, Start, Finish)
     ! na
 
     !** FLOW:
-    
+
         Flag = (INDEX(SET_DIGITS, Chr) /= 0)
 
         RETURN
@@ -2260,7 +2558,7 @@ SUBROUTINE HPDec_Construct(HP, cStr, Start, Finish)
     ! na
 
     !** FLOW:
-    
+
         Flag = (INDEX(SET_EXPONENTS, Chr) /= 0)
 
         RETURN
@@ -2284,7 +2582,7 @@ SUBROUTINE HPDec_Construct(HP, cStr, Start, Finish)
     ! na
 
     !** FLOW:
-    
+
         Flag = (INDEX(SET_INTEGERS, Chr) /= 0)
 
         RETURN
@@ -2306,7 +2604,7 @@ SUBROUTINE HPDec_Construct(HP, cStr, Start, Finish)
     ! na
 
     !** FLOW:
-    
+
         Flag = (INDEX(SET_SIGNS, Chr) /= 0)
 
         RETURN
@@ -2331,7 +2629,7 @@ SUBROUTINE HPDec_Shift(HP, Shift)
     INTEGER(KIND=I4B)     :: ShiftAmount
 
 !** FLOW
-    
+
     ShiftAmount = Shift
     IF (ShiftAmount > 0) THEN
 ! Left shift
@@ -2350,7 +2648,7 @@ SUBROUTINE HPDec_Shift(HP, Shift)
     END IF
 
     RETURN
-    
+
 END SUBROUTINE HPDec_Shift
 
 !******************************************************************************
@@ -2368,7 +2666,7 @@ SUBROUTINE HPDec_Round_To_UInt(HP, ResVal)
     INTEGER(KIND=I4B)     :: CurDigit
 
 !** FLOW
-    
+
     ResVal = 0
     CurDigit = 0
 
@@ -2385,9 +2683,9 @@ SUBROUTINE HPDec_Round_To_UInt(HP, ResVal)
     IF (HP%ShouldRoundUp(HP%DecimalPoint)) THEN
         ResVal = ResVal + 1
     END IF
-    
+
     RETURN
-    
+
     END SUBROUTINE HPDec_Round_To_UInt
 
 !******************************************************************************
@@ -2422,7 +2720,7 @@ FUNCTION Empty_Hi64(Truncated) RESULT(Val)
 
     Truncated = FalseVal
     Val = 0_I8B
-    
+
     RETURN
 
 END FUNCTION Empty_Hi64
@@ -2451,7 +2749,7 @@ FUNCTION UInt64_Hi64_I(R0, Truncated) RESULT(Val)
     Truncated = FalseVal
     ShiftPos = LEADZ(R0)
     Val = SHIFTL(R0, ShiftPos)
-    
+
     RETURN
 
 END FUNCTION UInt64_Hi64_I
@@ -2485,7 +2783,7 @@ FUNCTION UInt64_Hi64_II(R0, R1, Truncated) RESULT(Val)
         Truncated = SHIFTL(R1, ShiftPos) /= 0_I8B
         Val = IOR(SHIFTL(R0, ShiftPos), SHIFTR(R1, 64-ShiftPos))
     END IF
-        
+
     RETURN
 
 END FUNCTION UInt64_Hi64_II
@@ -2509,7 +2807,7 @@ FUNCTION BigUInt_IsEmpty(Big) RESULT(Flag)
 !** FLOW
 
     Flag = Big%Length == 0
-    
+
     RETURN
 
 END FUNCTION BigUInt_IsEmpty
@@ -2545,7 +2843,7 @@ FUNCTION BigUInt_IsNonZero(Big, Index) RESULT(Flag)
         I = I + 1
     END DO
     Flag = FalseVal
-    
+
     RETURN
 
 END FUNCTION BigUInt_IsNonZero
@@ -2558,7 +2856,7 @@ SUBROUTINE BigUInt_Push(Big, Value)
 ! To append the item to the BigUInt
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BigUInt),     INTENT(INOUT)  :: Big       ! BigUInt object
     INTEGER(KIND=I8B),  INTENT(IN)     :: Value    ! item to be appended
@@ -2567,7 +2865,7 @@ SUBROUTINE BigUInt_Push(Big, Value)
 ! na
 
 ! FLOW
-        
+
     Big%Digit(Big%Length) = Value
     Big%Length = Big%Length + 1
 
@@ -2583,7 +2881,7 @@ SUBROUTINE BigUInt_Extend(Big, Span)
 ! To append a span of items to the stack
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BigUInt),     INTENT(INOUT)  :: Big       ! BigUInt object
     INTEGER(KIND=I8B),  INTENT(IN)     :: Span(0:)  ! span of items to be appended
@@ -2609,7 +2907,7 @@ SUBROUTINE BigUInt_Normalize(Big)
 ! To normalize the BigUInt, so most-significant zero digits are removed.
 
     IMPLICIT NONE
-        
+
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     CLASS(BigUInt), INTENT(INOUT)   :: Big  ! BigUInt object
 
@@ -2617,7 +2915,7 @@ SUBROUTINE BigUInt_Normalize(Big)
     INTEGER(KIND=I4B)     :: RIndex
 
 ! FLOW
-        
+
     RIndex = Big%Length - 1
     IF (RIndex >= 0) THEN
         DO WHILE (Big%Digit(RIndex) == 0_I8B)
@@ -2652,10 +2950,10 @@ FUNCTION ScalarAdd(X, Y, Overflow) RESULT(Z)
 
 ! add value
     Z = X + Y
-        
+
 ! check overflow
     Overflow = Z .ULT. X
-    
+
     RETURN
 
 END FUNCTION ScalarAdd
@@ -2679,14 +2977,14 @@ FUNCTION ScalarMul(X, Y, Carry) RESULT(Z_Low)
     LOGICAL    :: Overflow
 
 !** FLOW
-        
+
     CALL UMul128(X, Y, Z_Hi, Z_Low)
 
     Z_Low = ScalarAdd(Z_Low, Carry, Overflow)
-        
+
     IF (Overflow) Z_Hi  = Z_Hi + 1_I8B    ! cannot overflow
     Carry = Z_Hi
-    
+
     RETURN
 
 END FUNCTION ScalarMul
@@ -2715,7 +3013,7 @@ SUBROUTINE BigUInt_SmallMul(Big, Y)
         Big%Digit(Index) = ScalarMul(Big%Digit(Index), Y, Carry)
     END DO
     IF (Carry /= 0_I8B) CALL Big%Push(Carry)
-        
+
     RETURN
 
 END SUBROUTINE BigUInt_SmallMul
@@ -2747,9 +3045,9 @@ SUBROUTINE BigUInt_LongMul(Big, Span)
         Big%Length = Big%Length + SpanLen
         Big%Digit(0:Big%Length-1) = Z(0:Big%Length-1)
     END IF
-    
+
     CALL Big%Normalize()
-        
+
     RETURN
 
 END SUBROUTINE BigUInt_LongMul
@@ -2771,10 +3069,10 @@ SUBROUTINE BigUInt_From_U64(Big, Val)
 ! na
 
 !** FLOW
-        
+
     CALL Big%Push(Val)
     CALL Big%Normalize()
-        
+
     RETURN
 
 END SUBROUTINE BigUInt_From_U64
@@ -2798,7 +3096,7 @@ FUNCTION BigUInt_Get_Hi64(Big, Truncated) RESULT(Val)
     INTEGER(KIND=I4B)     :: RIndex
 
 !** FLOW
-        
+
     IF (Big%Length == 0) THEN
         Val = Empty_Hi64(Truncated)
     ELSEIF (Big%Length == 1) THEN
@@ -2809,7 +3107,7 @@ FUNCTION BigUInt_Get_Hi64(Big, Truncated) RESULT(Val)
         Val = Uint64_Hi64_II(Big%Digit(RIndex), Big%Digit(RIndex-1), Truncated)
         Truncated = Truncated .OR. Big%IsNonZero(2)
     END IF
-        
+
     RETURN
 
 END FUNCTION BigUInt_Get_Hi64
@@ -2836,7 +3134,7 @@ FUNCTION BigUInt_Compare(Big, Other) RESULT(Flag)
     INTEGER(KIND=I4B)     :: Index
 
 !** FLOW
-        
+
     IF (Big%Length > Other%Length) THEN
         Flag = 1
     ELSEIF (Big%Length < Other%Length) THEN
@@ -2854,8 +3152,8 @@ FUNCTION BigUInt_Compare(Big, Other) RESULT(Flag)
             END ASSOCIATE
         END DO
         Flag = 0
-    END IF   
-          
+    END IF
+
     RETURN
 
 END FUNCTION BigUInt_Compare
@@ -2908,7 +3206,7 @@ SUBROUTINE BigUInt_ShiftL(Big, N)
         INTEGER(KIND=I8B)     :: XI, Carry, Prev
 
     !** FLOW
-        
+
     ! Internally, for each item, we shift left by n, and add the previous
     ! right shifted limb-bits.
     ! For example, we transform (for u8) shifted left 2, to:
@@ -2928,7 +3226,7 @@ SUBROUTINE BigUInt_ShiftL(Big, N)
 
         Carry = SHIFTR(Prev, Shr)
         IF (Carry /= 0_I8B) CALL Big%Push(Carry)
-          
+
         RETURN
 
     END SUBROUTINE BigUInt_ShiftL_Bits
@@ -2950,7 +3248,7 @@ SUBROUTINE BigUInt_ShiftL(Big, N)
         INTEGER(KIND=I8B)     :: Buffer(0:Big%Length-1)
 
     !** FLOW
-        
+
         IF (.NOT.Big%IsEmpty()) THEN
     ! move limbs by first copy source to buffer
             Buffer(0:Big%Length-1) = Big%Digit(0:Big%Length-1)
@@ -2961,7 +3259,7 @@ SUBROUTINE BigUInt_ShiftL(Big, N)
     ! set length
             Big%Length = Big%Length + N
         END IF
-          
+
         RETURN
 
     END SUBROUTINE BigUInt_ShiftL_Limbs
@@ -2987,13 +3285,13 @@ FUNCTION BigUInt_LeadZ(Big) RESULT(N)
 ! na
 
 !** FLOW
-        
+
     IF (Big%IsEmpty()) THEN
         N = 0
     ELSE
         N = LEADZ(Big%Digit(Big%Length - 1))
     END IF
-          
+
     RETURN
 
 END FUNCTION BigUInt_LeadZ
@@ -3015,10 +3313,10 @@ FUNCTION BigUInt_BitLen(Big) RESULT(N)
     INTEGER(KIND=I4B)     :: LZ
 
 !** FLOW
-        
+
     LZ = Big%LeadZ()
     N  = DigitBits*Big%Length - LZ
-          
+
     RETURN
 
 END FUNCTION BigUInt_BitLen
@@ -3045,7 +3343,7 @@ SUBROUTINE BigUInt_Add(Big, Y)
 
     Index = 0
     Carry = Y
-        
+
     DO WHILE ((Carry /= 0_I8B).AND.(Index < Big%Length))
         Big%Digit(Index) = ScalarAdd(Big%Digit(Index), Carry, Overflow)
         IF (Overflow) THEN
@@ -3056,7 +3354,7 @@ SUBROUTINE BigUInt_Add(Big, Y)
         Index = Index + 1
     END DO
     IF (Carry /= 0_I8B) CALL Big%Push(Carry)
-        
+
     RETURN
 
 END SUBROUTINE BigUInt_Add
@@ -3078,9 +3376,9 @@ SUBROUTINE BigUInt_Pow2(Big, Exp)
 ! na
 
 !** FLOW
-        
+
     CALL Big%ShiftL(Exp)
-          
+
     RETURN
 
 END SUBROUTINE BigUInt_Pow2
@@ -3128,7 +3426,7 @@ SUBROUTINE BigUInt_Pow5(Big, Exp)
     INTEGER(KIND=I4B)     :: IExp
 
 !** FLOW
-        
+
     IExp = Exp
 
 ! multiply Big by 5**Large_Step
@@ -3167,10 +3465,10 @@ SUBROUTINE BigUInt_Pow10(Big, Exp)
 ! na
 
 !** FLOW
-        
+
     CALL Big%Pow5(Exp)
     CALL Big%Pow2(Exp)
-          
+
     RETURN
 
 END SUBROUTINE BigUInt_Pow10
@@ -3195,7 +3493,7 @@ SUBROUTINE BigInt_Add_U64(Big, Val)
     INTEGER(KIND=I8B)     :: Num, Add
 
 !** FLOW
-    
+
     Num = Big%Digit(0)
     Add = Num + Val
     Big%Digit(0) = Add
@@ -3211,7 +3509,7 @@ SUBROUTINE BigInt_Add_U64(Big, Val)
     END DO
     Big%Digit(Big%Length) = 1_I8B
     Big%Length = Big%Length + 1
-        
+
     RETURN
 
 END SUBROUTINE BigInt_Add_U64
@@ -3348,15 +3646,15 @@ SUBROUTINE BigInt_Mul_Pow10(Big, Exp)
     INTEGER(KIND=I4B)     :: Xpn
 
 !** FLOW
-        
+
 ! initialize
     Xpn = Exp
-    
+
     DO WHILE (Xpn >= U64_POW10_MAX_EXP)
         CALL BigInt_Mul_U64(Big, U64_Pow10_Table(U64_POW10_MAX_EXP))
         Xpn = Xpn - U64_POW10_MAX_EXP
     END DO
-    
+
     IF (Xpn /= 0) CALL BigInt_Mul_U64(Big, U64_Pow10_Table(Xpn))
 
     RETURN
@@ -3392,7 +3690,7 @@ FUNCTION BigInt_Compare(A, B) RESULT(Flag)
         Flag = +1
         RETURN
     END IF
-    
+
 ! next check Digit components
     Idx = A%Length
     DO WHILE (Idx > 0)
@@ -3409,7 +3707,7 @@ FUNCTION BigInt_Compare(A, B) RESULT(Flag)
         END ASSOCIATE
     END DO
     Flag = 0
-        
+
     RETURN
 
 END FUNCTION BigInt_Compare
@@ -3469,7 +3767,7 @@ SUBROUTINE BigInt_Set_String(Big, SigDec, ExpDec, cStr, Aux)
         CALL BigInt_Set_UIntType(Big, SigDec)
         RETURN
     END IF
-        
+
 ! some digits were cut, read them from 'SigCut' to 'SigEnd'
     BLOCK
         ! +++ local variables +++
@@ -3497,7 +3795,7 @@ SUBROUTINE BigInt_Set_String(Big, SigDec, ExpDec, cStr, Aux)
         IF (DigitTotLen > MaxDecDigits) THEN
             DigitCut = TrueVal
             SigEnd = SigEnd - (DigitTotLen - (MaxDecDigits + 1))
-            SigEnd = SigEnd - (Aux%Indices(3) == Aux%Indices(4))
+            IF (Aux%Indices(3) == Aux%Indices(4)) SigEnd = SigEnd - 1
             DigitTotLen = (MaxDecDigits + 1)
         END IF
         ExpDec = ExpDec - (DigitTotLen - UIntSafeDigits)
@@ -3633,7 +3931,7 @@ FUNCTION Parse_Fortran_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT
         IF (PRESENT(ErrMsg)) ErrMsg = 'Invalid Input: this is an empty string.'
         RETURN
     END IF
-    
+
 ! check whether there are spaces in front of the number
 ! (only allow space(s) in front of the number but no spaces inside it)
     Indx = 1
@@ -3649,7 +3947,7 @@ FUNCTION Parse_Fortran_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT
             RETURN
         END IF
     END IF
-    
+
 ! check for sign of the significand
     NegSign = FalseVal
     CurChr => cStr(Indx:Indx)
@@ -3670,9 +3968,9 @@ FUNCTION Parse_Fortran_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT
             RETURN
         END IF
     END IF
-    
+
     Aux%Start = Indx
-    
+
 ! check for leading zero(s)
     IF (cStr(Indx:Indx) == '0') THEN
         AtLeastOneDigit = TrueVal
@@ -3688,7 +3986,7 @@ FUNCTION Parse_Fortran_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT
             RETURN
         END IF
     END IF
-    
+
 ! compute for the significand in the integral part
     IntegralStart = 0
     IntegralEnd   = 0
@@ -3776,7 +4074,7 @@ FUNCTION Parse_Fortran_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT
         END IF
         RETURN
     END IF
-    
+
     ESign = 1
 ! check whether the current character is an exponent indicator
     IF (Indx <= StrLen) THEN
@@ -3826,7 +4124,7 @@ FUNCTION Parse_Fortran_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT
             END DO
         END IF
     END IF
-    
+
 ! check number of significant digits
     IF (SigCount > FP_Max_Digits) THEN
 ! the input string have more digits than 'SigDec' can normally handle so
@@ -3840,10 +4138,10 @@ FUNCTION Parse_Fortran_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT
                 Indx = Indx + 1
             END DO
         END IF
-        IF (SigDec .UGE. SigLimit) THEN    
+        IF (SigDec .UGE. SigLimit) THEN
 ! We have a big integer (but we can handle it) so determine exponent
             ExpDec = IntegralEnd + 1 - Indx + ESign*ExpDec
-        ELSE                            
+        ELSE
 ! We may have a value with a fractional component.
             IF (FractionStart > 0) THEN
                 Indx = FractionStart
@@ -3860,9 +4158,9 @@ FUNCTION Parse_Fortran_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT
         Aux%SigCut = Indx
     ELSE
 ! determine exponent
-        ExpDec = ESign*ExpDec - NFrac    
+        ExpDec = ESign*ExpDec - NFrac
     END IF
-    
+
 ! set output
     Valid = TrueVal
     Aux%Truncated  = Truncated
@@ -3933,7 +4231,7 @@ FUNCTION Parse_JSON_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT(Va
         IF (PRESENT(ErrMsg)) ErrMsg = 'Invalid Input: this is an empty string.'
         RETURN
     END IF
-    
+
 ! check for sign of the significand
     NegSign = FalseVal
     Indx = 1
@@ -3953,9 +4251,9 @@ FUNCTION Parse_JSON_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT(Va
             RETURN
         END IF
     END IF
-    
+
     Aux%Start = Indx
-    
+
 ! check for leading zero(s)
     IF (cStr(Indx:Indx) == '0') THEN
 ! the current (leading) digit is zero
@@ -3996,7 +4294,7 @@ FUNCTION Parse_JSON_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT(Va
         SigCount = Indx - IntegralStart
         IntegralEnd = Indx - 1
     END IF
-    
+
 ! check whether the current character is a dot
     FractionStart = 0
     FractionEnd   = 0
@@ -4060,7 +4358,7 @@ FUNCTION Parse_JSON_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT(Va
         IF (PRESENT(ErrMsg)) ErrMsg = 'There must be something wrong with the implementation.'
         RETURN
     END IF
-    
+
     ESign = 1
 ! check whether the current character is an exponent indicator
     IF (Indx <= StrLen) THEN
@@ -4110,7 +4408,7 @@ FUNCTION Parse_JSON_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT(Va
             END DO
         END IF
     END IF
-    
+
 ! check number of significant digits
     IF (SigCount > FP_Max_Digits) THEN
 ! the input string have more digits than 'SigDec' can normally handle so
@@ -4124,10 +4422,10 @@ FUNCTION Parse_JSON_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT(Va
                 Indx = Indx + 1
             END DO
         END IF
-        IF (SigDec .UGE. SigLimit) THEN    
+        IF (SigDec .UGE. SigLimit) THEN
 ! We have a big integer (but we can handle it) so determine exponent
             ExpDec = IntegralEnd + 1 - Indx + ESign*ExpDec
-        ELSE                            
+        ELSE
 ! We may have a value with a fractional component.
             IF (FractionStart > 0) THEN
                 Indx = FractionStart
@@ -4144,9 +4442,9 @@ FUNCTION Parse_JSON_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT(Va
         Aux%SigCut = Indx
     ELSE
 ! determine exponent
-        ExpDec = ESign*ExpDec - NFrac    
+        ExpDec = ESign*ExpDec - NFrac
     END IF
-    
+
 ! set output
     Valid = TrueVal
     Aux%Truncated  = Truncated
@@ -4222,7 +4520,7 @@ FUNCTION Parse_FPlus_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT(V
         IF (PRESENT(ErrMsg)) ErrMsg = 'Invalid Input: this is an empty string.'
         RETURN
     END IF
-    
+
 ! check whether there are spaces in front of the number
 ! (only allow space(s) in front of the number but no spaces inside it)
     Indx = 1
@@ -4238,7 +4536,7 @@ FUNCTION Parse_FPlus_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT(V
             RETURN
         END IF
     END IF
-    
+
 ! check for sign of the significand
     NegSign = FalseVal
     CurChr => cStr(Indx:Indx)
@@ -4259,9 +4557,9 @@ FUNCTION Parse_FPlus_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT(V
             RETURN
         END IF
     END IF
-    
+
     Aux%Start = Indx
-    
+
 ! check for leading zero(s)
     IF (cStr(Indx:Indx) == '0') THEN
         AtLeastOneDigit = TrueVal
@@ -4277,7 +4575,7 @@ FUNCTION Parse_FPlus_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT(V
             RETURN
         END IF
     END IF
-    
+
 ! compute for the significand in the integral part
     IntegralStart = 0
     IntegralEnd   = 0
@@ -4365,7 +4663,7 @@ FUNCTION Parse_FPlus_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT(V
         END IF
         RETURN
     END IF
-    
+
     ESign = 1
 ! check whether the current character is an exponent indicator
     IF (Indx <= StrLen) THEN
@@ -4420,10 +4718,10 @@ FUNCTION Parse_FPlus_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT(V
                 Indx = Indx + 1
             END DO
         END IF
-        IF (SigDec .UGE. SigLimit) THEN    
+        IF (SigDec .UGE. SigLimit) THEN
 ! We have a big integer (but we can handle it) so determine exponent
             ExpDec = IntegralEnd + 1 - Indx + ESign*ExpDec
-        ELSE                            
+        ELSE
 ! We may have a value with a fractional component.
             IF (FractionStart > 0) THEN
                 Indx = FractionStart
@@ -4440,9 +4738,9 @@ FUNCTION Parse_FPlus_String(cStr, SigDec, ExpDec, NegSign, Aux, ErrMsg) RESULT(V
         Aux%SigCut = Indx
     ELSE
 ! determine exponent
-        ExpDec = ESign*ExpDec - NFrac    
+        ExpDec = ESign*ExpDec - NFrac
     END IF
-    
+
 ! set output
     Valid = TrueVal
     Aux%Truncated  = Truncated
@@ -4469,7 +4767,7 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
 !** PURPOSE OF THIS SUBROUTINE:
 ! To convert a binary floating point number into the shortest and correctly
 ! rounded decimal representation based on the DragonBox algorithm.
-    
+
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
@@ -4491,17 +4789,17 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
     LOGICAL             :: XMul_IsInteger, XMul_Parity
     LOGICAL             :: YMul_IsInteger, Approx_Y_Parity
     LOGICAL             :: Divisible_By_Small_Divisor
-    
+
 !** FLOW:
 
 ! Step 1: integer promotion & Schubfach multiplier calculation.
-    
+
 ! Check if normal.
     IF ((ExpRaw /= 0).AND.(SigRaw == 0_I4B)) THEN
         CALL Shorter_Interval_Case(ExpBin, SigDec, ExpDec)
         RETURN
     END IF
-    
+
     Include_Left_Endpoint  = (IAND(SigBin, 1_I4B) == 0_I4B)
     Include_Right_Endpoint = Include_Left_Endpoint
 
@@ -4529,12 +4827,12 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
     CALL Compute_Mul(SHIFTL(IOR(Two_Fc, 1_I4B), Beta), Pow10, ZMul_Val, ZMul_IsInteger)
 
 ! Step 2: Try larger divisor; remove trailing zeros if necessary.
-  
+
 ! Using an upper bound on zi, we might be able to optimize the division
 ! better than the compiler; we are computing zi / big_divisor here.
     SigDec = Divide_By_10_To_Kappa_Plus_1(ZMul_Val)
     R = ZMul_Val - Big_Divisor*SigDec   ! implicit conversion if necessary
-    
+
     IF (R .ULT. DeltaI) THEN
 ! Exclude the right endpoint if necessary.
         IF ((R == 0).AND.ZMul_IsInteger.AND.(.NOT.Include_Right_Endpoint)) THEN
@@ -4571,7 +4869,7 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
     ELSE
 ! must perform Step 3
     END IF
-    
+
 ! Step 3: Find the significand with the smaller divisor
     SigDec = SigDec*TenUInt
     ExpDec = Minus_K + Kappa
@@ -4583,7 +4881,7 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
 
 ! Add dist / 10^kappa to the significand.
     SigDec = SigDec + Dist
-    
+
 ! Is dist divisible by 10^kappa?
     IF (Divisible_By_Small_Divisor) THEN
 ! Check z^(f) >= epsilon^(f).
@@ -4604,7 +4902,7 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
     END IF
 
     RETURN
-    
+
     CONTAINS
 
     SUBROUTINE Compute_Mul(U, Pow10, ResHi, IsInteger)
@@ -4621,17 +4919,16 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
         LOGICAL,           INTENT(OUT)  :: IsInteger
 
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-        INTEGER(KIND=I4B)   :: ResLo
         INTEGER(KIND=I8B)   :: Output
 
     !** FLOW
-  
+
         Output = UMul96_Upper64(U, Pow10)
         ResHi = INT(IAND(SHIFTR(Output, 32), MaskU32), KIND=I4B)
         IsInteger = INT(IAND(Output, MaskU32), KIND=I4B) == 0
- 
+
         RETURN
-            
+
     END SUBROUTINE Compute_Mul
 
 !**************************************************************************
@@ -4660,7 +4957,7 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
         IsInteger = INT(IAND(SHIFTR(Output, (32 - Beta)), MaskU32), KIND=I4B) == 0
 
         RETURN
-            
+
     END FUNCTION Compute_Mul_Parity
 
 !**************************************************************************
@@ -4683,7 +4980,7 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
     ! na
 
     !** FLOW
-            
+
     ! The numbers below are chosen such that:
     !   1. floor(n/d) = floor(nm / 2^k) where d=10 or d=100,
     !   2. nm mod 2^k < m if and only if n is divisible by d,
@@ -4695,13 +4992,13 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
     ! Multiplication" by Granlund and Montgomery (1994). magic_number (m) is set
     ! to ceil(2^k/d) for large enough k.
     ! The idea for item 2 originates from Schubfach.
-    
+
         N = N * Magic_Number
         Flag = IAND(N, Comparison_Mask) .ULT. Magic_Number
         N = SHIFTR(N, Info_Shift_Amount)
- 
+
         RETURN
-            
+
     END FUNCTION Is_Divisible_By_Pow10
 
 !**************************************************************************
@@ -4725,7 +5022,7 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
         M = INT(SHIFTR(INT(N, KIND=I8B)*DivM, DivS), KIND=I4B)
 
         RETURN
-            
+
     END FUNCTION Divide_By_10_To_Kappa_Plus_1
 
 !**************************************************************************
@@ -4750,7 +5047,7 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
         Delta = INT(IAND(SHIFTR(Pow10, (64 - 1 - Beta)), MaskU32), KIND=I4B)
 
         RETURN
-            
+
     END FUNCTION Compute_Delta
 
 !**************************************************************************
@@ -4760,7 +5057,7 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
     !** PURPOSE OF THIS SUBROUTINE:
     ! To convert a binary floating point number into the decimal representation
     ! for shorter interval case.
-    
+
         IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
     !** SUBROUTINE ARGUMENT DECLARATIONS:
@@ -4785,7 +5082,7 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
 
         Xi = Compute_Left_Endpoint(Pow10, Beta)
         Zi = Compute_Right_Endpoint(Pow10, Beta)
-  
+
     ! If the left endpoint is not an integer, increase it
         IF (.NOT.Is_Left_Endpoint_Integer(Exponent)) Xi = Xi + 1_I4B
 
@@ -4839,7 +5136,7 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
                      MaskU32), KIND=I4B)
 
         RETURN
-            
+
     END FUNCTION Compute_Left_Endpoint
 
 !**************************************************************************
@@ -4866,7 +5163,7 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
                      MaskU32), KIND=I4B)
 
         RETURN
-            
+
     END FUNCTION Compute_Right_Endpoint
 
 !**************************************************************************
@@ -4892,7 +5189,7 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
                             MaskU32), KIND=I4B) + 1, 1)
 
         RETURN
-            
+
     END FUNCTION Compute_Round_Up
 
 !**************************************************************************
@@ -4912,12 +5209,12 @@ SUBROUTINE Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
     ! na
 
     !** FLOW
-            
+
         Flag = ((E >= Case_Shorter_Interval_Left_Endpoint_Lower_Threshold) .AND. &
                 (E <= Case_Shorter_Interval_Left_Endpoint_Upper_Threshold))
- 
+
         RETURN
-            
+
     END FUNCTION Is_Left_Endpoint_Integer
 
 !**************************************************************************
@@ -4945,7 +5242,7 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     REAL(KIND=DP),     PARAMETER  :: Log2Base5 = LOG(2.0_DP)/LOG(5.0_DP)
     INTEGER(KIND=I4B), PARAMETER  :: QLimit    = FLOOR(Log2Base5*BinaryPrecision)
-    
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I4B)   :: E2
     INTEGER(KIND=I4B)   :: M2
@@ -4959,7 +5256,7 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
     INTEGER(KIND=I4B)   :: Removed, LastRemovedDigit
 
 !** FLOW
-    
+
 ! We subtract 2 in all cases so that the bounds computation has 2 additional bits.
     E2 = ExpBin - 2
     M2 = SigBin
@@ -4979,12 +5276,12 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
 ! not closer to the lower bound; regular spacing
         MM = MV - TwoUInt
     END IF
-    
+
 ! Step 3: Convert to a decimal power base using 128-bit arithmetic.
     VmIsTrailingZeros = FalseVal
     VrIsTrailingZeros = FalseVal
     DecrementVp = FalseVal
-    
+
     IF (E2 >= 0) THEN
 ! We need (Vm, Vr, Vp) = (MM, MV, MP) * 2**E2
 ! and we need to remove at least Q' = LOG10(2**E2) digits from the
@@ -4998,7 +5295,7 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
 ! once and determine the correct value of the last removed digit.
         Q = Floor_Log10_Pow2(E2)
         E10 = Q
-        
+
 ! Determine whether all the removed digits are 0.
 !
 ! Z(X, E2, Q) = MOD((X * 2**E2), 10**Q) == 0
@@ -5007,7 +5304,7 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
 !             = P2(X) + E2 >= Q and P5(x) >= Q
 !             = P5(X) >= Q
 !             = MOD(X, 5**Q) == 0
-        
+
 ! QLimit = FLOOR(LOG5(2**BinaryPrecision))
         IF (Q <= QLimit) THEN
 ! Only one of MP, MV, and MM can be a multiple of 5, if any.
@@ -5033,7 +5330,7 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
 !               = (MM, MV, MP) * 5**(-E10) / 2**(E10 - E2)
         Q = Floor_Log10_Pow5(-E2)
         E10 = Q + E2
-        
+
 ! Determine whether all the removed digits are 0.
 !
 ! Z(X, E2, Q) = MOD((X * 5**-E2), 10**Q) == 0
@@ -5061,7 +5358,7 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
             VrIsTrailingZeros = Is_Multiple_Of_Pow2(MV, Q - 1)
         END IF
     END IF
-    
+
     CALL MulPow5DivPow2(MM, MV, MP, -E10, E10-E2, Vm, Vr, Vp)
     IF (DecrementVp) Vp = Vp - 1_I4B
 
@@ -5117,7 +5414,7 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
     SUBROUTINE MulPow5DivPow2(U, V, W, E5, E2, A, B, C)
 
     !** PURPOSE OF THIS SUBROUTINE:
-    ! To perform multipy by power of 5 and divide by power of 2 
+    ! To perform multipy by power of 5 and divide by power of 2
 
         IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
@@ -5131,7 +5428,7 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
         INTEGER(KIND=I8B)     :: Pow5
 
     !** FLOW
-    
+
         Shift = E2 - (Floor_Log2_Pow5(E5) + 1 - BitsPerPow5)
 
         Pow5 = Get_Pow10_64Bits(E5)
@@ -5139,9 +5436,9 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
         A = MulShift32(U, Pow5, Shift)
         B = MulShift32(V, Pow5, Shift)
         C = MulShift32(W, Pow5, Shift)
-    
+
         RETURN
-            
+
     END SUBROUTINE MulPow5DivPow2
 
 !**************************************************************************
@@ -5164,15 +5461,15 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
         INTEGER(KIND=I4B)     :: Shift
 
     !** FLOW
-    
+
         A = ToUnsignedLong(X)*IAND(Y, MaskU32)
         B = ToUnsignedLong(X)*SHIFTR(Y, 32)
         Sum = B + SHIFTR(A, 32)
         Shift = J - 32
         Z = IAND(SHIFTR(Sum, Shift), MaskU32)
-        
+
         RETURN
-    
+
     END FUNCTION MulShift32
 
 !**************************************************************************
@@ -5195,15 +5492,15 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
     ! na
 
     !** FLOW
-    
+
         IF (Exp <= MaxExp_ModInv5) THEN
             Flag = IsMultipleOfPow5_32Bits(Value, Exp)
         ELSE
             Flag = Pow5Factor_32Bits(Value) .UGE. Exp
         END IF
-    
+
         RETURN
-    
+
     END FUNCTION Is_Multiple_Of_Pow5
 
 !**************************************************************************
@@ -5228,9 +5525,9 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
     !** FLOW
 
         Flag = IAND(Value, SHIFTL(1_I4B, Exp) - 1_I4B) == 0_I4B
-    
+
         RETURN
-    
+
     END FUNCTION Is_Multiple_Of_Pow2
 
 !**************************************************************************
@@ -5331,7 +5628,7 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
         INTEGER(KIND=I4B)     :: Quotient, Remainder
 
     !** FLOW
-    
+
         Count = 0
         Dividend = Value
         DO WHILE (Dividend /= 0)
@@ -5341,9 +5638,9 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
             Count = Count + 1
         END DO
         Count = 0
-    
+
         RETURN
-    
+
     END FUNCTION Pow5Factor_32Bits
 
 !**************************************************************************
@@ -5361,35 +5658,35 @@ SUBROUTINE Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
         LOGICAL                       :: Flag
 
     !** SUBROUTINE PARAMETER DECLARATIONS:
-        INTEGER(KIND=I4B), PARAMETER  :: ModInv5(0:1,0:MaxExp_ModInv5) = [   &
-                        [INT(Z'00000001', KIND=I4B), INT(Z'FFFFFFFF', KIND=I4B)], &
-                        [INT(Z'CCCCCCCD', KIND=I4B), INT(Z'33333333', KIND=I4B)], &
-                        [INT(Z'C28F5C29', KIND=I4B), INT(Z'0A3D70A3', KIND=I4B)], &
-                        [INT(Z'26E978D5', KIND=I4B), INT(Z'020C49BA', KIND=I4B)], &
-                        [INT(Z'3AFB7E91', KIND=I4B), INT(Z'0068DB8B', KIND=I4B)], &
-                        [INT(Z'0BCBE61D', KIND=I4B), INT(Z'0014F8B5', KIND=I4B)], &
-                        [INT(Z'68C26139', KIND=I4B), INT(Z'000431BD', KIND=I4B)], &
-                        [INT(Z'AE8D46A5', KIND=I4B), INT(Z'0000D6BF', KIND=I4B)], &
-                        [INT(Z'22E90E21', KIND=I4B), INT(Z'00002AF3', KIND=I4B)], &
-                        [INT(Z'3A2E9C6D', KIND=I4B), INT(Z'00000897', KIND=I4B)], &
-                        [INT(Z'3ED61F49', KIND=I4B), INT(Z'000001B7', KIND=I4B)], &
-                        [INT(Z'0C913975', KIND=I4B), INT(Z'00000057', KIND=I4B)], &
-                        [INT(Z'CF503EB1', KIND=I4B), INT(Z'00000011', KIND=I4B)], &
-                        [INT(Z'F6433FBD', KIND=I4B), INT(Z'00000003', KIND=I4B)]]
+        INTEGER(KIND=I4B), PARAMETER  :: ModInv5(0:1,0:MaxExp_ModInv5) = RESHAPE([ &
+                        INT(Z'00000001', KIND=I4B), INT(Z'FFFFFFFF', KIND=I4B), &
+                        INT(Z'CCCCCCCD', KIND=I4B), INT(Z'33333333', KIND=I4B), &
+                        INT(Z'C28F5C29', KIND=I4B), INT(Z'0A3D70A3', KIND=I4B), &
+                        INT(Z'26E978D5', KIND=I4B), INT(Z'020C49BA', KIND=I4B), &
+                        INT(Z'3AFB7E91', KIND=I4B), INT(Z'0068DB8B', KIND=I4B), &
+                        INT(Z'0BCBE61D', KIND=I4B), INT(Z'0014F8B5', KIND=I4B), &
+                        INT(Z'68C26139', KIND=I4B), INT(Z'000431BD', KIND=I4B), &
+                        INT(Z'AE8D46A5', KIND=I4B), INT(Z'0000D6BF', KIND=I4B), &
+                        INT(Z'22E90E21', KIND=I4B), INT(Z'00002AF3', KIND=I4B), &
+                        INT(Z'3A2E9C6D', KIND=I4B), INT(Z'00000897', KIND=I4B), &
+                        INT(Z'3ED61F49', KIND=I4B), INT(Z'000001B7', KIND=I4B), &
+                        INT(Z'0C913975', KIND=I4B), INT(Z'00000057', KIND=I4B), &
+                        INT(Z'CF503EB1', KIND=I4B), INT(Z'00000011', KIND=I4B), &
+                        INT(Z'F6433FBD', KIND=I4B), INT(Z'00000003', KIND=I4B)], [2, 14])
 
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
         INTEGER(KIND=I4B)     :: Cache(0:1)
         INTEGER(KIND=I4B)     :: ModInverse, MaxQuotient
 
     !** FLOW
-    
+
         Cache = ModInv5(:,Exp)
         ModInverse  = Cache(0)
         MaxQuotient = Cache(1)
         Flag = Value*ModInverse .ULE. MaxQuotient
-    
+
         RETURN
-    
+
     END FUNCTION IsMultipleOfPow5_32Bits
 
 !**************************************************************************
@@ -5423,10 +5720,10 @@ SUBROUTINE Bin2Dec_Schubfach(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
     INTEGER(KIND=I4B)   :: Upper, Lower, Middle
 
 !** FLOW:
-    
+
     Cb  = SHIFTL(SigBin, 2)
     Cbr = Cb + TwoUInt
-        
+
 ! check whether Cb is closer to the lower bound
     IF ((SigRaw == 0_I4B).AND.(ExpRaw > 1)) THEN
 ! closer to the lower bound; irregular spacing
@@ -5437,11 +5734,11 @@ SUBROUTINE Bin2Dec_Schubfach(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
         Cbl = Cb - TwoUInt
         kExp = Floor_Log10_Pow2(ExpBin)
     END IF
-    
+
 ! compute Exp10 and shift
     Exp10 = -kExp
     hExp  = ExpBin + Floor_Log2_Pow10(Exp10) + 1
-        
+
 ! get the cached pow10 value from Pow10_Sig_Table or compute it
     Pow10 = Get_Pow10_64Bits(Exp10)
     IF ((Exp10 < Pow10_Min_Exact_Exp).OR.(Exp10 > Pow10_Max_Exact_Exp)) THEN
@@ -5478,23 +5775,23 @@ SUBROUTINE Bin2Dec_Schubfach(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
             RETURN
         END IF
     END IF
-    
+
     Sx4 = SHIFTL(Sx, 2)
     uInside = (Lower .ULE. Sx4)
     wInside = (Upper .UGE. (Sx4 + FourUInt))
-    
+
     ExpDec  = kExp
     SigDec  = Sx
     IF (uInside .NEQV. wInside) THEN
         IF (wInside) SigDec = SigDec + 1_I4B
         RETURN
     END IF
-    
+
     Middle  = Sx4 + TwoUInt
     IF ((Vb .UGT. Middle).OR.((Vb == Middle).AND.(IAND(Sx, 1_I4B) /= 0_I4B))) THEN
         SigDec = SigDec + 1_I4B
     END IF
-    
+
     RETURN
 
     CONTAINS
@@ -5503,7 +5800,7 @@ SUBROUTINE Bin2Dec_Schubfach(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
 
     !** PURPOSE OF THIS SUBROUTINE:
     ! To perform the rounding of input
-    
+
         IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
     !** SUBROUTINE ARGUMENT DECLARATIONS:
@@ -5515,11 +5812,11 @@ SUBROUTINE Bin2Dec_Schubfach(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
         INTEGER(KIND=I8B)    :: X, Y
 
     !** FLOW
-    
+
         Y = ToUnsignedLong(Cx)
         X = Y * IAND(G, MaskU32)
         Y = Y * SHIFTR(G, 32) + SHIFTR(X, 32)
-    
+
         Vx = INT(SHIFTR(Y, 32), KIND=I4B)
         IF (INT(IAND(Y, MaskU32), KIND=I4B) .UGT. 1) Vx = IOR(Vx, 1)
 
@@ -5557,7 +5854,7 @@ FUNCTION Dec2Bin_Clinger(SigDec, ExpDec, SigBin, ExpBin) RESULT(Valid)
     REAL(KIND=SP)       :: FloatMantissa
 
 !** FLOW
-    
+
     IF (SHIFTR(SigDec, SignificandBits) /= 0_I4B) THEN
         Valid = FalseVal
         RETURN
@@ -5590,13 +5887,13 @@ FUNCTION Dec2Bin_Clinger(SigDec, ExpDec, SigBin, ExpBin) RESULT(Valid)
         END IF
         RawFP = RawFP_FromFloat(FloatMantissa / Powers_Of_Ten(-Exp10))
     END IF
-    
+
     SigBin = RawFP_Significand(RawFP)
     ExpBin = RawFP_BiasedExponent(RawFP)
     Valid = TrueVal
 
     RETURN
-    
+
 END FUNCTION Dec2Bin_Clinger
 
 !******************************************************************************
@@ -5649,7 +5946,7 @@ SUBROUTINE Dec2Bin_LibC(SigDec, ExpDec, cStr, Start, Truncated, SigBin, ExpBin)
 !            IF ((SigBin == FirstSigBin).AND.(ExpBin == FirstExpBin)) RETURN
 !        END IF
 !    END IF
-    
+
 ! use the slow Simple Decimal Conversion algorithm
     CALL Simple_Decimal_Conversion(cStr, Start, LEN_TRIM(cStr), SigBin, ExpBin)
 
@@ -5689,12 +5986,12 @@ SUBROUTINE Dec2Bin_LibC(SigDec, ExpDec, cStr, Start, Truncated, SigBin, ExpBin)
 
     ! compute the exponent
         Exponent = Floor_Log2_Pow10(ExpDec) + MaxExpBin + SignBits
-    
+
     ! +++ normalize the significand +++
     ! We want the most significant bit of Significand to be 1. Shift if needed.
         LZ = LEADZ(SigDec)
         Significand = SHIFTL(SigDec, LZ)
-    
+
     ! +++ perform multiplication +++
     ! We want the most significant 128/64/32 bits of the product. We know this will be non-zero
     ! because the most significant bit of Significand is 1.
@@ -5737,13 +6034,13 @@ SUBROUTINE Dec2Bin_LibC(SigDec, ExpDec, cStr, Start, Truncated, SigBin, ExpBin)
                 Upper = Product_High
             END BLOCK
         END IF
-    
+
     ! The final mantissa should be 123/53/24 (BinaryPrecision) bits with a leading 1.
     ! We shift it so that it occupies 124/54/25 (BinaryPrecision+1) bits with a leading 1.
         Upperbit = INT(SHIFTR(Upper, SignBits), KIND=I4B)
         SigBin   = SHIFTR(Upper, (Upperbit + LowBits))
         LZ = LZ + IEOR(1, Upperbit)
-    
+
     ! Here we have SigBin < SHIFTL(1, BinaryPrecision+1).
 
     ! We have to round to even. The "to even" part
@@ -5783,7 +6080,7 @@ SUBROUTINE Dec2Bin_LibC(SigDec, ExpDec, cStr, Start, Truncated, SigBin, ExpBin)
         ELSE
             Success = TrueVal
         END IF
-  
+
         RETURN
 
     END FUNCTION D2B_Lemire_FastPath
@@ -5812,11 +6109,11 @@ SUBROUTINE Dec2Bin_LibC(SigDec, ExpDec, cStr, Start, Truncated, SigBin, ExpBin)
         INTEGER(KIND=I4B)     :: MSB
 
     !** FLOW
-    
+
     ! normalization
         CLZ = LEADZ(SigDec)
         Mantissa = SHIFTL(SigDec, CLZ)
-    
+
         Exp2 = Floor_Log2_Pow10(ExpDec) + TotalBits + ExponentBias - CLZ
 
     ! multiplication
@@ -5872,7 +6169,7 @@ SUBROUTINE Dec2Bin_LibC(SigDec, ExpDec, cStr, Start, Truncated, SigBin, ExpBin)
             FinalMantissa = SHIFTR(FinalMantissa, 1)
             Exp2 = Exp2 + 1
         END IF
-    
+
     ! check exponent validity
         IF ((Exp2 < 1).OR.(Exp2 > (MaxExponent-1))) THEN
             Valid = FalseVal
@@ -5884,7 +6181,7 @@ SUBROUTINE Dec2Bin_LibC(SigDec, ExpDec, cStr, Start, Truncated, SigBin, ExpBin)
         Valid = TrueVal
 
         RETURN
-    
+
     END FUNCTION Eisel_Lemire
 
 !******************************************************************************
@@ -5919,10 +6216,10 @@ SUBROUTINE Dec2Bin_LibC(SigDec, ExpDec, cStr, Start, Truncated, SigBin, ExpBin)
 
     ! initialize
         Exp2 = 0
-    
+
     ! construct HPDecimal object
         CALL HP%Construct(cStr, Start, Finish)
-    
+
         IF (HP%NumDigits == 0) THEN
             SigBin = 0_I4B
             ExpBin = 0
@@ -6029,7 +6326,7 @@ SUBROUTINE Dec2Bin_LibC(SigDec, ExpDec, cStr, Start, Truncated, SigBin, ExpBin)
         ExpBin = Exp2
 
         RETURN
-    
+
     END SUBROUTINE Simple_Decimal_Conversion
 
 !******************************************************************************
@@ -6061,7 +6358,7 @@ SUBROUTINE Dec2Bin_FastFloat(SigDec, ExpDec, cStr, SigCut, Indices, SigBin, ExpB
     INTEGER(KIND=I8B)     :: MCmp
 
 !** FLOW
-            
+
 ! compute float
     CALL Compute_Float(ExpDec, SigDec, EBase, MBase)
     IF (SigCut .AND. EBase >= 0) THEN
@@ -6070,7 +6367,7 @@ SUBROUTINE Dec2Bin_FastFloat(SigDec, ExpDec, cStr, SigCut, Indices, SigBin, ExpB
             CALL Compute_Error(ExpDec, SigDec, EBase, MBase)
         END IF
     END IF
-        
+
 ! If we have an invalid power (EBase < 0), then we need to go
 ! the long way around again. This is very uncommon.
     IF (EBase < 0) THEN
@@ -6089,7 +6386,7 @@ SUBROUTINE Dec2Bin_FastFloat(SigDec, ExpDec, cStr, SigCut, Indices, SigBin, ExpB
             CALL Digit_Comparision(cStr, NumInfo, ECmp, MCmp, EBase, MBase)
         END BLOCK
     END IF
-    
+
     SigBin = MBase
     ExpBin = EBase
 
@@ -6117,23 +6414,23 @@ SUBROUTINE Dec2Bin_FastFloat(SigDec, ExpDec, cStr, SigCut, Indices, SigBin, ExpB
         TYPE(UInt128)         :: Pow10
 
     !** FLOW
-    
+
     ! The required precision is Mantissa_Explicit_Bits + 3 because
     ! 1. We need the implicit bit
     ! 2. We need an extra bit for rounding purposes
     ! 3. We might lose a bit due to the "UpperBit" (result too small, requiring a shift)
     ! BitPrecision = 26 for 32-bit number and 55 for 64-bit number
         BitPrecision = Mantissa_Explicit_Bits + 3
-    
+
     ! compute precision mask
         PrecisionMask = SHIFTR(MaxMant, BitPrecision)
-    
+
     ! get 128-bit approximation of power of ten (or power of five)
         Pow10 = Get_Pow10_128Bits(Q)
 
     ! For small values of Q, e.g., Q in [0,27], the product is always exact.
         CALL UMul128(W, Pow10%High, ProductHi, ProductLo)
-    
+
         IF (IAND(ProductHi, PrecisionMask) == PrecisionMask) THEN
     ! could further guard with  (ProductLo + W < ProductLo)
     ! regarding the second product, we only need the upper bits of the product.
@@ -6141,7 +6438,7 @@ SUBROUTINE Dec2Bin_FastFloat(SigDec, ExpDec, cStr, SigCut, Indices, SigBin, ExpB
             ProductLo = ProductLo + SecondProductHi
             IF (SecondProductHi .UGT. ProductLo) ProductHi = ProductHi + 1_I8B
         END IF
-    
+
         RETURN
 
     END SUBROUTINE Compute_Product_Approximation
@@ -6165,7 +6462,7 @@ SUBROUTINE Dec2Bin_FastFloat(SigDec, ExpDec, cStr, SigCut, Indices, SigBin, ExpB
     !** FLOW
 
         E = Floor_Log2_Pow10(Q) + MantTotalBits - 1
-    
+
         RETURN
 
     END FUNCTION Power
@@ -6196,7 +6493,7 @@ SUBROUTINE Dec2Bin_FastFloat(SigDec, ExpDec, cStr, SigCut, Indices, SigBin, ExpB
         Bias = Mantissa_Explicit_Bits - Minimum_Exponent
         M = SHIFTL(W, HiLZ)
         E = Power(Q) + Bias - HiLZ - LZ - (MantTotalBits-2) + Invalid_AM_Bias
-    
+
         RETURN
 
     END SUBROUTINE Compute_Error_Scaled
@@ -6227,13 +6524,13 @@ SUBROUTINE Dec2Bin_FastFloat(SigDec, ExpDec, cStr, SigCut, Indices, SigBin, ExpB
     ! perform normalization
         LZ = LEADZ(W)
         LocalW = SHIFTL(W, LZ)
-    
+
     ! compute the product approximation
         CALL Compute_Product_Approximation(Q, LocalW, ProductHi, ProductLo)
-    
+
     ! compute the adjusted mantissa biased by the invalid power2
         CALL Compute_Error_Scaled(Q, ProductHi, LZ, E, M)
-    
+
         RETURN
 
     END SUBROUTINE Compute_Error
@@ -6291,12 +6588,12 @@ SUBROUTINE Dec2Bin_FastFloat(SigDec, ExpDec, cStr, SigCut, Indices, SigBin, ExpB
     ! See mathematical proof in the following reference:
     ! Noble Mushtak, Daniel Lemire, Fast Number Parsing Without Fallback,
     !       Software: Practice and Experience 53 (7), 2023.
-    
+
     ! Shifting to Mantissa_Explicit_Bits + 2 bits
         UpperBit = INT(SHIFTR(ProductHi, MantTotalBits - 1), KIND=I4B)
         M = SHIFTR(ProductHi, (UpperBit + MantTotalBits - Mantissa_Explicit_Bits - 3))
         E = Power(Q) + UpperBit - LZ - Minimum_Exponent
-    
+
         IF (E <= 0) THEN    ! we have a subnormal?
     ! Here have that E <= 0 so -E >= 0
             IF (-E + 1 >= MantTotalBits) THEN
@@ -6333,10 +6630,10 @@ SUBROUTINE Dec2Bin_FastFloat(SigDec, ExpDec, cStr, SigCut, Indices, SigBin, ExpB
     ! We are only concerned with the cases where 5**Q fits in single 64-bit word.
         IF ((ProductLo .ULE. OneMant) .AND. (Q >= Min_Exponent_Round_To_Even) .AND. &
             (Q <= Max_Exponent_Round_To_Even) .AND. &
-            (IAND(M, ThreeUInt) == OneMant)) THEN  ! we may fall between two floats!
+            (IAND(M, 3_I8B) == OneMant)) THEN  ! we may fall between two floats!
     ! To be in-between two floats we need that in doing
     !   M = ProductHi >> (UpperBit + 64 - Mantissa_Explicit_Bits - 3)
-    ! ... we dropped out only zeroes. But if this happened, then we can go back!!!
+    ! ... we dropped out only zeros. But if this happened, then we can go back!!!
             IF (SHIFTL(M, (UpperBit + MantTotalBits - Mantissa_Explicit_Bits - 3)) == &
                 ProductHi) THEN
                 M = IAND(M, NotOneMant)   ! flip it so that we do not round up
@@ -6355,9 +6652,9 @@ SUBROUTINE Dec2Bin_FastFloat(SigDec, ExpDec, cStr, SigCut, Indices, SigBin, ExpB
             E = Infinite_Power
             M = 0_I4B
         END IF
-  
+
         RETURN
-    
+
     END SUBROUTINE Compute_Float
 
     !**************************************************************************
@@ -6395,7 +6692,7 @@ SUBROUTINE Dec2Bin_FastFloat(SigDec, ExpDec, cStr, SigCut, Indices, SigBin, ExpB
             Mantissa = DivByPow10(Mantissa, 1)
             Exponent = Exponent + 1
         END DO
-    
+
         RETURN
 
     END FUNCTION Scientific_Exponent
@@ -6451,7 +6748,7 @@ SUBROUTINE Dec2Bin_FastFloat(SigDec, ExpDec, cStr, SigCut, Indices, SigBin, ExpB
         END IF
 
         RETURN
-        
+
     END SUBROUTINE Digit_Comparision
 
     !**************************************************************************
@@ -6460,7 +6757,7 @@ SUBROUTINE Dec2Bin_FastFloat(SigDec, ExpDec, cStr, SigCut, Indices, SigBin, ExpB
 
     !** PURPOSE OF THIS SUBROUTINE:
     ! To compare whether LHS /= RHS.
-    
+
         IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
     !** SUBROUTINE ARGUMENT DECLARATIONS:
@@ -6472,11 +6769,11 @@ SUBROUTINE Dec2Bin_FastFloat(SigDec, ExpDec, cStr, SigCut, Indices, SigBin, ExpB
 
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     ! na
-        
+
     !** FLOW
-        
+
         Flag = (MLhs /= MRhs).OR.(ELhs /= ERhs)
-    
+
         RETURN
 
     END FUNCTION Is_AdjustedMantissa_NE
@@ -6584,7 +6881,7 @@ SUBROUTINE Round_Nearest_Tie_Even(E, M, Shift, CB)
 
     Is_Odd = IAND(M, OneMant) == OneMant
     IF (CB(Is_Odd, Is_Halfway, Is_Above)) M = M + OneMant
-  
+
     RETURN
 
 END SUBROUTINE Round_Nearest_Tie_Even
@@ -6612,7 +6909,7 @@ SUBROUTINE Parse_Mantissa(cStr, Big, NumInfo, Max_Digits, Digits)
     LOGICAL               :: Truncated
 
 !** FLOW
-        
+
 ! try to minimize the number of big integer and scalar multiplication.
 ! therefore, try to parse 8 digits at a time, and multiply by the largest
 ! scalar value (19 digits) for each step.
@@ -6620,7 +6917,7 @@ SUBROUTINE Parse_Mantissa(cStr, Big, NumInfo, Max_Digits, Digits)
     Digits = 0
     Value = 0_I8B
     Step = 19
-  
+
 ! process all integer digits.
     IF (NumInfo%IntegralStart /= 0) THEN
         Indx = NumInfo%IntegralStart
@@ -6707,14 +7004,14 @@ SUBROUTINE Parse_Mantissa(cStr, Big, NumInfo, Max_Digits, Digits)
 
     !** SUBROUTINE PARAMETER DECLARATIONS:
         INTEGER(KIND=I8B), PARAMETER  :: MConst = INT(Z'3030303030303030', KIND=I8B)
-        
+
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
         CHARACTER(LEN=8)    :: wStr
         INTEGER(KIND=I8B)   :: wVal
         EQUIVALENCE(wStr, wVal)
 
     !** FLOW
-        
+
         DO WHILE (IStart + 7 <= IEnd)
             wStr = cStr(IStart:IStart+7)
             IF (wVal /= MConst) EXIT
@@ -6724,7 +7021,7 @@ SUBROUTINE Parse_Mantissa(cStr, Big, NumInfo, Max_Digits, Digits)
             IF (cStr(IStart:IStart) /= '0') EXIT
             IStart = IStart + 1
         END DO
-  
+
         RETURN
 
     END SUBROUTINE Skip_Zeros
@@ -6749,7 +7046,7 @@ SUBROUTINE Parse_Mantissa(cStr, Big, NumInfo, Max_Digits, Digits)
 
     !** SUBROUTINE PARAMETER DECLARATIONS:
         INTEGER(KIND=I8B), PARAMETER  :: MConst = INT(Z'3030303030303030', KIND=I8B)
-        
+
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
         INTEGER(KIND=I4B)   :: Indx
         CHARACTER(LEN=8)    :: wStr
@@ -6757,11 +7054,11 @@ SUBROUTINE Parse_Mantissa(cStr, Big, NumInfo, Max_Digits, Digits)
         EQUIVALENCE(wStr, wVal)
 
     !** FLOW
-        
+
     ! initialize
         Indx = IStart
         Flag = TrueVal
-        
+
     ! do 8-bit optimizations, can just compare to 8 literal 0s.
         DO WHILE (Indx + 7 <= IEnd)
             wStr = cStr(Indx:Indx+7)
@@ -6773,7 +7070,7 @@ SUBROUTINE Parse_Mantissa(cStr, Big, NumInfo, Max_Digits, Digits)
             Indx = Indx + 1
         END DO
         Flag = FalseVal
-        
+
         RETURN
 
     END FUNCTION Is_Truncated
@@ -6800,13 +7097,13 @@ SUBROUTINE Parse_Mantissa(cStr, Big, NumInfo, Max_Digits, Digits)
         EQUIVALENCE(wStr, wVal)
 
     !** FLOW
-        
+
         wStr = cStr(Indx:Indx+7)
         Value = Value*100000000_I8B + Parse_Eight_Digits_Unrolled(wVal)
         Indx = Indx + 8
         Counter = Counter + 8
         Count = Count + 8
-  
+
         RETURN
 
     END SUBROUTINE Parse_Eight_Digits
@@ -6834,12 +7131,12 @@ SUBROUTINE Parse_Mantissa(cStr, Big, NumInfo, Max_Digits, Digits)
     ! na
 
     !** FLOW
-        
+
         Value = Value*10_I8B + (IACHAR(cStr(Indx:Indx))-A0)
         Indx = Indx + 1
         Counter = Counter + 1
         Count = Count + 1
-  
+
         RETURN
 
     END SUBROUTINE Parse_One_Digit
@@ -6863,10 +7160,10 @@ SUBROUTINE Parse_Mantissa(cStr, Big, NumInfo, Max_Digits, Digits)
     ! na
 
     !** FLOW
-        
+
         CALL Big%SmallMul(Power)
         CALL Big%Add(Value)
-  
+
         RETURN
 
     END SUBROUTINE Add_Native
@@ -6890,12 +7187,12 @@ SUBROUTINE Parse_Mantissa(cStr, Big, NumInfo, Max_Digits, Digits)
     ! na
 
     !** FLOW
-        
+
     ! need to round-up the digits, but need to avoid rounding
     ! ....9999 to ...10000, which could cause a false halfway point.
         CALL Add_Native(Big, 10_I8B, 1_I8B)
         Count = Count + 1
-  
+
         RETURN
 
     END SUBROUTINE Round_Up_BigUInt
@@ -6923,7 +7220,7 @@ SUBROUTINE Positive_Digit_Comparision(Big, Exp, E2, M2)
 
 !** SUBROUTINE PARAMETER DECLARATIONS:
     INTEGER(KIND=I4B), PARAMETER  :: Offset = Mantissa_Explicit_Bits - Minimum_Exponent - MantTotalBits
-        
+
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     LOGICAL    :: Truncated
 
@@ -6936,9 +7233,9 @@ SUBROUTINE Positive_Digit_Comparision(Big, Exp, E2, M2)
     CALL Round(E2, M2, Callback_Round)
 
     RETURN
-        
+
 CONTAINS
-    
+
     SUBROUTINE Callback_Round(E, M, Shift)
         ! arguments
         INTEGER(KIND=I4B),  INTENT(INOUT) :: E    ! exponent in base 2
@@ -6976,7 +7273,7 @@ SUBROUTINE Negative_Digit_Comparision(Big, EIn, MIn, Exp, EOut, MOut)
 ! to scale them identically, we do `n * 2^f * 5^-f`, so we now have `m * 2^e`.
 ! we then need to scale by `2^(f- e)`, and then the two significant digits
 ! are of the same magnitude.
-    
+
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
@@ -7009,7 +7306,7 @@ SUBROUTINE Negative_Digit_Comparision(Big, EIn, MIn, Exp, EOut, MOut)
     MBase = MIn
     CALL Round(EBase, MBase, CBRound)
     CALL To_Float(FalseVal, EBase, MBase, FloatBase)
-        
+
     CALL To_Extended_Halfway(FloatBase, ETheory, MTheory)
 
     CALL TheoryDigits%FromU64(MTheory)
@@ -7032,14 +7329,14 @@ SUBROUTINE Negative_Digit_Comparision(Big, EIn, MIn, Exp, EOut, MOut)
     EOut = EIn
     MOut = MIn
     CALL Round(EOut, MOut, Callback_Round)
-    
+
 ! free pointer
     NULLIFY(RealDigits)
 
     RETURN
-        
+
 CONTAINS
-    
+
     SUBROUTINE CBRound(E, M, Shift)
         ! arguments
         INTEGER(KIND=I4B),  INTENT(INOUT) :: E    ! exponent in base 2
@@ -7095,15 +7392,15 @@ CONTAINS
 
     !** SUBROUTINE PARAMETER DECLARATIONS:
         INTEGER(KIND=I4B), PARAMETER  :: Bias = Mantissa_Explicit_Bits - Minimum_Exponent
-  
+
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-        INTEGER(KIND=I4B)    :: Bits
+        INTEGER(KIND=I8B)    :: Bits
 
     !** FLOW
 
-        Bits = RawFP_FromFloat(Value)
+        Bits = INT(RawFP_FromFloat(Value), KIND=I8B)
 
-        IF (IAND(Bits, Exponent_Mask) == 0_I4B) THEN
+        IF (IAND(Bits, Exponent_Mask) == 0_I8B) THEN
     ! denormal
             E = 1 - Bias
             M = IAND(Bits, Mantissa_Mask)
@@ -7171,7 +7468,7 @@ CONTAINS
             M = SHIFTR(M, Shift)
         END IF
         E = E + Shift
-  
+
         RETURN
 
     END SUBROUTINE Round_Down
@@ -7204,12 +7501,12 @@ CONTAINS
 
     ! compose the component parts into word
         Word = RawFP_Construct(FpBin)
-    
+
     ! convert word to real number
         Value = RawFP_ToFloat(Word)
- 
+
         RETURN
-            
+
     END SUBROUTINE To_Float
 
     !**************************************************************************
@@ -7243,7 +7540,7 @@ FUNCTION Dec2Bin_YY(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
     INTEGER(KIND=I4B)   :: ExpBin   ! exponent, base 2
 
 !** FLOW
-    
+
 ! check whether to use YY's fast path
     IF ((.NOT.Aux%Truncated).AND.(ExpDec > MinExpFastPath).AND.(ExpDec < MaxExpFastPath)) THEN
         IF (D2B_YY_FastPath(SigDec, ExpDec, SigBin, ExpBin)) THEN
@@ -7260,7 +7557,7 @@ FUNCTION Dec2Bin_YY(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
             RETURN
         END IF
     END IF
-    
+
 ! perform decimal to binary conversion using YY's slow path
     RawFP = D2B_YY_SlowPath(SigDec, ExpDec, Negative, cStr, Aux)
 
@@ -7301,17 +7598,17 @@ FUNCTION Dec2Bin_YY(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
 
     ! The result value is exactly equal to (SigDec * 10**ExpDec),
     ! the exponent part (10**ExpDec) can be converted to (Sig2 * 2**Exp2).
-         
+
     ! The Sig2 can be an infinite length number, only the highest 256 bits
     ! is cached in the Pow10_Sig_Table.
     ! (Quad uses 256 bits, Double uses 128 bits, and Single uses 64 bits)
-         
+
     ! Now we have these bits:
     ! Sig1 (normalized 128/64/32 bit)   : aaaaaaaaaaaaaaaa
     ! Sig2 (higher 128/64/32 bit)       : bbbbbbbbbbbbbbbb
     ! Sig2_Ext (lower 128/64/32 bit)    : cccccccccccccccc
     ! Sig2_Cut (extra unknown bits)     : dddddddddddddddddddddddd....
-         
+
     ! And the calculation process is:
     ! -------------------------------------------------------------
     !         aaaaaaaaaaaaaaaa *
@@ -7325,18 +7622,18 @@ FUNCTION Dec2Bin_YY(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
     !         [Hi2___][Lo2___] +
     !                 [unknown___________....]
     ! -------------------------------------------------------------
-         
+
     ! The addition with carry may affect higher bits, but if there is a 0
     ! in higher bits, the bits higher than 0 will not be affected.
-         
+
     ! 'Lo2' + 'unknown' may get a carry bit and may affect 'Hi2', the max value
     ! of 'Hi2' is 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE/0xFFFFFFFFFFFFFFFE/0xFFFFFFFE,
     ! so 'Hi2' will not overflow.
-         
+
     ! 'Lo' + 'Hi2' may alse get a carry bit and may affect 'Hi', but only
     ! the highest significant 113/53/24 bits of 'Hi' is needed. If there is a 0
     ! in the lower bits of 'Hi', then all the following bits can be dropped.
-         
+
     ! To convert the result to IEEE-754 double number, we need to perform
     ! correct rounding:
     ! 1. if bit 114/54/25 is 0, round down,
@@ -7347,13 +7644,13 @@ FUNCTION Dec2Bin_YY(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
     ! initialize
         Exact   = FalseVal
         Success = FalseVal
-    
+
     ! convert (10*ExpDec) to (Sig2 * 2**Exp2)
         Pow10    = Get_Pow10_64Bits(ExpDec)
         Sig2     = SHIFTR(Pow10, 32)
         Sig2_Ext = IAND(Pow10, MaskU32)
         Exp2     = Floor_Log2_Pow10(ExpDec) - SignBits
-                
+
     ! normalize and multiply
         Lz   = LEADZ(SigDec)
         Sig1 = SHIFTL(SigDec, Lz)
@@ -7364,15 +7661,15 @@ FUNCTION Dec2Bin_YY(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
         Hi = INT(SHIFTR(FirstProduct, 32), KIND=I4B)
 
     ! To get normalized value, 'Hi' should be shifted to the left by 0 or 1.
-         
+
     ! The highest significant 113/53/24 bits is used by IEEE-754 double number,
     ! and the bit 114/54/25 is used to detect rounding direction.
-         
+
     ! The lowest 13 (= 128 - 114 - 1) / 9 (= 64 - 54 - 1) / 6 (= 32 - 25 - 1) bits (LowBits)
     ! is used to check whether it contains 0.
     ! Note: BitMask = SHIFTL(1, LowBits) - 1
         Bits = IAND(Hi, BitMask)
-    
+
         IF ((Bits /= 0_I4B).AND.(Bits /= BitMask)) THEN
     ! The 'Bits' is not zero, so we don't need to check 'round to even' case.
     ! The 'Bits' contains bit '0', so we can drop the extra bits after '0'.
@@ -7398,16 +7695,16 @@ FUNCTION Dec2Bin_YY(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
                 Exp2 = Exp2 - 1
             END IF
             Exp2 = Exp2 + TotalBits
-            
+
     ! test the bit 114 and get rounding direction
             IF (IAND(Hi, AddRound) /= 0_I4B) Hi = Hi + AddRound
-            
+
     ! test overflow
             IF (Hi .ULT. AddRound) THEN
                 Hi = SignMask
                 Exp2 = Exp2 + 1
             END IF
-            
+
     ! This is a normal number, convert it to binary representation.
             SigBin = SHIFTR(Hi, ExponentBits)
             ExpBin = Exp2 + (ExponentBits + SignificandBits) + ExponentBias
@@ -7468,21 +7765,21 @@ FUNCTION D2B_YY_SlowPath(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
     TYPE(BigUInt)       :: BigFull, BigComp
 
 !** FLOW
-    
+
 ! Slow path: read floating-point number exactly with diyfp.
 ! 1. Use cached diyfp to get an approximation value.
 ! 2. Use bigcomp to check the approximation value if needed.
-     
+
 ! This algorithm refers to google's double-conversion project:
 ! https://github.com/google/double-conversion
-    
+
 ! initialize
     IF (Negative) THEN
         Sign = 1_I4B
     ELSE
         Sign = 0_I4B
     END IF
-    
+
     Fp%Sig = SigDec
     Fp%Exp = 0
     IF (Aux%Truncated) THEN
@@ -7492,13 +7789,13 @@ FUNCTION D2B_YY_SlowPath(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
     ELSE
         FpErr = 0_I4B
     END IF
-        
+
 ! normalize
     Bits   = LEADZ(Fp%Sig)
     Fp%Sig = SHIFTL(Fp%Sig, Bits)
     Fp%Exp = Fp%Exp - Bits
     FpErr  = SHIFTL(FpErr, Bits)
-    
+
 ! multiply and add error
     Fp = Diy_Fp_Mul(Fp, Diy_Fp_Get_Cached_Pow10(ExpDec))
     IF (FpErr == 0_I4B) THEN
@@ -7506,7 +7803,7 @@ FUNCTION D2B_YY_SlowPath(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
     ELSE
         FpErr = FpErr + INT(ERR_CACHED_POW + ERR_MUL_FIXED + 1, KIND=I4B)
     END IF
-        
+
 ! normalize
     Bits   = LEADZ(Fp%Sig)
     Fp%Sig = SHIFTL(Fp%Sig, Bits)
@@ -7522,7 +7819,7 @@ FUNCTION D2B_YY_SlowPath(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
     ELSE
         Effective_Significand_Size = Order_of_Magnitude - EXP_SUBNORMAL
     END IF
-        
+
 ! precision digits count
     PrecisionDigitsCount = DIY_SIG_BITS - Effective_Significand_Size
     IF (PrecisionDigitsCount + ERR_ULP_LOG >= DIY_SIG_BITS) THEN
@@ -7541,15 +7838,15 @@ FUNCTION D2B_YY_SlowPath(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
     PrecisionBits = PrecisionBits*ERR_ULP
     HalfWay = SHIFTL(1_I4B, (PrecisionDigitsCount - 1))
     HalfWay = HalfWay*ERR_ULP
-        
+
 ! rounding
     Fp%Sig = SHIFTR(Fp%Sig, PrecisionDigitsCount)
     IF (PrecisionBits .UGE. HalfWay + FpErr) Fp%Sig = Fp%Sig + 1_I4B
     Fp%Exp = Fp%Exp + PrecisionDigitsCount
-        
+
 ! get IEEE raw value
     RawFP = Diy_Fp_To_IEEE_Raw(Fp)
-    
+
     IF (RawFP == FpRawInf) THEN
         RawFP = IOR(SHIFTL(Sign, SignBits), RawFP)
         RETURN
@@ -7559,11 +7856,11 @@ FUNCTION D2B_YY_SlowPath(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
         RawFP = IOR(SHIFTL(Sign, SignBits), RawFP)
         RETURN
     END IF
-    
+
 ! -------------------------------------------------------------------------
 ! now the number is the correct value, or the next lower value
 ! -------------------------------------------------------------------------
-        
+
 ! upper boundary
     IF (IAND(RawFP, ExponentMask) /= 0_I4B) THEN
         FpUpper%Sig = IAND(RawFP, SignificandMask) + SHIFTL(1_I4B, SignificandBits)
@@ -7576,7 +7873,7 @@ FUNCTION D2B_YY_SlowPath(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
     FpUpper%Sig = SHIFTL(FpUpper%Sig, 1)
     FpUpper%Exp = FpUpper%Exp - 1
     FpUpper%Sig = FpUpper%Sig + 1     ! add half ulp
-    
+
 ! compare with BigInt
     Exp10 = ExpDec
     CALL BigInt_Set_String(BigFull, SigDec, Exp10, cStr, Aux)
@@ -7591,7 +7888,7 @@ FUNCTION D2B_YY_SlowPath(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
     ELSE
         CALL BigInt_Mul_Pow2(BigFull, -FpUpper%Exp)
     END IF
-    
+
     Cmp = BigInt_Compare(BigFull, BigComp)
     IF (Cmp /= 0) THEN
 ! round down or round up
@@ -7601,9 +7898,9 @@ FUNCTION D2B_YY_SlowPath(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
         IF (IAND(RawFP, 1_I4B) /= 0_I4B) RawFP = RawFP + 1_I4B
     END IF
     RawFP = IOR(SHIFTL(Sign, SignBits), RawFP)
-    
+
     RETURN
-    
+
     CONTAINS
 
     FUNCTION Diy_Fp_Get_Cached_Pow10(Exp10) RESULT(Fp)
@@ -7630,7 +7927,7 @@ FUNCTION D2B_YY_SlowPath(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
 
         Fp%Exp = Floor_Log2_Pow10(Exp10) - SignBits
         Fp%Sig = Fp%Sig + SHIFTR(Sig_Ext, SignBits)
-        
+
         RETURN
 
     END FUNCTION Diy_Fp_Get_Cached_Pow10
@@ -7657,10 +7954,10 @@ FUNCTION D2B_YY_SlowPath(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
         Product = ToUnsignedLong(Fp1%Sig)*ToUnsignedLong(Fp2%Sig)
         Lo = INT(IAND(Product, MaskU32), KIND=I4B)
         Hi = INT(SHIFTR(Product, 32), KIND=I4B)
-    
+
         Fp%Sig = Hi + SHIFTR(Lo, SignBits)
         Fp%Exp = Fp1%Exp + Fp2%Exp + TotalBits
-        
+
         RETURN
 
     END FUNCTION Diy_Fp_Mul
@@ -7684,19 +7981,19 @@ FUNCTION D2B_YY_SlowPath(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
         INTEGER(KIND=I4B)   :: Lz_Bits
 
     !** FLOW
-        
+
     ! initialize
         Sig = Fp%Sig
         Exp = Fp%Exp
         Val = 0_I4B
         IF (Sig == 0_I4B) RETURN
-    
+
     ! compute significand and exponent
         Lz_Bits = LEADZ(Sig)
         Sig = SHIFTL(Sig, Lz_Bits)
         Sig = SHIFTR(Sig, ExponentBits)
         Exp = Exp - Lz_Bits + ExponentBits + SignificandBits
-        
+
     ! check which range the result falls
         IF (Exp >= MaxExpBin) THEN
     ! overflow
@@ -7748,7 +8045,7 @@ FUNCTION Dec2Bin_Lemire(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
     INTEGER(KIND=I4B)   :: ExpBin   ! exponent, base 2
 
 !** FLOW
-    
+
 ! check whether to use Lemire's fast path
     IF ((.NOT.Aux%Truncated).AND.(ExpDec > MinExpFastPath).AND.(ExpDec < MaxExpFastPath)) THEN
         IF (D2B_Lemire_FastPath(SigDec, ExpDec, SigBin, ExpBin)) THEN
@@ -7765,7 +8062,7 @@ FUNCTION Dec2Bin_Lemire(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
             RETURN
         END IF
     END IF
-    
+
 ! perform decimal to binary conversion using YY's slow path
     RawFP = D2B_YY_SlowPath(SigDec, ExpDec, Negative, cStr, Aux)
 
@@ -7805,12 +8102,12 @@ FUNCTION Dec2Bin_Lemire(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
 
     ! compute the exponent
         Exponent = Floor_Log2_Pow10(ExpDec) + MaxExpBin + SignBits
-    
+
     ! +++ normalize the significand +++
     ! We want the most significant bit of Significand to be 1. Shift if needed.
         LZ = LEADZ(SigDec)
         Significand = SHIFTL(SigDec, LZ)
-    
+
     ! +++ perform multiplication +++
     ! We want the most significant 128/64/32 bits of the product. We know this will be non-zero
     ! because the most significant bit of Significand is 1.
@@ -7853,13 +8150,13 @@ FUNCTION Dec2Bin_Lemire(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
                 Upper = Product_High
             END BLOCK
         END IF
-    
+
     ! The final mantissa should be 123/53/24 (BinaryPrecision) bits with a leading 1.
     ! We shift it so that it occupies 124/54/25 (BinaryPrecision+1) bits with a leading 1.
         Upperbit = INT(SHIFTR(Upper, SignBits), KIND=I4B)
         SigBin   = SHIFTR(Upper, (Upperbit + LowBits))
         LZ = LZ + IEOR(1, Upperbit)
-    
+
     ! Here we have SigBin < SHIFTL(1, BinaryPrecision+1).
 
     ! We have to round to even. The "to even" part
@@ -7899,7 +8196,7 @@ FUNCTION Dec2Bin_Lemire(SigDec, ExpDec, Negative, cStr, Aux) RESULT(RawFP)
         ELSE
             Success = TrueVal
         END IF
-  
+
         RETURN
 
     END FUNCTION D2B_Lemire_FastPath
@@ -7949,7 +8246,7 @@ FUNCTION DivByPow10(X, P) RESULT(Y)
     Y = INT(SHIFTR(ToUnsignedLong(X)*Multiplier, Shift), KIND=I4B)
 
     RETURN
-            
+
 END FUNCTION DivByPow10
 
 !******************************************************************************
@@ -7965,7 +8262,7 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
     INTEGER(KIND=I4B), INTENT(IN)       :: Fp           ! significand
-    INTEGER(KIND=I4B), INTENT(IN)       :: Ep           ! expoenent
+    INTEGER(KIND=I4B), INTENT(IN)       :: Ep           ! exponent
     CHARACTER(LEN=*),  INTENT(INOUT)    :: cStr         ! character string
     LOGICAL, OPTIONAL, INTENT(IN)       :: IsScientific ! format flag
                                                         ! true  if to write the given number in scientific format
@@ -7995,7 +8292,7 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
     LOGICAL               :: IsGeneral    ! true if to write the given number in general format
 
 !** FLOW
-    
+
 ! check for special cases
     IF (Ep == ExceptionalExponent) THEN
 ! either NaN or Infinity
@@ -8008,7 +8305,7 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
         END IF
         RETURN
     END IF
-    
+
     IF (Fp == 0_I4B) THEN
 ! zero
         cStr(1:3) = '0.0'
@@ -8020,14 +8317,14 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
 ! Determine len such that 10**(sLen-1) <= F < 10**sLen
     sLen = Floor_Log10_Pow2(32 - LEADZ(Fp))
     IF (Fp >= Pow10(sLen)) sLen = sLen + 1
-    
+
 ! Let Fp and Ep be the original F and E, respectively.
 ! Transform F and E to ensure
 !    10**(H-1) <= F < 10**H
 !    Fp*10**Ep = F*10**(E-H) = 0.F*10**E
     F = Fp*Pow10(H - sLen)
     E = Ep + sLen
-    
+
 ! ToChars perform left-to-right digits extraction using integers,
 ! provided that the arguments are limited to 8 digits.
 ! Therefore, split the H = 9 digits of F into:
@@ -8039,17 +8336,17 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
 !
     HF = INT(SHIFTR(F*M98, S98), KIND=I4B)
     LF = INT(F - DivE8*HF, KIND=I4B)
-    
+
 ! set format flag
     IsGeneral = TrueVal
     IF (PRESENT(IsScientific)) IsGeneral = .NOT.IsScientific
 ! write output
     IF (IsGeneral) THEN
         IF ((0 < E).AND.(E <= 7)) THEN
-! plain format without leading zeroes
+! plain format without leading zeros
             sLen = ToChar_Plain_Without_LZ(HF, LF, E, cStr)
         ELSEIF ((-3 < E).AND.(E <= 0)) THEN
-! plain format with leading zeroes
+! plain format with leading zeros
             sLen = ToChar_Plain_With_LZ(HF, LF, E, cStr)
         ELSE
 ! scientific notation
@@ -8061,7 +8358,7 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
     END IF
 
     RETURN
-    
+
     CONTAINS
 
     FUNCTION ToChar_Plain_Without_LZ(H, L, E, cStr) RESULT(sLen)
@@ -8069,7 +8366,7 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
 !DIR$ ATTRIBUTES FORCEINLINE :: ToChar_Plain_Without_LZ
 
     !** PURPOSE OF THIS SUBROUTINE:
-    ! For 0 < E <= 7, plain format without leading zeroes.
+    ! For 0 < E <= 7, plain format without leading zeros.
     ! Left-to-right digits extraction:
     ! algorithm 1 in [7], with b = 10, k = 8, n = 28.
 
@@ -8078,7 +8375,7 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
     !** SUBROUTINE ARGUMENT DECLARATIONS:
         INTEGER(KIND=I4B),   INTENT(IN)       :: H        ! high digit
         INTEGER(KIND=I4B),   INTENT(IN)       :: L        ! low digits
-        INTEGER(KIND=I4B),   INTENT(IN)       :: E        ! expoenent
+        INTEGER(KIND=I4B),   INTENT(IN)       :: E        ! exponent
         CHARACTER(LEN=*),    INTENT(INOUT)    :: cStr     ! character string
         INTEGER(KIND=I4B)                     :: sLen     ! length of string written
 
@@ -8086,7 +8383,7 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
         INTEGER(KIND=I4B)     :: Y, T, I, Pos
 
     !** FLOW
-    
+
         cStr(1:1) = Char1Digit(H)
         Pos = 2
     ! Algorithm 1 in [7] needs computation of floor((a + 1) 2^n / b^k) - 1
@@ -8121,7 +8418,7 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
         END DO
     ! ... but do not remove the one directly to the right of '.'
         IF (cStr(Pos:Pos) == '.') Pos = Pos + 1
-    
+
     ! set length
         sLen = Pos
 
@@ -8136,26 +8433,26 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
 !DIR$ ATTRIBUTES FORCEINLINE :: ToChar_Plain_With_LZ
 
     !** PURPOSE OF THIS SUBROUTINE:
-    ! For -3 < E <= 0: plain format with leading zeroes.
+    ! For -3 < E <= 0: plain format with leading zeros.
 
         IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
     !** SUBROUTINE ARGUMENT DECLARATIONS:
         INTEGER(KIND=I4B),   INTENT(IN)       :: H        ! high digit
         INTEGER(KIND=I4B),   INTENT(IN)       :: L        ! low digits
-        INTEGER(KIND=I4B),   INTENT(IN)       :: E        ! expoenent
+        INTEGER(KIND=I4B),   INTENT(IN)       :: E        ! exponent
         CHARACTER(LEN=*),    INTENT(INOUT)    :: cStr     ! character string
         INTEGER(KIND=I4B)                     :: sLen     ! length of string written
 
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-        INTEGER(KIND=I4B)    :: Y, T, I, Pos
+        INTEGER(KIND=I4B)    :: Pos
 
     !** FLOW
-    
+
     ! fill the first 4 characters
         cStr(1:4) = '0.00'
     ! compute Pos
-        Pos = 3 - E 
+        Pos = 3 - E
     ! append H
         cStr(Pos:Pos) = Char1Digit(H)
         Pos = Pos + 1
@@ -8167,7 +8464,7 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
         END DO
     ! ... but do not remove the one directly to the right of '.'
         IF (cStr(Pos:Pos) == '.') Pos = Pos + 1
-    
+
     ! set length
         sLen = Pos
 
@@ -8189,15 +8486,15 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
     !** SUBROUTINE ARGUMENT DECLARATIONS:
         INTEGER(KIND=I4B),   INTENT(IN)       :: H        ! high digit
         INTEGER(KIND=I4B),   INTENT(IN)       :: L        ! low digits
-        INTEGER(KIND=I4B),   INTENT(IN)       :: E        ! expoenent
+        INTEGER(KIND=I4B),   INTENT(IN)       :: E        ! exponent
         CHARACTER(LEN=*),    INTENT(INOUT)    :: cStr     ! character string
         INTEGER(KIND=I4B)                     :: sLen     ! length of string written
 
     !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-        INTEGER(KIND=I4B)     :: Y, T, I, Pos
+        INTEGER(KIND=I4B)     :: Pos
 
     !** FLOW
-    
+
     ! append H
         cStr(1:1) = Char1Digit(H)
     ! append period
@@ -8211,14 +8508,14 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
         END DO
     ! ... but do not remove the one directly to the right of '.'
         IF (cStr(Pos:Pos) == '.') Pos = Pos + 1
-    
+
     ! append exponent
         Pos = Pos + 1
         cStr(Pos:Pos) = 'E'
         sLen = Pos + Write_I32_Exponent(E-1, cStr(Pos+1:))
-    
+
         RETURN
-    
+
     END FUNCTION ToChar_Scientific
 
     !******************************************************************************
@@ -8247,21 +8544,21 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
         INTEGER(KIND=I4B)     :: NxtNum, RemNum
 
     !** FLOW
-    
+
     ! compute NxtNum = PosNum/10000
         NxtNum = INT(SHIFTR(INT(Number, KIND=I8B)*Mul78, Shf78), KIND=I4B)
-    
+
     ! compute RemNum = MOD(PosNum, 10000)
         RemNum = Number - NxtNum*Divisor
-    
+
     ! convert the remainder to a working string
         cStr(5:8) = Char4Digits(RemNum)
-    
+
     ! convert the rest (NxtNum)
         cStr(1:4) = Char4Digits(NxtNum)
-        
+
         sLen = 8
-    
+
         RETURN
 
     END FUNCTION Write_U32_8_Digits
@@ -8286,7 +8583,7 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
         INTEGER(KIND=I4B)     :: PosExp
 
     !** FLOW
-        
+
         IF (Exp < 0) THEN
             cStr(1:1) = '-'
         ELSE
@@ -8302,7 +8599,7 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
             cStr(2:3) = Char2Digits(PosExp)
             sLen = 3
         END IF
-    
+
         RETURN
 
     END FUNCTION Write_I32_Exponent
@@ -8310,764 +8607,6 @@ FUNCTION WRITE_RealSP(Fp, Ep, cStr, IsScientific) RESULT(sLen)
     !**************************************************************************
 
 END FUNCTION WRITE_RealSP
-
-!------------------------------------------------------------------------------
-!
-!                       REAL32-TO-STRING MAIN ROUTINES
-!
-!------------------------------------------------------------------------------
-
-FUNCTION RealSP_ToString_DragonBox(Number, IsScientific) RESULT(cStr)
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To convert a single-precision floating-point value to a character (decimal) string
-! using the DragonBox algorithm.
-    
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    REAL(KIND=SP),     INTENT(IN)   :: Number       ! number
-    LOGICAL, OPTIONAL, INTENT(IN)   :: IsScientific ! format flag
-                                                    ! true  if to write the given number in scientific format
-                                                    ! false if to write the given number in general format
-                                                    ! default is false
-    CHARACTER(LEN=:), ALLOCATABLE   :: cStr         ! character string
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-    INTEGER(KIND=I4B)   :: RawBin       ! raw IEEE binary floating point representation
-    INTEGER(KIND=I4B)   :: SigRaw       ! raw (biased) significand in base 2
-    INTEGER(KIND=I4B)   :: ExpRaw       ! raw (biased) exponent in base 2
-    INTEGER(KIND=I4B)   :: SigBin       ! (unbiased) significand in base 2
-    INTEGER(KIND=I4B)   :: ExpBin       ! (unbiased) exponent in base 2
-    LOGICAL             :: Negative     ! sign flag (true if real value is negative)
-    INTEGER(KIND=I4B)   :: SigDec       ! significand in base 10
-    INTEGER(KIND=I4B)   :: ExpDec       ! exponent in base 10
-    LOGICAL             :: ConvFlag     ! conversion flag (true if bin2dec conversion is needed)
-    REAL(KIND=SP)       :: FloatVal     ! working real (for conversion to binary representation)
-    EQUIVALENCE(RawBin, FloatVal)
-    INTEGER(KIND=I4B)   :: wPos
-    CHARACTER(LEN=48)   :: wStr         ! working string
-    INTEGER(KIND=I4B)   :: wLen         ! length of string
-
-!** FLOW
-    
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ conversion of real value to its binary representation  +++++
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! get raw IEEE binary floating point representation (little-endian order)
-    FloatVal = Number
-    
-! decompose the representation into its parts
-    Negative = IAND(RawBin, SignMask) /= 0_I4B
-    SigRaw   = IAND(RawBin, SignificandMask)
-    ExpRaw   = INT(SHIFTR(IAND(RawBin, ExponentMask), SignificandBits), KIND=I4B)
-
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ conversion from binary to decimal representation +++++
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ConvFlag = TrueVal
-! check for special cases
-    IF ((ExpRaw == 0).AND.(SigRaw == 0_I4B)) THEN
-! zero
-        SigDec = 0_I4B
-        ExpDec = 0
-        ConvFlag = FalseVal
-    ELSEIF (ExpRaw == MaxExponent) THEN
-! NaN or Infinity
-        SigDec = SigRaw
-        ExpDec = ExceptionalExponent
-        ConvFlag = FalseVal
-    END IF
-
-! get exponent and mantissa
-    IF (ExpRaw /= 0) THEN
-! normal number
-        SigBin = IOR(SigRaw, SigHidBitMask)
-        ExpBin = ExpRaw - ExponentBias - SignificandBits
-        IF ((-SignificandBits <= ExpBin).AND.(ExpBin <= 0)) THEN
-            IF (TRAILZ(SigBin) >= -ExpBin)THEN
-! fast path for small integer number (without fraction?)
-                SigDec = SHIFTR(SigBin, -ExpBin)
-                ExpDec = 0
-                ConvFlag = FalseVal
-            END IF
-        END IF
-    ELSE
-! subnormal number
-        SigBin = SigRaw
-        ExpBin = 1 - ExponentBias - SignificandBits
-    END IF
-    
-    IF (ConvFlag) THEN
-! perform binary-to-decimal conversion
-        CALL Bin2Dec_DragonBox(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
-    END IF
-
-! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ conversion from decimal represetnation to decimal string  +++++
-! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! write output
-    IF (Negative) THEN
-        wStr(1:1) = '-'
-        wPos = 2
-    ELSE
-        wPos = 1
-    END IF
-    wLen = (wPos - 1) + WRITE_RealSP(SigDec, ExpDec, wStr(wPos:), IsScientific)
-    
-! set output
-    cStr = wStr(1:wLen)
-
-    RETURN
-
-END FUNCTION RealSP_ToString_DragonBox
-
-!******************************************************************************
-
-FUNCTION RealSP_ToString_Ryu(Number, IsScientific) RESULT(cStr)
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To convert a single-precision floating-point value to a character (decimal) string
-! using the Ryu algorithm.
-    
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    REAL(KIND=SP),     INTENT(IN)   :: Number       ! number
-    LOGICAL, OPTIONAL, INTENT(IN)   :: IsScientific ! format flag
-                                                    ! true  if to write the given number in scientific format
-                                                    ! false if to write the given number in general format
-                                                    ! default is false
-    CHARACTER(LEN=:), ALLOCATABLE   :: cStr         ! character string
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-    INTEGER(KIND=I4B)   :: RawBin       ! raw IEEE binary floating point representation
-    INTEGER(KIND=I4B)   :: SigRaw       ! raw (biased) significand in base 2
-    INTEGER(KIND=I4B)   :: ExpRaw       ! raw (biased) exponent in base 2
-    INTEGER(KIND=I4B)   :: SigBin       ! (unbiased) significand in base 2
-    INTEGER(KIND=I4B)   :: ExpBin       ! (unbiased) exponent in base 2
-    LOGICAL             :: Negative     ! sign flag (true if real value is negative)
-    INTEGER(KIND=I4B)   :: SigDec       ! significand in base 10
-    INTEGER(KIND=I4B)   :: ExpDec       ! exponent in base 10
-    LOGICAL             :: ConvFlag     ! conversion flag (true if bin2dec conversion is needed)
-    REAL(KIND=SP)       :: FloatVal     ! working real (for conversion to binary representation)
-    EQUIVALENCE(RawBin, FloatVal)
-    INTEGER(KIND=I4B)   :: wPos
-    CHARACTER(LEN=48)   :: wStr         ! working string
-    INTEGER(KIND=I4B)   :: wLen         ! length of string
-
-!** FLOW
-    
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ conversion of real value to its binary representation  +++++
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! get raw IEEE binary floating point representation (little-endian order)
-    FloatVal = Number
-    
-! decompose the representation into its parts
-    Negative = IAND(RawBin, SignMask) /= 0_I4B
-    SigRaw   = IAND(RawBin, SignificandMask)
-    ExpRaw   = INT(SHIFTR(IAND(RawBin, ExponentMask), SignificandBits), KIND=I4B)
-
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ conversion from binary to decimal representation +++++
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ConvFlag = TrueVal
-! check for special cases
-    IF ((ExpRaw == 0).AND.(SigRaw == 0_I4B)) THEN
-! zero
-        SigDec = 0_I4B
-        ExpDec = 0
-        ConvFlag = FalseVal
-    ELSEIF (ExpRaw == MaxExponent) THEN
-! NaN or Infinity
-        SigDec = SigRaw
-        ExpDec = ExceptionalExponent
-        ConvFlag = FalseVal
-    END IF
-
-! get exponent and mantissa
-    IF (ExpRaw /= 0) THEN
-! normal number
-        SigBin = IOR(SigRaw, SigHidBitMask)
-        ExpBin = ExpRaw - ExponentBias - SignificandBits
-        IF ((-SignificandBits <= ExpBin).AND.(ExpBin <= 0)) THEN
-            IF (TRAILZ(SigBin) >= -ExpBin)THEN
-! fast path for small integer number (without fraction?)
-                SigDec = SHIFTR(SigBin, -ExpBin)
-                ExpDec = 0
-                ConvFlag = FalseVal
-            END IF
-        END IF
-    ELSE
-! subnormal number
-        SigBin = SigRaw
-        ExpBin = 1 - ExponentBias - SignificandBits
-    END IF
-    
-    IF (ConvFlag) THEN
-! perform binary-to-decimal conversion
-        CALL Bin2Dec_Ryu(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
-    END IF
-
-! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ conversion from decimal represetnation to decimal string  +++++
-! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! write output
-    IF (Negative) THEN
-        wStr(1:1) = '-'
-        wPos = 2
-    ELSE
-        wPos = 1
-    END IF
-    wLen = (wPos - 1) + WRITE_RealSP(SigDec, ExpDec, wStr(wPos:), IsScientific)
-    
-! set output
-    cStr = wStr(1:wLen)
-
-    RETURN
-
-END FUNCTION RealSP_ToString_Ryu
-
-!******************************************************************************
-
-FUNCTION RealSP_ToString_Schubfach(Number, IsScientific) RESULT(cStr)
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To convert a single-precision floating-point value to a character (decimal) string
-! using the Schubfach algorithm.
-    
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    REAL(KIND=SP),     INTENT(IN)   :: Number       ! number
-    LOGICAL, OPTIONAL, INTENT(IN)   :: IsScientific ! format flag
-                                                    ! true  if to write the given number in scientific format
-                                                    ! false if to write the given number in general format
-                                                    ! default is false
-    CHARACTER(LEN=:), ALLOCATABLE   :: cStr         ! character string
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-    INTEGER(KIND=I4B)   :: RawBin       ! raw IEEE binary floating point representation
-    INTEGER(KIND=I4B)   :: SigRaw       ! raw (biased) significand in base 2
-    INTEGER(KIND=I4B)   :: ExpRaw       ! raw (biased) exponent in base 2
-    INTEGER(KIND=I4B)   :: SigBin       ! (unbiased) significand in base 2
-    INTEGER(KIND=I4B)   :: ExpBin       ! (unbiased) exponent in base 2
-    LOGICAL             :: Negative     ! sign flag (true if real value is negative)
-    INTEGER(KIND=I4B)   :: SigDec       ! significand in base 10
-    INTEGER(KIND=I4B)   :: ExpDec       ! exponent in base 10
-    LOGICAL             :: ConvFlag     ! conversion flag (true if bin2dec conversion is needed)
-    REAL(KIND=SP)       :: FloatVal     ! working real (for conversion to binary representation)
-    EQUIVALENCE(RawBin, FloatVal)
-    INTEGER(KIND=I4B)   :: wPos
-    CHARACTER(LEN=48)   :: wStr         ! working string
-    INTEGER(KIND=I4B)   :: wLen         ! length of string
-
-!** FLOW
-    
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ conversion of real value to its binary representation  +++++
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! get raw IEEE binary floating point representation (little-endian order)
-    FloatVal = Number
-    
-! decompose the representation into its parts
-    Negative = IAND(RawBin, SignMask) /= 0_I4B
-    SigRaw   = IAND(RawBin, SignificandMask)
-    ExpRaw   = INT(SHIFTR(IAND(RawBin, ExponentMask), SignificandBits), KIND=I4B)
-
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ conversion from binary to decimal representation +++++
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ConvFlag = TrueVal
-! check for special cases
-    IF ((ExpRaw == 0).AND.(SigRaw == 0_I4B)) THEN
-! zero
-        SigDec = 0_I4B
-        ExpDec = 0
-        ConvFlag = FalseVal
-    ELSEIF (ExpRaw == MaxExponent) THEN
-! NaN or Infinity
-        SigDec = SigRaw
-        ExpDec = ExceptionalExponent
-        ConvFlag = FalseVal
-    END IF
-
-! get exponent and mantissa
-    IF (ExpRaw /= 0) THEN
-! normal number
-        SigBin = IOR(SigRaw, SigHidBitMask)
-        ExpBin = ExpRaw - ExponentBias - SignificandBits
-        IF ((-SignificandBits <= ExpBin).AND.(ExpBin <= 0)) THEN
-            IF (TRAILZ(SigBin) >= -ExpBin)THEN
-! fast path for small integer number (without fraction?)
-                SigDec = SHIFTR(SigBin, -ExpBin)
-                ExpDec = 0
-                ConvFlag = FalseVal
-            END IF
-        END IF
-    ELSE
-! subnormal number
-        SigBin = SigRaw
-        ExpBin = 1 - ExponentBias - SignificandBits
-    END IF
-    
-    IF (ConvFlag) THEN
-! perform binary-to-decimal conversion
-        CALL Bin2Dec_Schubfach(SigRaw, ExpRaw, SigBin, ExpBin, SigDec, ExpDec)
-    END IF
-
-! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ conversion from decimal represetnation to decimal string  +++++
-! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! write output
-    IF (Negative) THEN
-        wStr(1:1) = '-'
-        wPos = 2
-    ELSE
-        wPos = 1
-    END IF
-    wLen = (wPos - 1) + WRITE_RealSP(SigDec, ExpDec, wStr(wPos:), IsScientific)
-    
-! set output
-    cStr = wStr(1:wLen)
-
-    RETURN
-
-END FUNCTION RealSP_ToString_Schubfach
-
-!------------------------------------------------------------------------------
-!
-!                       REAL64-FROM-STRING MAIN ROUTINES
-!
-!------------------------------------------------------------------------------
-
-FUNCTION RealSP_FromString_FastFloat(cStr, ParseOpt, ErrFlag, ErrMsg) RESULT(Number)
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To convert a character (decimal) string to a single-precision floating-point value
-! using the FastFloat algorithm.
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*),                        INTENT(IN)    :: cStr
-    INTEGER(KIND=I4B),             OPTIONAL, INTENT(IN)    :: ParseOpt
-    LOGICAL,                       OPTIONAL, INTENT(OUT)   :: ErrFlag
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)   :: ErrMsg
-    REAL(KIND=SP)                                          :: Number
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-    INTEGER(KIND=I4B)   :: SigDec       ! significand in base 10
-    INTEGER(KIND=I4B)   :: ExpDec       ! exponent in base 10
-    LOGICAL             :: Negative     ! sign flag (true if real value is negative)
-    INTEGER(KIND=I8B)   :: SigBin64     ! (unbiased) significand in base 2
-    INTEGER(KIND=I4B)   :: SigBin       ! (unbiased) significand in base 2
-    INTEGER(KIND=I4B)   :: ExpBin       ! (unbiased) exponent in base 2
-    TYPE(StringAux)     :: Aux          ! auxialiary string information
-    LOGICAL             :: Valid
-    LOGICAL             :: SlowPath
-    INTEGER(KIND=I4B)   :: ParseFormat
-    INTEGER(KIND=I4B)   :: RawVal       ! raw IEEE binary floating point representation
-    REAL(KIND=SP)       :: FloatVal     ! working real (for conversion from binary representation)
-    EQUIVALENCE(RawVal, FloatVal)
-
-!** FLOW
-
-! check and set optional input (parsing format)
-    ParseFormat = FortNum
-    IF (PRESENT(ParseOpt)) THEN
-        IF ((ParseOpt >= 1).AND.(ParseOpt <= 3)) ParseFormat = ParseOpt
-    END IF
-
-! parse floating-point-number string
-    SELECT CASE (ParseFormat)
-    CASE (FortNum)
-        Valid = Parse_Fortran_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
-    CASE (FPlusNum)
-        Valid = Parse_FPlus_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
-    CASE (JsonNum)
-        Valid = Parse_JSON_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
-    END SELECT
-    IF (PRESENT(ErrFlag)) ErrFlag = .NOT.Valid
-
-    IF (Valid) THEN
-! ++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ perform decimal to binary conversion +++++
-! ++++++++++++++++++++++++++++++++++++++++++++++++
-! set flag
-        SlowPath = TrueVal
-    
-! If the exponent is too large and can't be represented in this size of
-! float, return inf. These bounds are relatively loose, but are mostly
-! serving as a first pass. Some close numbers getting through is okay.
-        IF (ExpDec > Exponent_UppBound) THEN
-! infinity
-            SigBin = 0_I4B
-            ExpBin = MaxExponent
-            SlowPath = FalseVal
-! If the exponent is too small even for a subnormal, return 0.
-        ELSEIF (ExpDec < Exponent_LowBound) THEN
-! zero
-            SigBin = 0_I4B
-            ExpBin = 0
-            SlowPath = FalseVal
-        ELSEIF (.NOT.Aux%Truncated) THEN
-            IF (Dec2Bin_Clinger(SigDec, ExpDec, SigBin, ExpBin)) THEN
-! clinger's fast path is valid
-                SlowPath = FalseVal
-            END IF
-        END IF
-    
-! perform decimal to binary conversion using FastFloat algorithm if SlowPath is true
-! IF (SlowPath) CALL Dec2Bin_FastFloat(SigDec, ExpDec, cStr, Aux%Truncated, Aux%Indices, SigBin, ExpBin)
-        IF (SlowPath) THEN
-            CALL Dec2Bin_FastFloat(INT(SigDec, KIND=I8B), ExpDec, cStr, Aux%Truncated, Aux%Indices, SigBin64, ExpBin)
-            SigBin = INT(SigBin64, KIND=I4B)
-        END IF
-
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++ convert binary representation into real number +++
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! construct raw binary representation of floating point number
-! set sign bit
-        IF (Negative) THEN
-            RawVal = SignMask
-        ELSE
-            RawVal = 0_I4B
-        END IF
-! add exponent bits
-        RawVal = IOR(RawVal, SHIFTL(INT(ExpBin, KIND=I4B), SignificandBits))
-! add (both implicit and explicit) significand bits
-        RawVal = IOR(RawVal, IAND(SigBin, SignificandMask))
-! convert raw binary representation to floating point number (little-endian order)
-        Number = FloatVal
-    ELSE
-! handle special cases (infinity or NaN)
-        Number = Handle_Invalid_String(cStr, Aux%Start, Negative)
-    END IF
-    
-    RETURN
-
-END FUNCTION RealSP_FromString_FastFloat
-
-!******************************************************************************
-
-FUNCTION RealSP_FromString_LibC(cStr, ParseOpt, ErrFlag, ErrMsg) RESULT(Number)
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To convert a character (decimal) string to a single-precision floating-point value
-! using the LibC algorithm.
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*),                        INTENT(IN)    :: cStr
-    INTEGER(KIND=I4B),             OPTIONAL, INTENT(IN)    :: ParseOpt
-    LOGICAL,                       OPTIONAL, INTENT(OUT)   :: ErrFlag
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)   :: ErrMsg
-    REAL(KIND=SP)                                          :: Number
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-    INTEGER(KIND=I4B)   :: SigDec       ! significand in base 10
-    INTEGER(KIND=I4B)   :: ExpDec       ! exponent in base 10
-    LOGICAL             :: Negative     ! sign flag (true if real value is negative)
-    INTEGER(KIND=I4B)   :: SigBin       ! (unbiased) significand in base 2
-    INTEGER(KIND=I4B)   :: ExpBin       ! (unbiased) exponent in base 2
-    TYPE(StringAux)     :: Aux          ! auxialiary string information
-    LOGICAL             :: Valid
-    LOGICAL             :: SlowPath
-    INTEGER(KIND=I4B)   :: ParseFormat
-    INTEGER(KIND=I4B)   :: RawVal       ! raw IEEE binary floating point representation
-    REAL(KIND=SP)       :: FloatVal     ! working real (for conversion from binary representation)
-    EQUIVALENCE(RawVal, FloatVal)
-
-!** FLOW
-
-! check and set optional input (parsing format)
-    ParseFormat = FortNum
-    IF (PRESENT(ParseOpt)) THEN
-        IF ((ParseOpt >= 1).AND.(ParseOpt <= 3)) ParseFormat = ParseOpt
-    END IF
-
-! parse floating-point-number string
-    SELECT CASE (ParseFormat)
-    CASE (FortNum)
-        Valid = Parse_Fortran_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
-    CASE (FPlusNum)
-        Valid = Parse_FPlus_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
-    CASE (JsonNum)
-        Valid = Parse_JSON_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
-    END SELECT
-    IF (PRESENT(ErrFlag)) ErrFlag = .NOT.Valid
-
-    IF (Valid) THEN
-! ++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ perform decimal to binary conversion +++++
-! ++++++++++++++++++++++++++++++++++++++++++++++++
-! set flag
-        SlowPath = TrueVal
-    
-! If the exponent is too large and can't be represented in this size of
-! float, return inf. These bounds are relatively loose, but are mostly
-! serving as a first pass. Some close numbers getting through is okay.
-        IF (ExpDec > Exponent_UppBound) THEN
-! infinity
-            SigBin = 0_I4B
-            ExpBin = MaxExponent
-            SlowPath = FalseVal
-! If the exponent is too small even for a subnormal, return 0.
-        ELSEIF (ExpDec < Exponent_LowBound) THEN
-! zero
-            SigBin = 0_I4B
-            ExpBin = 0
-            SlowPath = FalseVal
-        ELSEIF (.NOT.Aux%Truncated) THEN
-            IF (Dec2Bin_Clinger(SigDec, ExpDec, SigBin, ExpBin)) THEN
-! clinger's fast path is valid
-                SlowPath = FalseVal
-            END IF
-        END IF
-    
-! perform decimal to binary conversion using LibC algorithm if SlowPath is true
-        IF (SlowPath) CALL Dec2Bin_LibC(SigDec, ExpDec, cStr, Aux%Start, Aux%Truncated, SigBin, ExpBin)
-
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++ convert binary representation into real number +++
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! construct raw binary representation of floating point number
-! set sign bit
-        IF (Negative) THEN
-            RawVal = SignMask
-        ELSE
-            RawVal = 0_I4B
-        END IF
-! add exponent bits
-        RawVal = IOR(RawVal, SHIFTL(INT(ExpBin, KIND=I4B), SignificandBits))
-! add (both implicit and explicit) significand bits
-        RawVal = IOR(RawVal, IAND(SigBin, SignificandMask))
-! convert raw binary representation to floating point number (little-endian order)
-        Number = FloatVal
-    ELSE
-! handle special cases (infinity or NaN)
-        Number = Handle_Invalid_String(cStr, Aux%Start, Negative)
-    END IF
-    
-    RETURN
-
-END FUNCTION RealSP_FromString_LibC
-
-!******************************************************************************
-
-FUNCTION RealSP_FromString_YY(cStr, ParseOpt, ErrFlag, ErrMsg) RESULT(Number)
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To convert a character (decimal) string to a single-precision floating-point value
-! using the YY algorithm.
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*),                        INTENT(IN)    :: cStr
-    INTEGER(KIND=I4B),             OPTIONAL, INTENT(IN)    :: ParseOpt
-    LOGICAL,                       OPTIONAL, INTENT(OUT)   :: ErrFlag
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)   :: ErrMsg
-    REAL(KIND=SP)                                          :: Number
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-    INTEGER(KIND=I4B)   :: SigDec       ! significand in base 10
-    INTEGER(KIND=I4B)   :: ExpDec       ! exponent in base 10
-    LOGICAL             :: Negative     ! sign flag (true if real value is negative)
-    INTEGER(KIND=I4B)   :: SigBin       ! (unbiased) significand in base 2
-    INTEGER(KIND=I4B)   :: ExpBin       ! (unbiased) exponent in base 2
-    TYPE(StringAux)     :: Aux          ! auxialiary string information
-    LOGICAL             :: Valid
-    LOGICAL             :: SlowPath
-    INTEGER(KIND=I4B)   :: ParseFormat
-    INTEGER(KIND=I4B)   :: RawVal       ! raw IEEE binary floating point representation
-    REAL(KIND=SP)       :: FloatVal     ! working real (for conversion from binary representation)
-    EQUIVALENCE(RawVal, FloatVal)
-
-!** FLOW
-
-! check and set optional input (parsing format)
-    ParseFormat = FortNum
-    IF (PRESENT(ParseOpt)) THEN
-        IF ((ParseOpt >= 1).AND.(ParseOpt <= 3)) ParseFormat = ParseOpt
-    END IF
-
-! parse floating-point-number string
-    SELECT CASE (ParseFormat)
-    CASE (FortNum)
-        Valid = Parse_Fortran_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
-    CASE (FPlusNum)
-        Valid = Parse_FPlus_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
-    CASE (JsonNum)
-        Valid = Parse_JSON_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
-    END SELECT
-    IF (PRESENT(ErrFlag)) ErrFlag = .NOT.Valid
-
-    IF (Valid) THEN
-! ++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ perform decimal to binary conversion +++++
-! ++++++++++++++++++++++++++++++++++++++++++++++++
-! set flag
-        SlowPath = TrueVal
-    
-! If the exponent is too large and can't be represented in this size of
-! float, return inf. These bounds are relatively loose, but are mostly
-! serving as a first pass. Some close numbers getting through is okay.
-        IF (ExpDec > Exponent_UppBound) THEN
-! infinity
-            SigBin = 0_I4B
-            ExpBin = MaxExponent
-            SlowPath = FalseVal
-! If the exponent is too small even for a subnormal, return 0.
-        ELSEIF (ExpDec < Exponent_LowBound) THEN
-! zero
-            SigBin = 0_I4B
-            ExpBin = 0
-            SlowPath = FalseVal
-        ELSEIF (.NOT.Aux%Truncated) THEN
-            IF (Dec2Bin_Clinger(SigDec, ExpDec, SigBin, ExpBin)) THEN
-! clinger's fast path is valid
-                SlowPath = FalseVal
-            END IF
-        END IF
-    
-        IF (SlowPath) THEN
-! +++ perform decimal to binary conversion using YY's algorithm +++
-            RawVal = Dec2Bin_YY(SigDec, ExpDec, Negative, cStr, Aux)
-        ELSE
-! +++ construct raw binary representation of floating point number +++
-! set sign bit
-            IF (Negative) THEN
-                RawVal = SignMask
-            ELSE
-                RawVal = 0_I4B
-            END IF
-! add exponent bits
-            RawVal = IOR(RawVal, SHIFTL(INT(ExpBin, KIND=I4B), SignificandBits))
-! add (both implicit and explicit) significand bits
-            RawVal = IOR(RawVal, IAND(SigBin, SignificandMask))
-        END IF
-
-! convert raw binary representation to floating point number (little-endian order)
-        Number = FloatVal
-    ELSE
-! handle special cases (infinity or NaN)
-        Number = Handle_Invalid_String(cStr, Aux%Start, Negative)
-    END IF
-    
-    RETURN
-
-END FUNCTION RealSP_FromString_YY
-
-!******************************************************************************
-
-FUNCTION RealSP_FromString_Lemire(cStr, ParseOpt, ErrFlag, ErrMsg) RESULT(Number)
-
-!** PURPOSE OF THIS SUBROUTINE:
-! To convert a character (decimal) string to a single-precision floating-point value
-! using the Lemire algorithm.
-
-    IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
-
-!** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*),                        INTENT(IN)    :: cStr
-    INTEGER(KIND=I4B),             OPTIONAL, INTENT(IN)    :: ParseOpt
-    LOGICAL,                       OPTIONAL, INTENT(OUT)   :: ErrFlag
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)   :: ErrMsg
-    REAL(KIND=SP)                                          :: Number
-
-!** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
-    INTEGER(KIND=I4B)   :: SigDec       ! significand in base 10
-    INTEGER(KIND=I4B)   :: ExpDec       ! exponent in base 10
-    LOGICAL             :: Negative     ! sign flag (true if real value is negative)
-    INTEGER(KIND=I4B)   :: SigBin       ! (unbiased) significand in base 2
-    INTEGER(KIND=I4B)   :: ExpBin       ! (unbiased) exponent in base 2
-    TYPE(StringAux)     :: Aux          ! auxialiary string information
-    LOGICAL             :: Valid
-    LOGICAL             :: SlowPath
-    INTEGER(KIND=I4B)   :: ParseFormat
-    INTEGER(KIND=I4B)   :: RawVal       ! raw IEEE binary floating point representation
-    REAL(KIND=SP)       :: FloatVal     ! working real (for conversion from binary representation)
-    EQUIVALENCE(RawVal, FloatVal)
-
-!** FLOW
-
-! check and set optional input (parsing format)
-    ParseFormat = FortNum
-    IF (PRESENT(ParseOpt)) THEN
-        IF ((ParseOpt >= 1).AND.(ParseOpt <= 3)) ParseFormat = ParseOpt
-    END IF
-
-! parse floating-point-number string
-    SELECT CASE (ParseFormat)
-    CASE (FortNum)
-        Valid = Parse_Fortran_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
-    CASE (FPlusNum)
-        Valid = Parse_FPlus_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
-    CASE (JsonNum)
-        Valid = Parse_JSON_String(cStr, SigDec, ExpDec, Negative, Aux, ErrMsg)
-    END SELECT
-    IF (PRESENT(ErrFlag)) ErrFlag = .NOT.Valid
-
-    IF (Valid) THEN
-! ++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ perform decimal to binary conversion +++++
-! ++++++++++++++++++++++++++++++++++++++++++++++++
-! set flag
-        SlowPath = TrueVal
-    
-! If the exponent is too large and can't be represented in this size of
-! float, return inf. These bounds are relatively loose, but are mostly
-! serving as a first pass. Some close numbers getting through is okay.
-        IF (ExpDec > Exponent_UppBound) THEN
-! infinity
-            SigBin = 0_I4B
-            ExpBin = MaxExponent
-            SlowPath = FalseVal
-! If the exponent is too small even for a subnormal, return 0.
-        ELSEIF (ExpDec < Exponent_LowBound) THEN
-! zero
-            SigBin = 0_I4B
-            ExpBin = 0
-            SlowPath = FalseVal
-        ELSEIF (.NOT.Aux%Truncated) THEN
-            IF (Dec2Bin_Clinger(SigDec, ExpDec, SigBin, ExpBin)) THEN
-! clinger's fast path is valid
-                SlowPath = FalseVal
-            END IF
-        END IF
-    
-        IF (SlowPath) THEN
-! +++ perform decimal to binary conversion using Lemire's algorithm +++
-            RawVal = Dec2Bin_Lemire(SigDec, ExpDec, Negative, cStr, Aux)
-        ELSE
-! +++ construct raw binary representation of floating point number +++
-! set sign bit
-            IF (Negative) THEN
-                RawVal = SignMask
-            ELSE
-                RawVal = 0_I4B
-            END IF
-! add exponent bits
-            RawVal = IOR(RawVal, SHIFTL(INT(ExpBin, KIND=I4B), SignificandBits))
-! add (both implicit and explicit) significand bits
-            RawVal = IOR(RawVal, IAND(SigBin, SignificandMask))
-        END IF
-
-! convert raw binary representation to floating point number (little-endian order)
-        Number = FloatVal
-    ELSE
-! handle special cases (infinity or NaN)
-        Number = Handle_Invalid_String(cStr, Aux%Start, Negative)
-    END IF
-    
-    RETURN
-
-END FUNCTION RealSP_FromString_Lemire
 
 !******************************************************************************
 

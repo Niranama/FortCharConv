@@ -1,22 +1,21 @@
 
 MODULE ModBase_Integer_FromChar
 
-!** PURPOSE OF THIS MODULE:
-    ! This module contains routines that convert a decimal string into an integer value.
-
-!** REFERENCES:
-    ! [1] atoi_yy: https://github.com/ibireme/c_numconv_benchmark
-    ! [2] atoi_lemire: https://github.com/ibireme/c_numconv_benchmark
-
-!** TECHNICAL NOTES:
-    ! 1. A Fortran number (FortNum) that has the form as: [S]N[N...] where
-    !       S is a sign indicator (required if negative '-', optional if positive '+').
+!^ **PURPOSE OF THIS MODULE**:  
+    ! This module contains routines that convert a decimal string into an integer value.  
+    !    
+!^ **REFERENCES**:  
+    ! [1] [Number Conversion Benchmark in C](https://github.com/ibireme/c_numconv_benchmark)  
+    !    
+!^ **TECHNICAL NOTES**:  
+    ! 1. A Fortran number (FortNum) that has the form as: [S]N[N...] where  
+    !       S is a sign indicator (required if negative '-', optional if positive '+').  
     !       N is a decimal digit (0 through 9). Any leading zeros, leading and trailing
-    !           spaces are ignored.
-    !    Unlike Fortran constants, the optional kind parameter (_k) is not allowed here.
-    ! 2. A FPlus number (FortPlus) has a slightly more relaxed rule than that of a Fortran
+    !           spaces are ignored.  
+    !    Unlike Fortran constants, the optional kind parameter (_k) is not allowed here.   
+    ! 2. A FortPlus number (FortPlus) has a slightly more relaxed rule than that of a Fortran
     !    number such that any invalid characters after characters that are valid are ignored.
-    !    For example, -3567e23 is treated as a valid number with a value of -3567.
+    !    For example, -3567e23 is treated as a valid number with a value of -3567.  
     ! 3. A JSON number (JsonNum) has a slightly stricter rule than that of a Fortran number
     !    such that a plus sign and leading zoroes are not allowed.
 
@@ -76,15 +75,15 @@ MODULE ModBase_Integer_FromChar
 FUNCTION I32_FromChar_CC_FortNum(cStr, ErrFlag, ErrMsg) RESULT(Number)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a decimal string to an integer value
+    !! To convert a decimal string to a 32-bit integer by interpreting the string as a Fortran number
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     ! character string
-    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  ! true if input is not invalid
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   ! message if input is not invalid
-    INTEGER(KIND=I4B)                                       :: Number   ! number
+    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     !! character string
+    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  !! true if input is not invalid
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   !! message if input is not invalid
+    INTEGER(KIND=I4B)                                       :: Number   !! number
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I4B)           :: Indx, StrLen
@@ -234,15 +233,15 @@ END FUNCTION I32_FromChar_CC_FortNum
 FUNCTION I32_FromChar_CC_FortPlus(cStr, ErrFlag, ErrMsg) RESULT(Number)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a decimal string to an integer value
+    !! To convert a decimal string to a 32-bit integer by interpreting the string as a FortPlus number
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     ! character string
-    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  ! true if input is not invalid
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   ! message if input is not invalid
-    INTEGER(KIND=I4B)                                       :: Number   ! number
+    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     !! character string
+    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  !! true if input is not invalid
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   !! message if input is not invalid
+    INTEGER(KIND=I4B)                                       :: Number   !! number
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I4B)           :: Indx, StrLen
@@ -382,15 +381,15 @@ END FUNCTION I32_FromChar_CC_FortPlus
 FUNCTION I32_FromChar_CC_JsonNum(cStr, ErrFlag, ErrMsg) RESULT(Number)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a decimal string to an integer value
+    !! To convert a decimal string to a 32-bit integer by interpreting the string as a JSON number
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     ! character string
-    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  ! true if input is not invalid
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   ! message if input is not invalid
-    INTEGER(KIND=I4B)                                       :: Number   ! number
+    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     !! character string
+    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  !! true if input is not invalid
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   !! message if input is not invalid
+    INTEGER(KIND=I4B)                                       :: Number   !! number
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I4B)           :: Indx, StrLen
@@ -532,15 +531,15 @@ END FUNCTION I32_FromChar_CC_JsonNum
 FUNCTION I32_FromChar_Lemire_FortPlus(cStr, ErrFlag, ErrMsg) RESULT(Number)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a decimal string to an integer value
+    !! To convert a decimal string to a 32-bit integer by interpreting the string as a FortPlus number
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     ! character string
-    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  ! true if input is not invalid
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   ! message if input is not invalid
-    INTEGER(KIND=I4B)                                       :: Number   ! number
+    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     !! character string
+    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  !! true if input is not invalid
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   !! message if input is not invalid
+    INTEGER(KIND=I4B)                                       :: Number   !! number
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I4B)           :: Indx, IndxP7
@@ -699,15 +698,15 @@ END FUNCTION I32_FromChar_Lemire_FortPlus
 FUNCTION I32_FromChar_YY_JsonNum(cStr, ErrFlag, ErrMsg) RESULT(Number)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a decimal string to an integer value
+    !! To convert a decimal string to a 32-bit integer by interpreting the string as a JSON number
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     ! character string
-    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  ! true if input is not invalid
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   ! message if input is not invalid
-    INTEGER(KIND=I4B)                                       :: Number   ! number
+    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     !! character string
+    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  !! true if input is not invalid
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   !! message if input is not invalid
+    INTEGER(KIND=I4B)                                       :: Number   !! number
 
 !** SUBROUTINE PARAMETER DECLARATIONS:
     ! Digit: '0'
@@ -914,15 +913,15 @@ END FUNCTION I32_FromChar_YY_JsonNum
 FUNCTION I64_FromChar_CC_FortNum(cStr, ErrFlag, ErrMsg) RESULT(Number)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a decimal string to an integer value
+    !! To convert a decimal string to a 64-bit integer by interpreting the string as a Fortran number
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     ! character string
-    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  ! true if input is not invalid
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   ! message if input is not invalid
-    INTEGER(KIND=I8B)                                       :: Number   ! number
+    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     !! character string
+    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  !! true if input is not invalid
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   !! message if input is not invalid
+    INTEGER(KIND=I8B)                                       :: Number   !! number
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I4B)           :: Indx, StrLen
@@ -1067,15 +1066,15 @@ END FUNCTION I64_FromChar_CC_FortNum
 FUNCTION I64_FromChar_CC_FortPlus(cStr, ErrFlag, ErrMsg) RESULT(Number)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a decimal string to an integer value
+    !! To convert a decimal string to a 64-bit integer by interpreting the string as a FortPlus number
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     ! character string
-    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  ! true if input is not invalid
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   ! message if input is not invalid
-    INTEGER(KIND=I8B)                                       :: Number   ! number
+    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     !! character string
+    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  !! true if input is not invalid
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   !! message if input is not invalid
+    INTEGER(KIND=I8B)                                       :: Number   !! number
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I4B)           :: Indx, StrLen
@@ -1210,15 +1209,15 @@ END FUNCTION I64_FromChar_CC_FortPlus
 FUNCTION I64_FromChar_CC_JsonNum(cStr, ErrFlag, ErrMsg) RESULT(Number)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a decimal string to an integer value
+    !! To convert a decimal string to a 64-bit integer by interpreting the string as a JSON number
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     ! character string
-    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  ! true if input is not invalid
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   ! message if input is not invalid
-    INTEGER(KIND=I8B)                                       :: Number   ! number
+    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     !! character string
+    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  !! true if input is not invalid
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   !! message if input is not invalid
+    INTEGER(KIND=I8B)                                       :: Number   !! number
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I4B)           :: Indx, StrLen
@@ -1355,15 +1354,15 @@ END FUNCTION I64_FromChar_CC_JsonNum
 FUNCTION I64_FromChar_Lemire_FortPlus(cStr, ErrFlag, ErrMsg) RESULT(Number)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a decimal string to an integer value
+    !! To convert a decimal string to a 64-bit integer by interpreting the string as a FortPlus number
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     ! character string
-    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  ! true if input is not invalid
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   ! message if input is not invalid
-    INTEGER(KIND=I8B)                                       :: Number   ! number
+    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     !! character string
+    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  !! true if input is not invalid
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   !! message if input is not invalid
+    INTEGER(KIND=I8B)                                       :: Number   !! number
 
 !** SUBROUTINE INTERNAL VARIABLE DECLARATIONS:
     INTEGER(KIND=I4B)           :: Indx, IndxP7, StrLen
@@ -1528,15 +1527,15 @@ END FUNCTION I64_FromChar_Lemire_FortPlus
 FUNCTION I64_FromChar_YY_JsonNum(cStr, ErrFlag, ErrMsg) RESULT(Number)
 
 !** PURPOSE OF THIS SUBROUTINE:
-    ! To convert a decimal string to an integer value
+    !! To convert a decimal string to a 64-bit integer by interpreting the string as a JSON number
 
     IMPLICIT NONE    ! Enforce explicit typing of all variables in this routine
 
 !** SUBROUTINE ARGUMENT DECLARATIONS:
-    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     ! character string
-    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  ! true if input is not invalid
-    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   ! message if input is not invalid
-    INTEGER(KIND=I8B)                                       :: Number   ! number
+    CHARACTER(LEN=*), TARGET,                INTENT(IN)     :: cStr     !! character string
+    LOGICAL(KIND=4),               OPTIONAL, INTENT(OUT)    :: ErrFlag  !! true if input is not invalid
+    CHARACTER(LEN=:), ALLOCATABLE, OPTIONAL, INTENT(OUT)    :: ErrMsg   !! message if input is not invalid
+    INTEGER(KIND=I8B)                                       :: Number   !! number
 
 !** SUBROUTINE PARAMETER DECLARATIONS:
     ! Digit: '0'
